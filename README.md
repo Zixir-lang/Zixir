@@ -1,6 +1,26 @@
 # Zixir
 
-Three-tier runtime: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist). Compatible with Python libraries via ports; Zig for memory-critical math and high-speed data; Elixir for concurrency, fault tolerance, and intent.
+A programming language and three-tier runtime: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist). One stack that gives you reliability, speed, and ecosystem.
+
+## Why a three-tier runtime?
+
+Each tier does what it’s best at; together they cover orchestration, speed, and ecosystem in one stack.
+
+| Tier | Role | Strength |
+|------|------|----------|
+| **Elixir** | Orchestrator | Concurrency, fault tolerance, supervision (“let it crash”), distributed systems, hot reload, OTP. Coordinates many tasks and keeps the system up. |
+| **Zig** | Engine | Predictable performance, no GC pauses, low-level control, small binaries. Ideal for hot paths: parsing, math, core ops, NIFs. |
+| **Python** | Specialist | Huge ecosystem: ML (PyTorch, TensorFlow), data (pandas, numpy), scripting, APIs. Run existing libraries without rewriting them. |
+
+**Benefits:**
+
+- **Right tool per layer** — Orchestration in Elixir, heavy computation in Zig, ML/data/scripts in Python, instead of forcing everything into one language.
+- **Performance where it matters** — Zig runs the hot path with predictable latency and no GC; Python is used for “expensive but occasional” work (e.g. model inference, data prep).
+- **Reuse, don’t rewrite** — Python’s libraries (ML, science, tooling) are called from the same runtime; you don’t reimplement them in Elixir or Zig.
+- **Resilience at the top** — Elixir supervises workers and restarts them on failure; a crashing Zig NIF or Python subprocess can be isolated and restarted without bringing down the whole system.
+- **Good fit for agentic / AI workflows** — Elixir coordinates many steps and tools; Zig runs core logic and parsing fast; Python runs models and specialist tools.
+
+**When you’d want this:** building agentic coding or AI tooling (many tools + fast core + Python ML/data), needing throughput and low latency in the core engine but also Python libraries, or wanting fault tolerance and concurrency (Elixir) without giving up predictable performance (Zig) or ecosystem (Python).
 
 ## Requirements
 
