@@ -16,6 +16,7 @@ Zixir source is a sequence of **statements**. Each statement is either a **let**
 - **Binary ops**: `+`, `-`, `*`, `/` — left-associative, over numbers.
 - **Engine call**: `engine.`**op**`(`**args**`)` — runs Zig engine (e.g. `engine.list_sum([1.0, 2.0])`).
 - **Python call**: `python` **"module"** **"function"** `(`**args**`)` — calls Python (e.g. `python "math" "sqrt" (4.0)`).
+- **Pattern matching**: `match` **expr** `{` **pattern** `->` **body** `,` ... `}` — match value to first matching clause; patterns: literals, variable (binds), array, guards (`==`, `<`).
 - **Parentheses**: `(` expr `)`.
 
 ### Comments
