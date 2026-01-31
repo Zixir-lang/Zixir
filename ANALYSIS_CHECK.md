@@ -70,7 +70,7 @@ Aligned with [project_Analysis_for_fork.md](project_Analysis_for_fork.md). Last 
 
 - README: repo link, why three-tier, benefits, Mermaid layout, requirements, setup, usage, license (Apache-2.0).
 - project_Analysis_for_fork.md: purpose, stack, goals, failure model, repo layout, production alignment.
-- LICENSE: Apache-2.0, Copyright 2025 PersistenceOS.
+- LICENSE: Apache-2.0, Copyright 2025 Leo Louvar.
 
 ---
 
