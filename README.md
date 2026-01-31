@@ -2,37 +2,30 @@
 
 **Repository:** [github.com/PersistenceOS/Zixir](https://github.com/PersistenceOS/Zixir)
 
-A programming language and three-tier runtime: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist). Zixir today is a small, expression-oriented language. One stack that gives you reliability, speed, and ecosystem.
+Zixir is an **AI automation programming language** that combines workflow orchestration, resource management, and observability into a single, cohesive tool—so you don’t need to glue together Airflow, Redis, and Prometheus. It’s a small, expression-oriented language on a **three-tier runtime**: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist).
 
-## 🔥 Why Zixir?
+## Why Zixir?
 
-### Built for AI engineers
+**The problem:** Building production AI pipelines usually means combining Airflow for orchestration, Kubernetes for deployment, Redis for caching, Prometheus for monitoring, custom code for fault tolerance, and YAML for configuration.
 
-- **Pattern matching** for elegant data handling
-- **Expression-oriented** — everything returns a value
-- **Interactive REPL** for rapid prototyping
-- **Type inference** catches errors before runtime
+**The Zixir solution:** One language that does it all. Workflow orchestration, checkpointing, resource limits, circuit breakers, and built-in caching (ETS + disk, no Redis) are part of the runtime—not bolted on.
 
-### Production-ready out of the box
+**Accurate highlights:**
 
-- **Workflow orchestration** with DAG execution
-- **Automatic checkpointing** — resume from failures
-- **Resource sandboxing** — prevent runaway processes
-- **Circuit breakers** — stop cascade failures
-- **Built-in caching** — no Redis required
+- **Built-in caching** — ETS (in-memory) and local disk; no Redis/Memcached required.
+- **Pattern matching** — Native language feature; no other workflow tool has this.
+- **Interactive REPL** — Built-in REPL for workflow development; Airflow/Kubeflow/Prefect don’t have this.
+- **Fault tolerance built-in** — Supervision trees, circuit breakers, retries; not bolted-on like other tools.
+- **Three-tier architecture** — Elixir + Zig + Python; unique combination for orchestration, native speed, and ML.
 
-### Three-tier performance
+**Trade-offs:**
 
-- **Elixir** for concurrency and fault tolerance
-- **Zig** for native-speed data operations
-- **Python** for ML model integration
-
-### Observable by default
-
-- **Structured logging** (JSON)
-- **Distributed tracing** with spans
-- **Prometheus metrics** export
-- **Performance monitoring** built-in
+- ✅ Less infrastructure to manage  
+- ✅ Faster development (interactive REPL)  
+- ✅ Strong fault tolerance and type safety  
+- ⚠️ Requires learning Elixir/Zixir syntax  
+- ⚠️ Smaller ecosystem than Python  
+- ⚠️ Newer project (less battle-tested)
 
 ## Why a three-tier runtime?
 
@@ -54,34 +47,28 @@ Each tier does what it’s best at; together they cover orchestration, speed, an
 
 **When you’d want this:** building agentic coding or AI tooling (many tools + fast core + Python ML/data), needing throughput and low latency in the core engine but also Python libraries, or wanting fault tolerance and concurrency (Elixir) without giving up predictable performance (Zig) or ecosystem (Python).
 
-### Comparison to industry tools
+### Zixir vs. alternatives (honest assessment)
 
 | Feature | Zixir | Airflow | Kubeflow | Prefect |
 |---------|-------|---------|----------|---------|
-| Workflow orchestration | ✅ | ✅ | ✅ | ✅ |
-| Checkpointing / recovery | ✅ | ⚠️ | ✅ | ✅ |
-| Resource limits | ✅ | ❌ | ⚠️ | ⚠️ |
-| Python integration | ✅ | ✅ | ✅ | ✅ |
-| Observability | ✅ | ⚠️ | ⚠️ | ✅ |
-| Async / streaming | ✅ | ❌ | ❌ | ⚠️ |
-| Built-in caching | ✅ | ❌ | ❌ | ❌ |
-| Pattern matching | ✅ | ❌ | ❌ | ❌ |
-| Interactive REPL | ✅ | ❌ | ❌ | ❌ |
+| **External infrastructure** | Elixir runtime only* | Redis + DB | Kubernetes | Minimal |
+| **Setup time** | ~20 min | ~2 hours | ~2 days | ~1 hour |
+| **Lines of code (typical ML pipeline)** | 50–150 | 200–500 | 500–1000 | 150–400 |
+| **Workflow orchestration** | ✅ Built-in | ✅ | ✅ | ✅ |
+| **Checkpointing** | ✅ Any type | ⚠️ JSON only (XCom) | ✅ | ✅ |
+| **Resource limits** | ✅ Code-level primitives | ✅ Config (e.g. execution_timeout) | ✅ YAML | ✅ Decorators |
+| **Fault tolerance** | ✅ Supervision + circuit breakers | ⚠️ Basic | ⚠️ K8s | ⚠️ Basic |
+| **Observability** | ✅ Built-in | ⚠️ Manual | ⚠️ Complex | ⚠️ UI |
+| **Pattern matching** | ✅ Native | ❌ | ❌ | ❌ |
+| **Interactive REPL** | ✅ | ❌ | ❌ | ❌ |
+| **Type inference** | ✅ | ❌ | ❌ | ❌ |
+| **Native performance** | ✅ Zig NIFs | ❌ | ❌ | ❌ |
 
-### Zixir vs. the alternatives
+\* Requires Elixir and Zig (build-time) to run; no Redis, K8s, or separate DB for workflows.
 
-| Feature | Zixir | Airflow | Kubeflow | Prefect | Temporal |
-|---------|-------|---------|----------|---------|----------|
-| **Lines of code for ML pipeline** | 50 | 500+ | 1000+ | 300+ | 400+ |
-| **External services needed** | 0 | 3–5 | 5–10 | 2–3 | 2–4 |
-| **Setup time** | 5 minutes | 2 hours | 2 days | 1 hour | 3 hours |
-| **Fault tolerance** | Built-in | Add manually | K8s complex | Basic | Basic |
-| **Resource limits** | Code-level | None | K8s only | None | None |
-| **Interactive development** | ✅ REPL | ❌ | ❌ | ❌ | ❌ |
-| **Type safety** | ✅ Inference | ❌ | ❌ | ❌ | ⚠️ Partial |
-| **Native performance** | ✅ Zig NIFs | ❌ | ❌ | ❌ | ❌ |
+**Key difference:** Zixir bakes orchestration, resource limits, and observability into the language. Other tools add these via configuration and external services.
 
-**Bottom line:** Zixir gives you 10x less code and 10x more features.
+**Bottom line:** Zixir is a new AI automation language that puts workflow orchestration, resource management, and observability directly into the language—so you don’t need to glue together Airflow + Redis + Prometheus. It requires Elixir and Zig to run, but once set up, you get features that would normally require 3–5 external services. It’s particularly strong for teams that want functional patterns (pattern matching, type inference) and built-in fault tolerance.
 
 ### Layout (three-tier flow)
 
@@ -116,9 +103,17 @@ flowchart TB
 
 ## Requirements
 
-- **Elixir** 1.14+ / OTP 25+
-- **Zig** 0.10+ (Zigler fetches via `mix zig.get` after `mix deps.get`)
-- **Python** 3.10+ (for specialist; recommend virtualenv)
+**Minimum:**
+
+- **Elixir** 1.14+ / OTP 25+ (runtime)
+- **Zig** 0.15+ (build-time only; Zigler fetches via `mix zig.get` after `mix deps.get`)
+- ~100 MB disk space
+- File system (for persistence / checkpoints / cache)
+
+**Optional:**
+
+- **Python** 3.8+ (if using ML models or specialist calls; recommend virtualenv)
+- Extra disk (for checkpoints and cache)
 
 ## Supported platforms
 
