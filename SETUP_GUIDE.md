@@ -265,6 +265,53 @@ sudo apt-get update
 sudo apt-get install cuda-toolkit-12-0
 ```
 
+### CUDA Setup (Windows)
+
+**Prerequisites:**
+
+- NVIDIA GPU with compute capability 5.0+
+- Windows 10/11 64-bit
+
+**Installation:**
+
+1. **Download CUDA Toolkit:**
+   - Visit: https://developer.nvidia.com/cuda-downloads
+   - Select: Windows → x86_64 → 10/11 → exe (local)
+   - Download CUDA Toolkit 12.x (or latest)
+
+2. **Run Installer:**
+   - Double-click the downloaded `.exe`
+   - Choose "Express Installation" (recommended)
+   - Or "Custom Installation" to select specific components
+   - Ensure "CUDA" → "Development" → "Compiler" is selected (for `nvcc`)
+
+3. **Verify PATH:**
+
+   The installer should add CUDA to your PATH automatically. Verify:
+
+   ```powershell
+   nvcc --version
+   ```
+
+   If not found, manually add to PATH:
+   - `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.0\bin`
+   - `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.0\libnvvp`
+
+4. **Verify GPU Detection:**
+
+   ```powershell
+   nvidia-smi
+   ```
+
+**Quick install via package managers:**
+
+- **Chocolatey:** `choco install cuda`
+- **Winget:** `winget install Nvidia.CUDA`
+
+**Post-installation:** Restart your terminal or IDE to pick up the new PATH variables.
+
+**Note:** Zixir's GPU detection (`gpu.ex`) uses `nvcc --version` to detect CUDA. This works on Windows as long as `nvcc` is in your system PATH.
+
 ### ROCm Setup (AMD)
 
 ```bash
