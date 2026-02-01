@@ -7,6 +7,7 @@ A complete setup guide for the Zixir programming language with all implemented f
 1. [Prerequisites](#prerequisites)
 2. [Installation](#installation)
 3. [Project Setup](#project-setup)
+   - [Global / portable CLI (run from any directory)](#global--portable-cli-run-from-any-directory)
 4. [Python Integration](#python-integration)
 5. [GPU Computing](#gpu-computing)
 6. [Standard Library](#standard-library)
@@ -151,20 +152,21 @@ For tools and integrations, you can install Zixir so it runs from **any terminal
    ```bash
    mix release
    ```
+   By default this creates a dev release. For a production release: `MIX_ENV=prod mix release`.
 
 2. **Add the release `bin/` to your PATH:**
-   - **Unix/macOS:** `_build/prod/rel/zixir/bin/` (or wherever you unpack the release).
+   - **Unix/macOS:** `_build/dev/rel/zixir/bin/` (default) or `_build/prod/rel/zixir/bin/` (after `MIX_ENV=prod mix release`).
    - **Windows:** Same folder; use `zixir_run.bat` for the portable runner.
 
 3. **Run a `.zixir` file from any directory:**
    - **Unix/macOS:** `zixir_run.sh /path/to/script.zixir`
    - **Windows:** `zixir_run.bat C:\path\to\script.zixir`
 
-   Paths can be absolute or relative to the current working directory.
+   Paths can be absolute or relative to the current working directory. The scripts call `Zixir.CLI.run_file_from_argv()` and pass the path after `--`.
 
-4. **Alternative (any OS):** Use the release `eval` command with a path:
+4. **Alternative (any OS):** Use the release `eval` command with argv (same as the scripts):
    ```bash
-   bin/zixir eval "Zixir.CLI.run_file(List.first(System.argv()))" -- /path/to/file.zixir
+   bin/zixir eval "Zixir.CLI.run_file_from_argv()" -- /path/to/file.zixir
    ```
 
 Once `bin/` is on PATH, you can run Zixir scripts from any folder (CI, scripts, other tools) without `cd`-ing into the Zixir project.
@@ -238,12 +240,12 @@ config :zixir,
 Zixir.Compiler.GPU.available?()
 # => true
 
-# Compile for specific backend
-{:ok, kernel, backend} = Zixir.Compiler.GPU.compile(ast, backend: :cuda)
+# Compile for specific backend (returns kernel path and backend)
+{:ok, kernel_path, backend} = Zixir.Compiler.GPU.compile(ast, backend: :cuda)
 # backend is :cuda, :rocm, or :metal
 
-# Execute with automatic data transfer
-result = Zixir.Compiler.GPU.execute_kernel(kernel, data, backend: :cuda)
+# Execute with automatic data transfer (returns {:ok, result_data})
+{:ok, result} = Zixir.Compiler.GPU.execute_kernel(kernel_path, data, backend: :cuda)
 
 # Allocate GPU buffer
 {:ok, buffer} = Zixir.Compiler.GPU.allocate_buffer(size, backend: :cuda)
@@ -334,7 +336,7 @@ Zixir.Modules.call("std/io", :read_line, [])
 ### std/json
 
 ```elixir
-Zixir.Modules.call("std/json", :encode, [%{name: "John", age: 30})
+Zixir.Modules.call("std/json", :encode, [%{name: "John", age: 30}])
 # => {:ok, "{\"name\":\"John\",\"age\":30}"}
 
 Zixir.Modules.call("std/json", :decode, ["{\"name\":\"John\"}"])
@@ -492,14 +494,17 @@ could not find zig executable
 Zixir/
 ├── lib/                    # Elixir source
 │   ├── zixir/             # Main application
-│   ├── compiler/          # Compiler components
-│   └── mix/               # Mix tasks
-├── priv/                  # Native code
-│   └── python_nif.zig     # Python NIF (Zig)
-├── test/                  # Test files
-├── docs/                  # Documentation
-├── mix.exs               # Mix project file
-└── README.md             # Project README
+│   ├── compiler/           # Compiler components
+│   └── mix/                # Mix tasks
+├── priv/                   # Native code
+│   ├── python/             # Port bridge (port_bridge.py)
+│   ├── python_nif.zig       # Python NIF (Zig)
+│   └── zig/                 # Zig runtime
+├── rel/overlays/bin/       # Release scripts (zixir_run.sh, zixir_run.bat)
+├── test/                   # Test files
+├── docs/                   # Documentation
+├── mix.exs                 # Mix project file
+└── README.md               # Project README
 ```
 
 ---
