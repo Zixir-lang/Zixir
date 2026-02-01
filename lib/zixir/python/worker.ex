@@ -8,7 +8,6 @@ defmodule Zixir.Python.Worker do
 
   require Logger
 
-  @default_timeout 30_000
   @max_retries 3
   @health_check_interval 60_000
 
@@ -18,7 +17,7 @@ defmodule Zixir.Python.Worker do
   end
 
   def call(pid, module, function, args, opts \\ []) when is_pid(pid) do
-    timeout = Keyword.get(opts, :timeout, @default_timeout)
+    timeout = Keyword.get(opts, :timeout, default_timeout())
     retries = Keyword.get(opts, :retries, @max_retries)
     kwargs = Keyword.get(opts, :kwargs, [])
     
@@ -211,5 +210,10 @@ defmodule Zixir.Python.Worker do
       error ->
         error
     end
+  end
+
+  # Get default timeout from application config
+  defp default_timeout do
+    Application.get_env(:zixir, :python_timeout, 30_000)
   end
 end

@@ -51,12 +51,24 @@ defmodule Zixir.Engine do
   Automatically falls back to Elixir implementation if NIFs are not available.
   """
   def run(op, args) do
+    run_with_fallback(op, args, _fallback_attempted = false)
+  end
+
+  defp run_with_fallback(op, args, fallback_attempted) do
     try do
       do_run(op, args)
     rescue
       _e in ErlangError ->
-        Logger.debug("NIF not available for #{op}, using Elixir fallback")
-        run_fallback(op, args)
+        if fallback_attempted do
+          # Already tried fallback, don't retry to avoid infinite loop
+          Logger.error("NIF not available for #{op} and fallback also failed")
+          raise ArgumentError, "Engine operation #{inspect(op)} failed: NIF not available and fallback failed"
+        else
+          Logger.debug("NIF not available for #{op}, using Elixir fallback")
+          # The _safe functions in Zixir.Engine.Math already handle both NIF and pure Elixir
+          # implementations internally, so we can retry once with the same do_run
+          run_with_fallback(op, args, true)
+        end
     end
   end
 
@@ -179,123 +191,6 @@ defmodule Zixir.Engine do
   end
 
   defp do_run(op, _args) do
-    raise ArgumentError, "unknown engine op: #{inspect(op)}"
-  end
-
-  # Fallback implementations (same as do_run but always use _safe versions)
-  defp run_fallback(:list_sum, args), do: Zixir.Engine.Math.list_sum_safe(List.first(args) || [])
-  defp run_fallback(:list_product, args), do: Zixir.Engine.Math.list_product_safe(List.first(args) || [])
-  defp run_fallback(:list_mean, args), do: Zixir.Engine.Math.list_mean_safe(List.first(args) || [])
-  defp run_fallback(:list_min, args), do: Zixir.Engine.Math.list_min_safe(List.first(args) || [])
-  defp run_fallback(:list_max, args), do: Zixir.Engine.Math.list_max_safe(List.first(args) || [])
-  defp run_fallback(:list_variance, args), do: Zixir.Engine.Math.list_variance_safe(List.first(args) || [])
-  defp run_fallback(:list_std, args), do: Zixir.Engine.Math.list_std_safe(List.first(args) || [])
-  
-  defp run_fallback(:dot_product, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    Zixir.Engine.Math.dot_product_safe(a, b)
-  end
-  
-  defp run_fallback(:vec_add, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    Zixir.Engine.Math.vec_add_safe(a, b)
-  end
-  
-  defp run_fallback(:vec_sub, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    Zixir.Engine.Math.vec_sub_safe(a, b)
-  end
-  
-  defp run_fallback(:vec_mul, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    Zixir.Engine.Math.vec_mul_safe(a, b)
-  end
-  
-  defp run_fallback(:vec_div, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    Zixir.Engine.Math.vec_div_safe(a, b)
-  end
-  
-  defp run_fallback(:vec_scale, args) do
-    array = Enum.at(args, 0) || []
-    scalar = Enum.at(args, 1) || 1.0
-    Zixir.Engine.Math.vec_scale_safe(array, scalar)
-  end
-  
-  defp run_fallback(:map_add, args) do
-    array = Enum.at(args, 0) || []
-    value = Enum.at(args, 1) || 0.0
-    Zixir.Engine.Math.map_add_safe(array, value)
-  end
-  
-  defp run_fallback(:map_mul, args) do
-    array = Enum.at(args, 0) || []
-    value = Enum.at(args, 1) || 1.0
-    Zixir.Engine.Math.map_mul_safe(array, value)
-  end
-  
-  defp run_fallback(:filter_gt, args) do
-    array = Enum.at(args, 0) || []
-    threshold = Enum.at(args, 1) || 0.0
-    Zixir.Engine.Math.filter_gt_safe(array, threshold)
-  end
-  
-  defp run_fallback(:sort_asc, args), do: Zixir.Engine.Math.sort_asc_safe(List.first(args) || [])
-  
-  defp run_fallback(:find_index, args) do
-    array = Enum.at(args, 0) || []
-    value = Enum.at(args, 1) || 0.0
-    Zixir.Engine.Math.find_index_safe(array, value)
-  end
-  
-  defp run_fallback(:count_value, args) do
-    array = Enum.at(args, 0) || []
-    value = Enum.at(args, 1) || 0.0
-    Zixir.Engine.Math.count_value_safe(array, value)
-  end
-  
-  defp run_fallback(:mat_mul, args) do
-    a = Enum.at(args, 0) || []
-    b = Enum.at(args, 1) || []
-    a_rows = Enum.at(args, 2) || 1
-    a_cols = Enum.at(args, 3) || 1
-    b_cols = Enum.at(args, 4) || 1
-    Zixir.Engine.Math.mat_mul_safe(a, b, a_rows, a_cols, b_cols)
-  end
-  
-  defp run_fallback(:mat_transpose, args) do
-    matrix = Enum.at(args, 0) || []
-    rows = Enum.at(args, 1) || 1
-    cols = Enum.at(args, 2) || 1
-    Zixir.Engine.Math.mat_transpose_safe(matrix, rows, cols)
-  end
-  
-  defp run_fallback(:string_count, args), do: Zixir.Engine.Math.string_count_safe(List.first(args) || "")
-  
-  defp run_fallback(:string_find, args) do
-    haystack = Enum.at(args, 0) || ""
-    needle = Enum.at(args, 1) || ""
-    Zixir.Engine.Math.string_find_safe(haystack, needle)
-  end
-  
-  defp run_fallback(:string_starts_with, args) do
-    string = Enum.at(args, 0) || ""
-    prefix = Enum.at(args, 1) || ""
-    Zixir.Engine.Math.string_starts_with_safe(string, prefix)
-  end
-  
-  defp run_fallback(:string_ends_with, args) do
-    string = Enum.at(args, 0) || ""
-    suffix = Enum.at(args, 1) || ""
-    Zixir.Engine.Math.string_ends_with_safe(string, suffix)
-  end
-  
-  defp run_fallback(op, _args) do
     raise ArgumentError, "unknown engine op: #{inspect(op)}"
   end
 

@@ -39,7 +39,7 @@ defmodule Zixir.Quality do
         alert_on_violation: true
       )
       
-      if result.quality_score < 0.8:
+      if result.quality_score < 0.8 do
         Zixir.Observability.alert("Poor data quality", score: result.quality_score)
       end
       
@@ -423,10 +423,9 @@ defmodule Zixir.Quality do
   end
   defp fix_format(_value, _regex), do: ""
 
-  defp impute_null_value(_field) do
-    # Simple imputation - in a full implementation, this would use field-specific statistics
-    # For now, use sensible defaults based on type expectations
-    case @default_config.imputation_method do
+  defp impute_null_value(_field, method \\ nil) do
+    impute_method = method || @default_config.imputation_method
+    case impute_method do
       :mean -> 0.0
       :median -> 0.0
       :mode -> 0
@@ -604,6 +603,6 @@ defmodule Zixir.Quality do
   end
 
   defp generate_id do
-    :crypto.strong_rand_bytes(4) |> Base.encode16(case: :lower)
+    Zixir.Utils.generate_id(bytes: 4)
   end
 end

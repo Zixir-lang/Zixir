@@ -185,6 +185,6 @@ defmodule Zixir.Workflow.Checkpoint do
   end
   
   defp generate_checkpoint_id do
-    "chk_" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
+    Zixir.Utils.generate_id(prefix: "chk_", bytes: 8)
   end
 end

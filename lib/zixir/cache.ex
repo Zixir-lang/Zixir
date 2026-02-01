@@ -508,7 +508,7 @@ defmodule Zixir.Cache do
   end
 
   defp generate_id do
-    Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
+    Zixir.Utils.generate_id(bytes: 8)
   end
 
   defp estimate_memory_usage(cache) do
@@ -517,11 +517,6 @@ defmodule Zixir.Cache do
     entry_count = map_size(cache)
     estimate = entry_count * 1024  # Assume 1KB per entry on average
     
-    format_bytes(estimate)
+    Zixir.Utils.format_bytes(estimate)
   end
-
-  defp format_bytes(bytes) when bytes < 1024, do: "#{bytes} B"
-  defp format_bytes(bytes) when bytes < 1024 * 1024, do: "#{Float.round(bytes / 1024, 2)} KB"
-  defp format_bytes(bytes) when bytes < 1024 * 1024 * 1024, do: "#{Float.round(bytes / (1024 * 1024), 2)} MB"
-  defp format_bytes(bytes), do: "#{Float.round(bytes / (1024 * 1024 * 1024), 2)} GB"
 end

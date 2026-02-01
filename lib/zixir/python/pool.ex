@@ -5,14 +5,12 @@ defmodule Zixir.Python.Pool do
 
   require Logger
 
-  @default_timeout 30_000
-
   @doc """
   Call Python with automatic load balancing across workers.
   Supports kwargs for Python functions.
   """
   def call(module, function, args, opts \\ []) do
-    timeout = Keyword.get(opts, :timeout, @default_timeout)
+    timeout = Keyword.get(opts, :timeout, default_timeout())
     kwargs = Keyword.get(opts, :kwargs, [])
     
     case Zixir.Python.CircuitBreaker.allow?() do
@@ -85,7 +83,7 @@ defmodule Zixir.Python.Pool do
   Execute multiple Python calls in parallel.
   """
   def parallel_calls(calls, opts \\ []) when is_list(calls) do
-    timeout = Keyword.get(opts, :timeout, @default_timeout)
+    timeout = Keyword.get(opts, :timeout, default_timeout())
     
     tasks = Enum.map(calls, fn {module, function, args} ->
       Task.async(fn ->
@@ -165,5 +163,10 @@ defmodule Zixir.Python.Pool do
   
   defp convert_type(value, expected) do
     {:error, "Cannot convert #{inspect(value)} to #{expected}"}
+  end
+
+  # Get default timeout from application config
+  defp default_timeout do
+    Application.get_env(:zixir, :python_timeout, 30_000)
   end
 end

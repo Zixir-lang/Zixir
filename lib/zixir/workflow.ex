@@ -74,7 +74,7 @@ defmodule Zixir.Workflow do
       name: name,
       func: func,
       depends_on: Keyword.get(opts, :depends_on, []),
-      timeout: Keyword.get(opts, :timeout, 30_000),
+      timeout: Keyword.get(opts, :timeout, default_step_timeout()),
       retries: Keyword.get(opts, :retries, nil),
       checkpoint: Keyword.get(opts, :checkpoint, true)
     }
@@ -335,46 +335,18 @@ defmodule Zixir.Workflow do
         {:ok, result} ->
           # Check if result is an error tuple and should be retried
           case result do
-            {:error, reason} when attempt < retry_policy.max_retries ->
-              error_msg = "Step #{step.name} failed: #{inspect(reason)}"
-              Logger.error(error_msg)
-              delay = calculate_retry_delay(retry_policy, attempt)
-              Logger.info("Retrying step #{step.name} in #{delay}ms (attempt #{attempt + 1}/#{retry_policy.max_retries})")
-              Process.sleep(delay)
-              attempt_step(step, state, retry_policy, attempt + 1)
-            
             {:error, reason} ->
-              {:error, "Step #{step.name} failed: #{inspect(reason)}"}
-            
+              retry_step(step, state, retry_policy, attempt, "#{inspect(reason)}", "Step #{step.name} failed")
             _ ->
               result
           end
         
         nil ->
-          if attempt < retry_policy.max_retries do
-            error_msg = "Step #{step.name} timed out after #{step.timeout}ms"
-            Logger.error(error_msg)
-            delay = calculate_retry_delay(retry_policy, attempt)
-            Logger.info("Retrying step #{step.name} in #{delay}ms (attempt #{attempt + 1}/#{retry_policy.max_retries})")
-            Process.sleep(delay)
-            attempt_step(step, state, retry_policy, attempt + 1)
-          else
-            {:error, "Step #{step.name} timed out after #{step.timeout}ms"}
-          end
+          retry_step(step, state, retry_policy, attempt, "#{step.timeout}ms", "Step #{step.name} timed out after")
       end
     rescue
       e ->
-        error_msg = "Step #{step.name} failed: #{Exception.message(e)}"
-        Logger.error(error_msg)
-        
-        if attempt < retry_policy.max_retries do
-          delay = calculate_retry_delay(retry_policy, attempt)
-          Logger.info("Retrying step #{step.name} in #{delay}ms (attempt #{attempt + 1}/#{retry_policy.max_retries})")
-          Process.sleep(delay)
-          attempt_step(step, state, retry_policy, attempt + 1)
-        else
-          {:error, error_msg}
-        end
+        retry_step(step, state, retry_policy, attempt, Exception.message(e), "Step #{step.name} failed")
     end
   end
 
@@ -393,6 +365,19 @@ defmodule Zixir.Workflow do
   defp calculate_retry_delay(policy, attempt) do
     delay = policy.base_delay * :math.pow(policy.exponential_base, attempt)
     min(trunc(delay), policy.max_delay)
+  end
+
+  # Helper to handle retry logic consistently across error, timeout, and exception cases
+  defp retry_step(step, state, retry_policy, attempt, error_msg, error_type) do
+    if attempt < retry_policy.max_retries do
+      delay = calculate_retry_delay(retry_policy, attempt)
+      Logger.error("#{error_type}: #{error_msg}")
+      Logger.info("Retrying step #{step.name} in #{delay}ms (attempt #{attempt + 1}/#{retry_policy.max_retries})")
+      Process.sleep(delay)
+      attempt_step(step, state, retry_policy, attempt + 1)
+    else
+      {:error, "#{error_type}: #{error_msg}"}
+    end
   end
 
   defp get_retry_policy(step, state) do
@@ -486,11 +471,16 @@ defmodule Zixir.Workflow do
     Logger.error("Dead letter: #{inspect(dead_letter)}")
     
     # Persist to file for later analysis
-    file = Path.join(execution.workflow.name <> "_dead_letters.jsonl")
+    file = Path.join([execution.workflow.name, "_dead_letters.jsonl"])
     File.write!(file, Jason.encode!(dead_letter) <> "\n", [:append])
   end
 
   defp generate_execution_id do
-    "wf_" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
+    Zixir.Utils.generate_id(prefix: "wf_", bytes: 8)
+  end
+
+  # Get default step timeout from application config
+  defp default_step_timeout do
+    Application.get_env(:zixir, :workflow_step_timeout, 30_000)
   end
 end

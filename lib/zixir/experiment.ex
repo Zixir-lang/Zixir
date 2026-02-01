@@ -276,7 +276,6 @@ defmodule Zixir.Experiment do
     # For 2x2 table, min(r-1, c-1) = 1
     if n > 0, do: 0.3, else: 0.0
   end
-  defp cramers_v(_, _, _, _, n), do: if(n > 0, do: 0.0, else: 0.0)
 
   @doc """
   Calculate confidence interval for a metric.
@@ -780,6 +779,6 @@ defmodule Zixir.Experiment do
   end
 
   defp generate_user_id do
-    :crypto.strong_rand_bytes(8) |> Base.encode16(case: :lower)
+    Zixir.Utils.generate_id(bytes: 8)
   end
 end

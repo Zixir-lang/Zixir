@@ -148,7 +148,7 @@ defmodule Zixir.Sandbox do
   def resource_stats do
     %{
       memory_bytes: get_memory_usage(),
-      memory_human: format_bytes(get_memory_usage()),
+      memory_human: Zixir.Utils.format_bytes(get_memory_usage()),
       cpu_percent: get_cpu_usage(),
       uptime_ms: get_uptime()
     }
@@ -252,7 +252,7 @@ defmodule Zixir.Sandbox do
       memory_used = current_memory - context.start_memory
       
       if memory_used > context.limits.memory_limit_bytes do
-        {:violated, "Memory limit exceeded: #{format_bytes(memory_used)} > #{format_bytes(context.limits.memory_limit_bytes)}"}
+        {:violated, "Memory limit exceeded: #{Zixir.Utils.format_bytes(memory_used)} > #{Zixir.Utils.format_bytes(context.limits.memory_limit_bytes)}"}
       else
         :ok
       end
@@ -358,11 +358,6 @@ defmodule Zixir.Sandbox do
     # Return system uptime in milliseconds
     :erlang.system_time(:millisecond)
   end
-
-  defp format_bytes(bytes) when bytes < 1024, do: "#{bytes} B"
-  defp format_bytes(bytes) when bytes < 1024 * 1024, do: "#{Float.round(bytes / 1024, 2)} KB"
-  defp format_bytes(bytes) when bytes < 1024 * 1024 * 1024, do: "#{Float.round(bytes / (1024 * 1024), 2)} MB"
-  defp format_bytes(bytes), do: "#{Float.round(bytes / (1024 * 1024 * 1024), 2)} GB"
 
   defp monitor_loop do
     # Periodic monitoring of sandboxed processes
