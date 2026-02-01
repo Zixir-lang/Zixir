@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Zixir one-shot installer — includes:
-#   Quick start: git clone https://github.com/Zixir-lang/Zixir.git, cd Zixir, git checkout v5.2.0,
+#   Quick start: git clone https://github.com/Zixir-lang/Zixir.git, cd Zixir, git checkout v5.3.0,
 #                mix deps.get, mix zig.get, mix compile
 #   Optional GPU: Metal (macOS), CUDA (Linux NVIDIA), ROCm (Linux AMD) via install-optional-deps.sh
 # Usage: ./scripts/install-zixir.sh [install-dir] [--force]
@@ -11,7 +11,7 @@
 set -e
 
 REPO_URL="https://github.com/Zixir-lang/Zixir.git"
-VERSION="v5.2.0"
+VERSION="v5.3.0"
 FORCE=0
 
 # Parse arguments
@@ -47,7 +47,7 @@ CURRENT_DIR="$(pwd)"
 SCRIPT_NAME="$(basename "$0")"
 if [ -f "$CURRENT_DIR/mix.exs" ] && [ -d "$CURRENT_DIR/.git" ] && [ ! -f "$CURRENT_DIR/scripts/install-zixir.sh" ]; then
   echo "Detected old/broken Zixir installation at $CURRENT_DIR"
-  echo "This installation is missing the v5.2.0 tag and updated installer."
+  echo "This installation is missing the v5.3.0 tag and updated installer."
   echo ""
   
   if [ $FORCE -eq 0 ]; then

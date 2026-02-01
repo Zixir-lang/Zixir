@@ -16,12 +16,8 @@ $ProgressPreference = "Continue"
 
 # Configuration
 $RepoUrl = "https://github.com/Zixir-lang/Zixir.git"
-$Version = "v5.2.0"
+$Version = "v5.3.0"
 $RepoName = "Zixir"
-
-# Determine script location
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ScriptName = $MyInvocation.MyCommand.Name
 
 # Logging functions
 function Write-Log {

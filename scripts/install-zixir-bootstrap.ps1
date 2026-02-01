@@ -1,6 +1,6 @@
 # Zixir Bootstrap Installer
 # This script can be run from ANY location - it downloads and runs the full installer
-# Usage: iwr -useb https://raw.githubusercontent.com/Zixir-lang/Zixir/v5.2.0/scripts/install-zixir.ps1 | iex
+# Usage: iwr -useb https://raw.githubusercontent.com/Zixir-lang/Zixir/v5.3.0/scripts/install-zixir.ps1 | iex
 # Or save and run: .\install-zixir.ps1 [install-dir] [-Force]
 
 param(
@@ -11,7 +11,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $RepoUrl = "https://github.com/Zixir-lang/Zixir.git"
-$Version = "v5.2.0"
+$Version = "v5.3.0"
 $ScriptUrl = "https://raw.githubusercontent.com/Zixir-lang/Zixir/$Version/scripts/install-zixir.ps1"
 
 # Determine install directory

@@ -1,13 +1,13 @@
 #!/bin/bash
 # Zixir Bootstrap Installer for Unix/Linux/macOS
 # This script can be run from ANY location - it downloads and runs the full installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/Zixir-lang/Zixir/v5.2.0/scripts/install-zixir-bootstrap.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/Zixir-lang/Zixir/v5.3.0/scripts/install-zixir-bootstrap.sh | bash
 # Or save and run: ./install-zixir-bootstrap.sh [install-dir] [--force]
 
 set -e
 
 REPO_URL="https://github.com/Zixir-lang/Zixir.git"
-VERSION="v5.2.0"
+VERSION="v5.3.0"
 FORCE=0
 
 # Parse arguments
