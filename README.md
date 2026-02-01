@@ -34,7 +34,7 @@ Each tier does one job well; together: orchestration, speed, and ecosystem.
 | **Zig** | Engine | Predictable performance, no GC, small binaries. Hot paths: parsing, math, core ops (NIFs). |
 | **Python** | Specialist | ML (PyTorch, TensorFlow), data (pandas, numpy), APIs. Use existing libraries without rewriting. |
 
-Elixir orchestrates and restarts failed workers; Zig runs hot-path code; Python handles ML and data. Good fit for agentic/AI tooling and teams that want FP (pattern matching, type inference) plus built-in fault tolerance.
+Elixir orchestrates and restarts failed workers; Zig runs hot-path code; Python handles ML and data.
 
 ### How it works
 
@@ -43,7 +43,7 @@ Zixir has its **own grammar** (`let`, expressions, `engine.op(args)`, `python "m
 - **Interpreted** — `Zixir.eval(source)` evaluates the AST in Elixir; `engine.*` calls run in Zig NIFs, `python` calls go to Python via a port.
 - **Compiled** — `Zixir.Compiler.compile(source)` type-checks, optimizes, and **emits Zig**; the Zig is compiled to a native binary or run JIT.
 
-So: your code is Zixir only; the runtime is implemented with Elixir, uses Zig for the engine and codegen, and calls into Python for libraries.
+Your code stays Zixir-only; the runtime is Elixir + Zig (engine/codegen) + Python (libraries).
 
 ### Zixir vs. alternatives (honest assessment)
 
@@ -65,7 +65,7 @@ So: your code is Zixir only; the runtime is implemented with Elixir, uses Zig fo
 
 \* Elixir + Zig (build-time) required; no Redis, K8s, or separate DB for workflows.
 
-**Bottom line:** Zixir puts orchestration, resource limits, and observability in the language—so you don’t glue Airflow + Redis + Prometheus. Requires Elixir and Zig; once set up, you get what usually needs 3–5 external services. Strong for teams that want FP (pattern matching, type inference) and built-in fault tolerance.
+**Bottom line:** One language replaces the usual Airflow + Redis + Prometheus stack. Requires Elixir and Zig; once set up, you get orchestration, limits, and observability without 3–5 external services.
 
 ### Layout (three-tier flow)
 
@@ -111,13 +111,6 @@ flowchart TB
 
 **New to Zixir?** For step-by-step install of Elixir, Zig, and Python per OS, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
 
-## Entry point (agentic extension)
-
-- `Zixir.run_engine(op, args)` — hot path (math, data) → Zig
-- `Zixir.call_python(module, function, args)` — library calls → Python
-
-Intent and routing live in `Zixir.Intent`.
-
 ## Setup
 
 From a clone of the repo:
@@ -154,12 +147,7 @@ mix zixir.run examples/hello.zixir
 
 Grammar, types, and standard library: see [docs/LANGUAGE.md](docs/LANGUAGE.md).
 
-### Elixir API
-
-- `Zixir.run_engine/2` — hot path (math, data) → Zig NIFs
-- `Zixir.call_python/3` — library calls → Python via port
-
-See [project_Analysis_for_fork.md](project_Analysis_for_fork.md) for architecture and failure model.
+**Elixir API:** `Zixir.run_engine/2` (hot path → Zig NIFs), `Zixir.call_python/3` (library calls → Python). Intent/routing: `Zixir.Intent`. See [project_Analysis_for_fork.md](project_Analysis_for_fork.md) for architecture.
 
 ## Test
 
@@ -169,11 +157,7 @@ mix test
 
 ## Verification
 
-```bash
-mix deps.get && mix zig.get && mix compile && mix zixir.run examples/hello.zixir
-```
-
-Expected: `examples/hello.zixir` prints `11.0`. On Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
+After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
 
 ## Implementation Status
 
@@ -206,9 +190,7 @@ Expected: `examples/hello.zixir` prints `11.0`. On Windows: `scripts\verify.ps1`
 
 ### ❌ Aspirational / Not Implemented
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| — | None currently | Former aspirational items (Python FFI, GPU, Package Manager) are now implemented or partial (see above). |
+None at this time.
 
 **Note:** See [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md) for detailed implementation status.
 
