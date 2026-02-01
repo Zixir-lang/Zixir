@@ -23,12 +23,14 @@ if ((Test-Path "mix.exs") -and (Test-Path ".git")) {
     $ZixirDir = (Get-Location).Path
     Write-Host "Using repo at $ZixirDir"
     Set-Location $ZixirDir
-    git fetch origin tag $Version 2>$null; if (-not $?) { git fetch origin }
+    git fetch origin tag $Version 2>$null
+    if (-not $?) { git fetch origin }
     git checkout $Version
 } elseif (Test-Path (Join-Path $ZixirDir ".git")) {
     Write-Host "Existing clone at $ZixirDir — updating and checking out $Version"
     Set-Location $ZixirDir
-    git fetch origin tag $Version 2>$null; if (-not $?) { git fetch origin }
+    git fetch origin tag $Version 2>$null
+    if (-not $?) { git fetch origin }
     git checkout $Version
 } else {
     Write-Host "Cloning Zixir into $ZixirDir ..."
@@ -52,8 +54,8 @@ mix compile
 Write-Host ""
 Write-Host "Quick start done. Verify: mix zixir.run examples/hello.zixir" -ForegroundColor Green
 Write-Host ""
-
-$ans = Read-Host "Install optional GPU deps (CUDA)? [y/N]"
+Write-Host "Optional: Install GPU deps (CUDA) for Zixir GPU support." -ForegroundColor Cyan
+$ans = Read-Host "Install CUDA now? [y/N]"
 if ($ans -match '^[yY]') {
     Set-Location $ZixirDir
     & (Join-Path $ZixirDir "scripts\install-optional-deps.ps1") -Install
