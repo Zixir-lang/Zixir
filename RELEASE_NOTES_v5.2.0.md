@@ -39,8 +39,8 @@ mix compile
 ```
 
 **Optional (GPU):** Install platform-specific GPU deps from repo root:
-- **Unix/macOS:** `./scripts/install-gpu-deps.sh` (Metal on macOS; CUDA or ROCm on Linux)
-- **Windows:** `.\scripts\install-gpu-deps.ps1` (CUDA)
+- **Quick check:** `./scripts/install-gpu-deps.sh` (Unix/macOS) or `.\scripts\install-gpu-deps.ps1` (Windows)
+- **Full install:** `./scripts/install-optional-deps.sh` (Metal on macOS; CUDA or ROCm on Linux) or `.\scripts\install-optional-deps.ps1 -Install` (Windows CUDA)
 
 ## License
 
