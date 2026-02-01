@@ -1,4 +1,4 @@
-# Zixir one-shot installer — includes:
+# Zixir one-shot installer - includes:
 #   Quick start: git clone https://github.com/Zixir-lang/Zixir.git, cd Zixir, git checkout v5.2.0,
 #                mix deps.get, mix zig.get, mix compile
 #   Optional GPU: CUDA (Windows) via install-optional-deps.ps1 -Install
@@ -24,7 +24,7 @@ if (-not $InstallDir) {
 $ZixirDir = Join-Path $InstallDir "Zixir"
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "Zixir installer — Quick start + GPU (CUDA)" -ForegroundColor Cyan
+Write-Host "Zixir installer - Quick start + GPU (CUDA)" -ForegroundColor Cyan
 Write-Host "Version: $Version" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
