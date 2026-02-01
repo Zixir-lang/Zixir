@@ -36,7 +36,18 @@ defmodule Zixir.Compiler.TypeSystem do
     def poly(name, params), do: {:poly, name, params}
   end
 
-  # Public type_to_string function for use throughout the module
+  @doc """
+  Convert an internal type representation to a human-readable string.
+
+  ## Examples
+
+      iex> type_to_string(:int)
+      "Int"
+      
+      iex> type_to_string({:array, :float})
+      "[Float]"
+  """
+  @spec type_to_string(Type.t()) :: String.t()
   def type_to_string(:int), do: "Int"
   def type_to_string(:float), do: "Float"
   def type_to_string(:bool), do: "Bool"
@@ -57,24 +68,6 @@ defmodule Zixir.Compiler.TypeSystem do
   defmodule TypeError do
     defexception [:message, :location, :expected, :actual]
     
-    # Local type_to_string implementation - must be defined before use
-    defp type_to_string(:int), do: "Int"
-    defp type_to_string(:float), do: "Float"
-    defp type_to_string(:bool), do: "Bool"
-    defp type_to_string(:string), do: "String"
-    defp type_to_string(:void), do: "Void"
-    defp type_to_string({:array, t}), do: "[#{type_to_string(t)}]"
-    defp type_to_string({:function, args, ret}) do
-      args_str = Enum.map(args, &type_to_string/1) |> Enum.join(", ")
-      "(#{args_str}) -> #{type_to_string(ret)}"
-    end
-    defp type_to_string({:var, id}), do: "'t#{id}"
-    defp type_to_string({:poly, name, params}) do
-      params_str = Enum.map(params, &type_to_string/1) |> Enum.join(", ")
-      "#{name}<#{params_str}>"
-    end
-    defp type_to_string(t), do: inspect(t)
-    
     @impl true
     def exception(opts) do
       message = opts[:message] || format_error(opts)
@@ -87,8 +80,8 @@ defmodule Zixir.Compiler.TypeSystem do
     end
     
     defp format_error(opts) do
-      expected = type_to_string(opts[:expected])
-      actual = type_to_string(opts[:actual])
+      expected = Zixir.Compiler.TypeSystem.type_to_string(opts[:expected])
+      actual = Zixir.Compiler.TypeSystem.type_to_string(opts[:actual])
       "Type mismatch: expected #{expected}, got #{actual}"
     end
   end
@@ -97,6 +90,7 @@ defmodule Zixir.Compiler.TypeSystem do
   Infer types for all expressions in the AST.
   Returns {:ok, typed_ast} or {:error, TypeError}
   """
+  @spec infer(term()) :: {:ok, term()} | {:error, TypeError.t()}
   def infer({:program, _} = ast) do
     env = %{}
     var_counter = 0
@@ -130,6 +124,7 @@ defmodule Zixir.Compiler.TypeSystem do
   @doc """
   Check if an expression matches an expected type.
   """
+  @spec check_type(term(), Type.t(), map()) :: :ok | {:error, String.t()}
   def check_type(expr, expected_type, env) do
     {typed_expr, _new_env, _counter} = infer_expr(expr, env, 0)
     inferred_type = get_type(typed_expr)
@@ -403,11 +398,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_index_expr, elem_type), env, counter}
   end
 
-  defp infer_expr(expr, env, counter) do
-    # Unknown expression type - create type variable
-    {set_type(expr, Type.var(counter)), env, counter + 1}
-  end
-
   # Type unification
   defp unify(t1, t2, subst) when t1 == t2, do: {t1, subst}
   
@@ -517,17 +507,19 @@ defmodule Zixir.Compiler.TypeSystem do
   @doc """
   Get the type of an expression from the typed AST.
   """
+  @spec expr_type(term()) :: Type.t()
   def expr_type({_, _, _, _, _, type}), do: type
   def expr_type({_, _, _, _, type}), do: type
   def expr_type({_, _, _, type}), do: type
+  def expr_type({:type, type, _}), do: type
   def expr_type({_, _, type}), do: type
   def expr_type({_, type}), do: type
-  def expr_type({:type, type, _}), do: type
   def expr_type(_), do: :unknown
 
   @doc """
   Check if a type is concrete (fully resolved, no type variables).
   """
+  @spec concrete_type?(Type.t()) :: boolean()
   def concrete_type?({:var, _}), do: false
   def concrete_type?({:array, elem_type}), do: concrete_type?(elem_type)
   def concrete_type?({:function, args, ret}) do
@@ -541,11 +533,13 @@ defmodule Zixir.Compiler.TypeSystem do
   @doc """
   Format a type for display to the user.
   """
+  @spec format_type(Type.t()) :: String.t()
   def format_type(type), do: type_to_string(type)
 
   @doc """
   Run type inference and return detailed results.
   """
+  @spec infer_detailed(term()) :: {:ok, term(), map()} | {:error, TypeError.t()}
   def infer_detailed(ast) do
     case infer(ast) do
       {:ok, typed_ast} ->
@@ -599,6 +593,10 @@ defmodule Zixir.Compiler.TypeSystem do
     [type | acc]
   end
 
+  defp collect_all_types({:type, type, _}, acc) do
+    [type | acc]
+  end
+
   defp collect_all_types({_, _, type}, acc) do
     [type | acc]
   end
@@ -607,15 +605,8 @@ defmodule Zixir.Compiler.TypeSystem do
     [type | acc]
   end
 
-  defp collect_all_types({:type, type, _}, acc) do
-    [type | acc]
-  end
-
   defp collect_all_types(_, acc), do: acc
 
-  @doc """
-  Infer type for lambda expressions.
-  """
   defp infer_expr({:lambda, params, return_type, body, line, col}, env, counter) do
     {param_types, counter} = 
       Enum.map_reduce(params, counter, fn {_pname, ptype}, c ->
@@ -649,9 +640,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_lambda, lambda_type), env, counter}
   end
 
-  @doc """
-  Infer type for struct types.
-  """
   defp infer_expr({:struct, name, fields, line, col}, env, counter) do
     field_types = Enum.map(fields, fn {fname, ftype} ->
       {fname, zixir_type_to_internal(ftype)}
@@ -662,9 +650,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_struct, struct_type), env, counter}
   end
 
-  @doc """
-  Infer type for struct initialization.
-  """
   defp infer_expr({:struct_init, name, field_inits, line, col}, env, counter) do
     {typed_inits, {env, counter}} = 
       Enum.map_reduce(field_inits, {env, counter}, fn {fname, expr}, {e, c} ->
@@ -681,9 +666,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_init, struct_type), env, counter}
   end
 
-  @doc """
-  Infer type for struct field access.
-  """
   defp infer_expr({:struct_get, struct_expr, field_name, line, col}, env, counter) do
     {typed_struct, env, counter} = infer_expr(struct_expr, env, counter)
     struct_type = get_type(typed_struct)
@@ -703,9 +685,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_get, field_type), env, counter}
   end
 
-  @doc """
-  Infer type for map types.
-  """
   defp infer_expr({:map, entries, line, col}, env, counter) when is_list(entries) do
     {typed_entries, {env, counter}} = 
       Enum.map_reduce(entries, {env, counter}, fn {key_expr, value_expr}, {e, c} ->
@@ -743,9 +722,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_map, map_type), env, counter}
   end
 
-  @doc """
-  Infer type for map access.
-  """
   defp infer_expr({:map_get, map_expr, key_expr, line, col}, env, counter) do
     {typed_map, env, counter} = infer_expr(map_expr, env, counter)
     {typed_key, env, counter} = infer_expr(key_expr, env, counter)
@@ -763,9 +739,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_get, value_type), env, counter}
   end
 
-  @doc """
-  Infer type for list comprehension.
-  """
   defp infer_expr({:list_comp, generator, filter, map_expr, line, col}, env, counter) do
     {typed_gen, env, counter} = infer_expr(generator, env, counter)
     
@@ -788,9 +761,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_comp, Type.array(elem_type)), env, counter}
   end
 
-  @doc """
-  Infer type for range expressions.
-  """
   defp infer_expr({:range, start, end_expr, line, col}, env, counter) do
     {typed_start, env, counter} = infer_expr(start, env, counter)
     {typed_end, env, counter} = infer_expr(end_expr, env, counter)
@@ -807,9 +777,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_range, range_type), env, counter}
   end
 
-  @doc """
-  Infer type for try/catch expressions.
-  """
   defp infer_expr({:try, body, catches, line, col}, env, counter) do
     {typed_body, env, counter} = infer_statement(body, env, counter)
     body_type = get_type(typed_body)
@@ -832,9 +799,6 @@ defmodule Zixir.Compiler.TypeSystem do
     {set_type(typed_try, unified_type), env, counter}
   end
 
-  @doc """
-  Infer type for async/await expressions.
-  """
   defp infer_expr({:async, expr, line, col}, env, counter) do
     {typed_expr, env, counter} = infer_expr(expr, env, counter)
     expr_type = get_type(typed_expr)
@@ -857,5 +821,10 @@ defmodule Zixir.Compiler.TypeSystem do
     
     typed_await = {:await, typed_expr, line, col}
     {set_type(typed_await, result_type), env, counter}
+  end
+
+  # Catch-all for any unhandled expression types
+  defp infer_expr(expr, env, counter) do
+    {set_type(expr, Type.var(counter)), env, counter + 1}
   end
 end

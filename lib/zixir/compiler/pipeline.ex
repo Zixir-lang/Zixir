@@ -92,7 +92,7 @@ defmodule Zixir.Compiler.Pipeline do
   defp generate_zig(ast, _opts \\ []) do
     case Zixir.Compiler.ZigBackend.compile(ast) do
       {:ok, code} -> {:ok, code}
-      {:error, reason} -> {:error, "Code generation failed: #{reason}"}
+      {:error, reason} -> Zixir.Errors.code_generation_failed(reason)
     end
   end
 
@@ -112,7 +112,7 @@ defmodule Zixir.Compiler.Pipeline do
     zig_exe = find_zig_executable()
     
     if is_nil(zig_exe) do
-      {:error, "Zig compiler not found. Run 'mix zig.get' first."}
+      Zixir.Errors.not_found_with_help(:compiler, "zig", "Run 'mix zig.get' first.")
     else
       mode_flag = case optimize do
         :debug -> "-ODebug"
@@ -127,7 +127,7 @@ defmodule Zixir.Compiler.Pipeline do
       case System.cmd("cmd", ["/c", cmd], stderr_to_stdout: true) do
         {_, 0} -> {:ok, output_path}
         {output, code} -> 
-          {:error, "Zig compilation failed (exit #{code}):\n#{output}"}
+          Zixir.Errors.compilation_failed_with_code("Zig", code, output)
       end
     end
   end
@@ -144,14 +144,14 @@ defmodule Zixir.Compiler.Pipeline do
     zig_exe = find_zig_executable()
     
     if is_nil(zig_exe) do
-      {:error, "Zig compiler not found"}
+      Zixir.Errors.not_found(:compiler, "zig")
     else
       cmd = "#{zig_exe} build-exe -OReleaseFast -femit-bin=#{binary} #{zig_file}"
       log(verbose, "JIT compiling...")
       
       case System.cmd("cmd", ["/c", cmd], stderr_to_stdout: true) do
         {_, 0} -> {:ok, binary}
-        {output, _code} -> {:error, "JIT compilation failed: #{output}"}
+        {output, _code} -> Zixir.Errors.jit_compilation_failed(output)
       end
     end
   end

@@ -322,6 +322,7 @@ defmodule Zixir.Engine.Math do
   @doc """
   Check if NIFs are loaded and available.
   """
+  @spec nifs_available?() :: boolean()
   def nifs_available? do
     try do
       _ = list_sum([])
@@ -335,6 +336,10 @@ defmodule Zixir.Engine.Math do
   # Safe wrappers with Elixir fallbacks
   # ============================================
 
+  @doc """
+  Safely calculate sum of list with Elixir fallback.
+  """
+  @spec list_sum_safe(list(number())) :: number()
   def list_sum_safe(array) when is_list(array) do
     if nifs_available?() do
       # Convert integers to floats for the NIF
@@ -345,10 +350,18 @@ defmodule Zixir.Engine.Math do
     end
   end
 
+  @doc """
+  Safely calculate product of list with Elixir fallback.
+  """
+  @spec list_product_safe(list(number())) :: number()
   def list_product_safe(array) when is_list(array) do
     if nifs_available?(), do: list_product(array), else: Enum.product(array)
   end
 
+  @doc """
+  Safely calculate mean of list with Elixir fallback.
+  """
+  @spec list_mean_safe(list(number())) :: float()
   def list_mean_safe(array) when is_list(array) do
     if nifs_available?() do
       list_mean(array)
@@ -357,6 +370,10 @@ defmodule Zixir.Engine.Math do
     end
   end
 
+  @doc """
+  Safely find minimum value in list with Elixir fallback.
+  """
+  @spec list_min_safe(list(number())) :: number()
   def list_min_safe(array) when is_list(array) do
     if nifs_available?() do
       list_min(array)
@@ -365,6 +382,10 @@ defmodule Zixir.Engine.Math do
     end
   end
 
+  @doc """
+  Safely find maximum value in list with Elixir fallback.
+  """
+  @spec list_max_safe(list(number())) :: number()
   def list_max_safe(array) when is_list(array) do
     if nifs_available?() do
       list_max(array)

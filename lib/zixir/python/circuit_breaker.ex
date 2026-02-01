@@ -32,7 +32,7 @@ defmodule Zixir.Python.CircuitBreaker do
       state: :closed,
       threshold: 5,
       window_ms: 10_000,
-      cooldown_ms: 30_000,
+      cooldown_ms: Application.get_env(:zixir, :circuit_breaker_cooldown, 30_000),
       opened_at: nil
     }
     {:ok, state}

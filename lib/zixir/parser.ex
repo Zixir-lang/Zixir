@@ -2,7 +2,6 @@ defmodule Zixir.Parser do
   @moduledoc """
   Parser for Zixir source. Produces AST (Zixir.AST.*). Uses NimbleParsec; tracks line/column for errors.
   """
-  @compile {:no_warn_unused_functions, true}
 
   import NimbleParsec
 

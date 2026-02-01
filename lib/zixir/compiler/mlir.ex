@@ -408,68 +408,6 @@ defmodule Zixir.Compiler.MLIR do
     {:ok, {:program, []}}
   end
 
-  # Basic optimizations (fallback when MLIR unavailable)
-  
-  defp constant_folding({:program, statements}) do
-    {:program, Enum.map(statements, &fold_constants/1)}
-  end
-
-  defp fold_constants({:function, name, params, ret_type, body, is_pub, line, col}) do
-    {:function, name, params, ret_type, fold_constants(body), is_pub, line, col}
-  end
-
-  defp fold_constants({:block, statements}) do
-    {:block, Enum.map(statements, &fold_constants/1)}
-  end
-
-  defp fold_constants({:let, name, expr, line, col}) do
-    {:let, name, fold_constants(expr), line, col}
-  end
-
-  # Fold constant arithmetic: 2 + 3 -> 5
-  defp fold_constants({:binop, op, {:number, n1, l1, c1}, {:number, n2, l2, c2}}) do
-    result = case op do
-      :add -> n1 + n2
-      :sub -> n1 - n2
-      :mul -> n1 * n2
-      :div -> n1 / n2
-      _ -> nil
-    end
-    
-    if result != nil do
-      if is_integer(result) and result == trunc(result) do
-        {:number, trunc(result), l1, c1}
-      else
-        {:number, result, l1, c1}
-      end
-    else
-      {:binop, op, {:number, n1, l1, c1}, {:number, n2, l2, c2}}
-    end
-  end
-
-  defp fold_constants({:binop, op, left, right}) do
-    {:binop, op, fold_constants(left), fold_constants(right)}
-  end
-
-  defp fold_constants({:unary, op, expr, line, col}) do
-    {:unary, op, fold_constants(expr), line, col}
-  end
-
-  defp fold_constants({:call, func, args}) do
-    {:call, fold_constants(func), Enum.map(args, &fold_constants/1)}
-  end
-
-  defp fold_constants({:if, cond_expr, then_block, else_block, line, col}) do
-    {:if, fold_constants(cond_expr), fold_constants(then_block), 
-          if(else_block, do: fold_constants(else_block), else: nil), line, col}
-  end
-
-  defp fold_constants({:array, elements, line, col}) do
-    {:array, Enum.map(elements, &fold_constants/1), line, col}
-  end
-
-  defp fold_constants(other), do: other
-
   defp dead_code_elimination({:program, statements}) do
     # Remove unused let bindings
     {:program, eliminate_dead_code(statements, MapSet.new())}

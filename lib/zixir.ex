@@ -42,9 +42,13 @@ defmodule Zixir do
   defp eval_statements([stmt | rest], env) do
     case eval_statement(stmt, env) do
       {:ok, _result, new_env} -> eval_statements(rest, new_env)
+      {:ok, result} -> eval_statements(rest, env) |> update_last_result(result)
       {:error, _reason} = err -> err
     end
   end
+
+  defp update_last_result({:ok, _}, result), do: {:ok, result}
+  defp update_last_result({:error, _} = err, _), do: err
 
   defp eval_statement({:let, name, expr, _line, _col}, env) do
     case eval_expr(expr, env) do

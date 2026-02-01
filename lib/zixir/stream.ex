@@ -1,38 +1,3 @@
-defmodule Zixir.Stream.Source do
-  @moduledoc """
-  Represents a stream source.
-  """
-  
-  defstruct [
-    :type,
-    :data,
-    :module,
-    :function,
-    :args,
-    :opts,
-    :start,
-    :stop,
-    :step
-  ]
-end
-
-defmodule Zixir.Stream.Transformation do
-  @moduledoc """
-  Represents a stream transformation.
-  """
-  
-  defstruct [
-    :source,
-    :operation,
-    :func,
-    :count,
-    :batch_size,
-    :max_concurrency,
-    :buffer_size,
-    :opts
-  ]
-end
-
 defmodule Zixir.Stream do
   @moduledoc """
   Streaming and Async Support for AI Workflows.
@@ -59,7 +24,7 @@ defmodule Zixir.Stream do
         python "model" "train" (data)
       end)
       
-      result = Zixir.Stream.await(task, 30_000)
+      result = Zixir.Stream.await(task)
       
       # Lazy sequences
       Zixir.Stream.range(1, 1_000_000)
@@ -72,6 +37,10 @@ defmodule Zixir.Stream do
 
   require Logger
 
+  # Import struct definitions from separate modules
+  alias Zixir.Stream.Source
+  alias Zixir.Stream.Transformation
+
   @default_backpressure 1000  # Max items in buffer
 
   # Client API
@@ -79,6 +48,7 @@ defmodule Zixir.Stream do
   @doc """
   Start the Stream supervisor.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -92,6 +62,7 @@ defmodule Zixir.Stream do
       |> Zixir.Stream.each(fn chunk -> print(chunk) end)
       |> Zixir.Stream.run()
   """
+  @spec from_python(String.t(), String.t(), list(), keyword()) :: Source.t()
   def from_python(module, function, args, opts \\ []) do
     %Zixir.Stream.Source{
       type: :python,
@@ -105,6 +76,7 @@ defmodule Zixir.Stream do
   @doc """
   Create a stream from an Elixir enumerable.
   """
+  @spec from_enum(Enumerable.t()) :: Source.t()
   def from_enum(enum) do
     %Zixir.Stream.Source{
       type: :enum,
@@ -115,6 +87,7 @@ defmodule Zixir.Stream do
   @doc """
   Create a lazy range.
   """
+  @spec range(integer(), integer(), integer()) :: Source.t()
   def range(start, stop, step \\ 1) do
     %Zixir.Stream.Source{
       type: :range,
@@ -127,6 +100,7 @@ defmodule Zixir.Stream do
   @doc """
   Map each element through a function.
   """
+  @spec map(Source.t() | Transformation.t(), function()) :: Transformation.t()
   def map(source, func) when is_function(func, 1) do
     %Zixir.Stream.Transformation{
       source: source,
@@ -226,7 +200,7 @@ defmodule Zixir.Stream do
   Returns a task that can be awaited.
   """
   def async(func, opts \\ []) when is_function(func) do
-    _timeout = Keyword.get(opts, :timeout, 30_000)
+    _timeout = Keyword.get(opts, :timeout, Application.get_env(:zixir, :stream_timeout, 30_000))
     
     Task.async(fn ->
       try do
@@ -243,7 +217,8 @@ defmodule Zixir.Stream do
   @doc """
   Await an async task with timeout.
   """
-  def await(task, timeout \\ 30_000) do
+  def await(task, timeout \\ nil) do
+    timeout = timeout || Application.get_env(:zixir, :stream_timeout, 30_000)
     case Task.yield(task, timeout) || Task.shutdown(task) do
       {:ok, result} -> result
       nil -> {:error, "Async operation timed out after #{timeout}ms"}
@@ -260,9 +235,10 @@ defmodule Zixir.Stream do
         Zixir.Stream.async(fn -> python "model2" "predict" (data2) end)
       ]
       
-      results = Zixir.Stream.await_many(tasks, 30_000)
+      results = Zixir.Stream.await_many(tasks)
   """
-  def await_many(tasks, timeout \\ 30_000) when is_list(tasks) do
+  def await_many(tasks, timeout \\ nil) when is_list(tasks) do
+    timeout = timeout || Application.get_env(:zixir, :stream_timeout, 30_000)
     Task.await_many(tasks, timeout)
     |> Enum.map(fn
       {:ok, result} -> {:ok, result}
@@ -413,7 +389,7 @@ defmodule Zixir.Stream do
           end)
         end)
         
-        results = Task.await_many(tasks, Keyword.get(opts, :timeout, 30_000))
+        results = Task.await_many(tasks, Keyword.get(opts, :timeout, Application.get_env(:zixir, :stream_timeout, 30_000)))
         {:ok, results}
       
       {:ok, item} ->

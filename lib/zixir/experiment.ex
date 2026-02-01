@@ -34,6 +34,8 @@ defmodule Zixir.Experiment do
 
   require Logger
 
+  alias Zixir.Utils
+
   @default_config %{
     min_samples: 100,
     confidence_level: 0.95,
@@ -60,20 +62,7 @@ defmodule Zixir.Experiment do
   @doc """
   Create a new experiment.
   """
-  def new(name, opts \\ []) do
-    %{
-      name: name,
-      variants: %{},
-      metrics: %{},
-      config: Map.merge(@default_config, Map.new(opts)),
-      status: :created,
-      created_at: DateTime.utc_now(),
-      started_at: nil,
-      ended_at: nil,
-      winner: nil,
-      results: nil
-    }
-  end
+  defdelegate new(name, opts \\ []), to: Zixir.Experiment.Core
 
   @doc """
   Add a variant (model version) to the experiment.
@@ -82,22 +71,7 @@ defmodule Zixir.Experiment do
     * `:traffic` - Traffic allocation (0.0-1.0, must sum to 1.0 across variants)
     * `:metadata` - Additional info about the variant
   """
-  def add_variant(experiment, name, model, opts \\ []) do
-    traffic = Keyword.get(opts, :traffic, 0.5)
-    metadata = Keyword.get(opts, :metadata, %{})
-    
-    variant = %{
-      name: name,
-      model: model,
-      traffic: traffic,
-      metadata: metadata,
-      samples: 0,
-      metrics: %{},
-      created_at: DateTime.utc_now()
-    }
-    
-    %{experiment | variants: Map.put(experiment.variants, name, variant)}
-  end
+  defdelegate add_variant(experiment, name, model, opts \\ []), to: Zixir.Experiment.Core
 
   @doc """
   Set the primary metric for the experiment.
@@ -112,17 +86,7 @@ defmodule Zixir.Experiment do
     * `:min_samples` - Minimum samples before calculating significance
     * `:direction` - :higher_is_better or :lower_is_better
   """
-  def set_metric(experiment, metric_name, opts \\ []) do
-    metric = %{
-      name: metric_name,
-      type: Keyword.get(opts, :type, :continuous),
-      min_samples: Keyword.get(opts, :min_samples, 100),
-      direction: Keyword.get(opts, :direction, :higher_is_better),
-      target_improvement: Keyword.get(opts, :target_improvement, 0.05)  # 5% improvement
-    }
-    
-    %{experiment | metrics: Map.put(experiment.metrics, metric_name, metric)}
-  end
+  defdelegate set_metric(experiment, metric_name, opts \\ []), to: Zixir.Experiment.Core
 
   @doc """
   Configure automatic winner promotion.
@@ -143,6 +107,12 @@ defmodule Zixir.Experiment do
     config = Map.put(experiment.config, :auto_promote, auto_promote_config)
     %{experiment | config: config}
   end
+
+  # Statistical functions - delegate to Statistics module
+  defdelegate calculate_significance(variant_a, variant_b, metric_name), to: Zixir.Experiment.Statistics
+  defdelegate calculate_chi_square(successes_a, trials_a, successes_b, trials_b), to: Zixir.Experiment.Statistics
+  defdelegate confidence_interval(metric, confidence_level), to: Zixir.Experiment.Statistics
+  defdelegate effect_size(metric_a, metric_b), to: Zixir.Experiment.Statistics
 
   @doc """
   Run the experiment autonomously.
@@ -209,8 +179,8 @@ defmodule Zixir.Experiment do
   Calculate statistical significance between two variants.
   """
   def calculate_significance(variant_a, variant_b, metric_name) do
-      metric_a = get_nested(variant_a, [:metrics, metric_name])
-      metric_b = get_nested(variant_b, [:metrics, metric_name])
+      metric_a = Utils.get_nested(variant_a, [:metrics, metric_name])
+      metric_b = Utils.get_nested(variant_b, [:metrics, metric_name])
     
     if metric_a && metric_b do
       perform_t_test(metric_a, metric_b)
@@ -767,15 +737,6 @@ defmodule Zixir.Experiment do
     else
       false
     end
-  end
-
-  defp get_nested(map, keys) do
-    Enum.reduce(keys, map, fn key, acc ->
-      case acc do
-        %{} -> Map.get(acc, key)
-        _ -> nil
-      end
-    end)
   end
 
   defp generate_user_id do

@@ -327,8 +327,8 @@ defmodule Mix.Tasks.Zixir do
     IO.puts("Testing Python FFI connection...")
     
     case Zixir.Compiler.PythonFFI.init() do
-      :ok ->
-        IO.puts("✓ Python interpreter initialized")
+      {:ok, version} ->
+        IO.puts("✓ Python interpreter initialized (version #{version})")
         
         # Test basic call
         case Zixir.Compiler.PythonFFI.call("math", "sqrt", [16.0]) do

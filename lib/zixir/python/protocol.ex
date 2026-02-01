@@ -44,7 +44,7 @@ defmodule Zixir.Python.Protocol do
         {:ok, %{"error" => reason}} -> {:error, to_string(reason)}
         {:ok, %{"ready" => true} = info} -> {:ok, {:ready, info}}
         {:ok, _} -> {:error, :invalid_response}
-        {:error, _} -> {:error, :decode_failed}
+        {:error, _} -> Zixir.Errors.decode_failed()
       end
     end
   end

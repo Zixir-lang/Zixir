@@ -26,7 +26,10 @@ defmodule Zixir.Workflow do
 
   alias Zixir.Workflow.{Step, Checkpoint, Execution}
 
-  @default_checkpoint_dir "_zixir_workflows"
+  # Get checkpoint directory from config, fallback to default
+  defp default_checkpoint_dir do
+    Application.get_env(:zixir, :workflow_checkpoint_dir, "_zixir_workflows")
+  end
   @default_retry_policy %{
     max_retries: 3,
     base_delay: 1000,
@@ -39,6 +42,7 @@ defmodule Zixir.Workflow do
   @doc """
   Start the Workflow supervisor and engine.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     case GenServer.start_link(__MODULE__, opts, name: __MODULE__) do
       {:ok, pid} -> {:ok, pid}
@@ -50,6 +54,7 @@ defmodule Zixir.Workflow do
   @doc """
   Create a new workflow with the given name.
   """
+  @spec new(String.t(), keyword()) :: map()
   def new(name, opts \\ []) do
     %{
       name: name,
@@ -69,6 +74,7 @@ defmodule Zixir.Workflow do
     * `:retries` - Number of retries for this step (overrides workflow default)
     * `:checkpoint` - Whether to checkpoint after this step (default: true)
   """
+  @spec add_step(map(), String.t(), function(), keyword()) :: map()
   def add_step(workflow, name, func, opts \\ []) do
     step = %Step{
       name: name,
@@ -97,6 +103,7 @@ defmodule Zixir.Workflow do
     * `:parallel` - Allow parallel execution of independent steps (default: true)
     * `:resume` - Resume from last checkpoint if available (default: true)
   """
+  @spec execute(map(), keyword()) :: {:ok, map()} | {:error, term()}
   def execute(workflow, opts \\ []) do
     # Check if GenServer is running, if not execute directly
     if Process.whereis(__MODULE__) do
@@ -126,6 +133,7 @@ defmodule Zixir.Workflow do
   @doc """
   Resume a workflow from a specific checkpoint.
   """
+  @spec resume(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def resume(workflow_name, checkpoint_id, opts \\ []) do
     GenServer.call(__MODULE__, {:resume, workflow_name, checkpoint_id, opts}, :infinity)
   end
@@ -133,6 +141,7 @@ defmodule Zixir.Workflow do
   @doc """
   Get the status of a workflow execution.
   """
+  @spec status(String.t()) :: map() | {:error, :not_found}
   def status(execution_id) do
     GenServer.call(__MODULE__, {:status, execution_id})
   end
@@ -155,7 +164,7 @@ defmodule Zixir.Workflow do
 
   @impl true
   def init(opts) do
-    checkpoint_dir = Keyword.get(opts, :checkpoint_dir, @default_checkpoint_dir)
+    checkpoint_dir = Keyword.get(opts, :checkpoint_dir, default_checkpoint_dir())
     File.mkdir_p!(checkpoint_dir)
 
     state = %{

@@ -62,6 +62,7 @@ defmodule Zixir.Drift do
   @doc """
   Start the Drift detection service.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     case GenServer.start_link(__MODULE__, opts, name: __MODULE__) do
       {:ok, pid} -> {:ok, pid}
@@ -81,6 +82,7 @@ defmodule Zixir.Drift do
   ## Returns
     * `%{drift_detected: boolean, score: float, severity: atom, method: atom}`
   """
+  @spec detect(list(), list(), keyword()) :: map()
   def detect(current, baseline, opts \\ []) do
     method = Keyword.get(opts, :method, :ks_test)
     threshold = Keyword.get(opts, :threshold, 0.05)
@@ -123,6 +125,7 @@ defmodule Zixir.Drift do
   @doc """
   Create a baseline from historical predictions.
   """
+  @spec create_baseline(list(), keyword()) :: {:ok, map()}
   def create_baseline(predictions, opts \\ []) do
     name = Keyword.get(opts, :name, "default_baseline")
     
@@ -143,6 +146,7 @@ defmodule Zixir.Drift do
   @doc """
   Get a stored baseline.
   """
+  @spec get_baseline(String.t()) :: {:ok, map()} | {:error, :baseline_not_found}
   def get_baseline(name \\ "default_baseline") do
     case Zixir.Cache.get("drift_baseline_#{name}") do
       {:ok, baseline} -> {:ok, baseline}
@@ -154,6 +158,7 @@ defmodule Zixir.Drift do
   Monitor a stream of predictions for drift.
   Automatically checks at regular intervals.
   """
+  @spec monitor_stream(pid(), String.t(), keyword()) :: :ok
   def monitor_stream(stream_pid, baseline_name, opts \\ []) do
     GenServer.cast(__MODULE__, {:monitor_stream, stream_pid, baseline_name, opts})
   end
@@ -161,6 +166,7 @@ defmodule Zixir.Drift do
   @doc """
   Run drift detection on a sliding window of predictions.
   """
+  @spec sliding_window_detect(list(), String.t(), keyword()) :: map() | {:error, :baseline_not_found}
   def sliding_window_detect(predictions, baseline_name, opts \\ []) do
     window_size = Keyword.get(opts, :window_size, @default_config.window_size)
     
@@ -179,6 +185,7 @@ defmodule Zixir.Drift do
   @doc """
   Compare multiple features for drift (multivariate).
   """
+  @spec detect_multivariate(list(list()), list(list()), keyword()) :: map()
   def detect_multivariate(current_features, baseline_features, opts \\ []) do
     # Detect drift for each feature
     results = Enum.zip(current_features, baseline_features)
@@ -188,7 +195,7 @@ defmodule Zixir.Drift do
     
     # Aggregate results
     drift_count = Enum.count(results, & &1.drift_detected)
-    avg_score = Enum.map(results, & &1.score) |> average()
+    avg_score = Enum.map(results, & &1.score) |> Zixir.Utils.average()
     max_severity = results |> Enum.map(& &1.severity) |> max_severity()
     
     %{
@@ -205,6 +212,7 @@ defmodule Zixir.Drift do
   @doc """
   Get drift detection statistics.
   """
+  @spec stats() :: map()
   def stats do
     GenServer.call(__MODULE__, :stats)
   end
@@ -417,7 +425,7 @@ defmodule Zixir.Drift do
     # Calculate average absolute difference
     Enum.zip(padded1, padded2)
     |> Enum.map(fn {a, b} -> abs(a - b) end)
-    |> average()
+    |> Zixir.Utils.average()
   end
 
   defp pad_list(list, target_length) do
@@ -448,8 +456,8 @@ defmodule Zixir.Drift do
   # Chi-square test for categorical
   defp chi_square_statistic(current, baseline) do
     # Count frequencies
-    freq_current = frequencies(current)
-    freq_baseline = frequencies(baseline)
+    freq_current = Zixir.Utils.frequencies(current)
+    freq_baseline = Zixir.Utils.frequencies(baseline)
     
     # Get all categories
     categories = Map.keys(freq_current) ++ Map.keys(freq_baseline) |> Enum.uniq()
@@ -467,12 +475,6 @@ defmodule Zixir.Drift do
       else
         sum
       end
-    end)
-  end
-
-  defp frequencies(list) do
-    Enum.reduce(list, %{}, fn item, acc ->
-      Map.update(acc, item, 1, &(&1 + 1))
     end)
   end
 
@@ -507,9 +509,6 @@ defmodule Zixir.Drift do
       true -> :none
     end
   end
-
-  defp average(list) when length(list) == 0, do: 0.0
-  defp average(list), do: Enum.sum(list) / length(list)
 
   defp max_severity(severities) do
     cond do

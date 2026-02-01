@@ -35,7 +35,7 @@ defmodule Zixir.Cache do
     max_size: 100_000,        # Max entries in memory
     default_ttl: 3600,        # Default TTL in seconds
     cleanup_interval: 60_000,  # Cleanup every 60 seconds
-    persist_dir: "_zixir_cache",
+    persist_dir: Application.get_env(:zixir, :cache_persist_dir, "_zixir_cache"),
     enable_disk: true
   }
 
@@ -44,6 +44,7 @@ defmodule Zixir.Cache do
   @doc """
   Start the Cache service.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     case GenServer.start_link(__MODULE__, opts, name: __MODULE__) do
       {:ok, pid} -> {:ok, pid}
@@ -69,6 +70,7 @@ defmodule Zixir.Cache do
     * `:ttl` - Time-to-live in seconds
     * `:persistent` - Also save to disk
   """
+  @spec fetch(String.t(), keyword(), function()) :: any()
   def fetch(key, opts \\ [], func) when is_function(func) do
     case get(key) do
       {:ok, value} ->
@@ -88,6 +90,7 @@ defmodule Zixir.Cache do
     * `:ttl` - Time-to-live in seconds
     * `:persistent` - Also save to disk
   """
+  @spec put(String.t(), any(), keyword()) :: :ok
   def put(key, value, opts \\ []) do
     if Process.whereis(__MODULE__) do
       GenServer.call(__MODULE__, {:put, key, value, opts})
@@ -108,6 +111,7 @@ defmodule Zixir.Cache do
   @doc """
   Get a value from cache.
   """
+  @spec get(String.t()) :: {:ok, any()} | {:error, :not_found | :expired}
   def get(key) do
     if Process.whereis(__MODULE__) do
       GenServer.call(__MODULE__, {:get, key})
@@ -130,6 +134,7 @@ defmodule Zixir.Cache do
   @doc """
   Delete a key from cache.
   """
+  @spec delete(String.t()) :: :ok
   def delete(key) do
     if Process.whereis(__MODULE__) do
       GenServer.call(__MODULE__, {:delete, key})
@@ -143,6 +148,7 @@ defmodule Zixir.Cache do
   @doc """
   Check if key exists in cache.
   """
+  @spec exists?(String.t()) :: boolean()
   def exists?(key) do
     case get(key) do
       {:ok, _} -> true
@@ -153,6 +159,7 @@ defmodule Zixir.Cache do
   @doc """
   Store value persistently (always saved to disk).
   """
+  @spec put_persistent(String.t(), any()) :: :ok
   def put_persistent(key, value) do
     put(key, value, persistent: true, ttl: :infinity)
   end
@@ -160,6 +167,7 @@ defmodule Zixir.Cache do
   @doc """
   Get persistent value.
   """
+  @spec get_persistent(String.t()) :: {:ok, any()} | {:error, :not_found}
   def get_persistent(key) do
     # First try memory
     case get(key) do
@@ -171,6 +179,7 @@ defmodule Zixir.Cache do
   @doc """
   Insert into a collection/table.
   """
+  @spec insert(String.t(), map(), keyword()) :: {:ok, String.t()}
   def insert(table, record, opts \\ []) do
     key = "#{table}:#{generate_id()}"
     record = Map.put(record, :_id, key)
@@ -189,6 +198,7 @@ defmodule Zixir.Cache do
     * `:limit` - Max results
     * `:order_by` - Sort field
   """
+  @spec query(String.t(), keyword()) :: list(map())
   def query(table, opts \\ []) do
     GenServer.call(__MODULE__, {:query, table, opts})
   end
@@ -196,6 +206,7 @@ defmodule Zixir.Cache do
   @doc """
   Update a record.
   """
+  @spec update(String.t(), map()) :: :ok | {:error, :not_found}
   def update(key, updates) do
     GenServer.call(__MODULE__, {:update, key, updates})
   end
@@ -203,6 +214,7 @@ defmodule Zixir.Cache do
   @doc """
   Get all cache statistics.
   """
+  @spec stats() :: map()
   def stats do
     GenServer.call(__MODULE__, :stats)
   end
@@ -210,6 +222,7 @@ defmodule Zixir.Cache do
   @doc """
   Clear all cache entries.
   """
+  @spec clear() :: :ok
   def clear do
     GenServer.call(__MODULE__, :clear)
   end
@@ -217,6 +230,7 @@ defmodule Zixir.Cache do
   @doc """
   Warm cache by pre-computing values.
   """
+  @spec warm(list(String.t()), function()) :: :ok
   def warm(keys, func) when is_function(func) do
     Enum.each(keys, fn key ->
       spawn(fn ->
@@ -231,6 +245,7 @@ defmodule Zixir.Cache do
   @doc """
   Invalidate cache entries matching a pattern.
   """
+  @spec invalidate(String.t()) :: :ok
   def invalidate(pattern) when is_binary(pattern) do
     GenServer.call(__MODULE__, {:invalidate, pattern})
   end

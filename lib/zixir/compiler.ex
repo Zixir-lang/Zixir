@@ -13,6 +13,11 @@ defmodule Zixir.Compiler do
 
   require Logger
 
+  # Zig optimization mode flags
+  @zig_mode_debug "-ODebug"
+  @zig_mode_safe "-OReleaseSafe"
+  @zig_mode_fast "-OReleaseFast"
+
   @doc """
   Compile Zixir source with all optimizations enabled.
   
@@ -262,17 +267,17 @@ defmodule Zixir.Compiler do
     
     # Compile with zig
     mode = case optimize do
-      :debug -> "-ODebug"
-      :safe -> "-OReleaseSafe"
-      :fast -> "-OReleaseFast"
-      _ -> "-OReleaseFast"
+      :debug -> @zig_mode_debug
+      :safe -> @zig_mode_safe
+      :fast -> @zig_mode_fast
+      _ -> @zig_mode_fast
     end
     
     zig_exe = find_zig()
     
     if is_nil(zig_exe) do
       File.rm(temp_file)
-      {:error, "Zig compiler not found"}
+      Zixir.Errors.not_found(:compiler, "zig")
     else
       cmd = "#{zig_exe} build-exe #{mode} -femit-bin=#{output} #{temp_file}"
       
@@ -283,7 +288,7 @@ defmodule Zixir.Compiler do
         
         {output, _code} ->
           File.rm(temp_file)
-          {:error, "Zig compilation failed: #{output}"}
+          Zixir.Errors.compilation_failed("Zig", output)
       end
     end
   end

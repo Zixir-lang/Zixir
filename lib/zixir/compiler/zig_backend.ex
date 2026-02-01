@@ -19,6 +19,7 @@ defmodule Zixir.Compiler.ZigBackend do
   Compile Zixir AST to Zig source code.
   Returns {:ok, zig_code} or {:error, reason}
   """
+  @spec compile(term()) :: {:ok, String.t()} | {:error, String.t()}
   def compile(ast) do
     try do
       # Apply optimizations before code generation
@@ -673,15 +674,12 @@ defmodule Zixir.Compiler.ZigBackend do
     end)
     
     if length(errors) > 0 do
-      {:error, "Validation failed: #{Enum.join(errors, ", ")}"}
+      Zixir.Errors.validation_failed(errors)
     else
       :ok
     end
   end
 
-  @doc """
-  Generate Zig struct type from Zixir type definition.
-  """
   defp generate_statement({:struct, name, fields, _line, _col}, indent) do
     indent_str = String.duplicate(" ", indent)
     
@@ -733,45 +731,6 @@ defmodule Zixir.Compiler.ZigBackend do
     "#{struct_str}.#{field_name}"
   end
 
-  @doc """
-  Generate better pattern matching (switch) for match expressions.
-  """
-  defp generate_match_expression({:match, value, clauses, _line, _col}, indent) do
-    value_str = generate_expression(value, indent)
-    
-    clauses_str = clauses
-    |> Enum.map(fn {pattern, body} ->
-      pattern_str = generate_pattern(pattern)
-      body_str = generate_expression(body, indent)
-      "#{pattern_str} => #{body_str},"
-    end)
-    |> Enum.join("\n")
-    
-    "(switch (#{value_str}) {\n#{clauses_str}\n})"
-  end
-
-  defp generate_pattern({:number, n, _, _}), do: "#{n}"
-  defp generate_pattern({:string, s, _, _}), do: "\"#{escape_string(s)}\""
-  defp generate_pattern({:bool, true, _, _}), do: "true"
-  defp generate_pattern({:bool, false, _, _}), do: "false"
-  defp generate_pattern({:var, name, _, _}), do: "#{name}"
-  defp generate_pattern({:ident, name, _, _}), do: "#{name}"
-  defp generate_pattern({:binop, op, left, right}) do
-    left_str = generate_pattern(left)
-    right_str = generate_pattern(right)
-    "(#{left_str} #{op} #{right_str})"
-  end
-  defp generate_pattern({:range, start, end_expr, _, _}) do
-    start_str = generate_pattern(start)
-    end_str = generate_pattern(end_expr)
-    "#{start_str}...#{end_str}"
-  end
-  defp generate_pattern(:wildcard), do: "_"
-  defp generate_pattern(other), do: "#{inspect(other)}"
-
-  @doc """
-  Generate list comprehension.
-  """
   defp generate_expression({:list_comp, generator, _filter, map_expr, _line, _col}, indent) when generator != nil and map_expr != nil do
     gen_var = case generator do
       {:for_gen, var, _iterable} -> var
@@ -789,9 +748,6 @@ defmodule Zixir.Compiler.ZigBackend do
     iter_str
   end
 
-  @doc """
-  Generate try/catch expression.
-  """
   defp generate_statement({:try, body, catches, final, _line, _col}, indent) do
     indent_str = String.duplicate(" ", indent)
     body_str = generate_statement(body, indent + 2)
@@ -817,18 +773,12 @@ defmodule Zixir.Compiler.ZigBackend do
     """
   end
 
-  @doc """
-  Generate defer statement.
-  """
   defp generate_statement({:defer, expr, _line, _col}, indent) do
     indent_str = String.duplicate(" ", indent)
     expr_str = generate_expression(expr, 0)
     "#{indent_str}defer #{expr_str};"
   end
 
-  @doc """
-  Generate comptime block.
-  """
   defp generate_statement({:comptime, body, _line, _col}, indent) do
     body_str = generate_statement(body, indent + 2)
     """
@@ -838,9 +788,6 @@ defmodule Zixir.Compiler.ZigBackend do
     """
   end
 
-  @doc """
-  Generate async/await expressions.
-  """
   defp generate_expression({:async, expr, _line, _col}, indent) do
     expr_str = generate_expression(expr, indent)
     "async #{expr_str}"
@@ -851,17 +798,14 @@ defmodule Zixir.Compiler.ZigBackend do
     "await #{expr_str}"
   end
 
-  @doc """
-  Generate comptime field access.
-  """
-  defp generate_expression({:comptime_field, expr, field, _line, _col}, _indent) do
-    _expr_str = generate_expression(expr, 0)
+  defp generate_expression({:comptime_field, _expr, field, _line, _col}, _indent) do
     ".#{field}"
   end
 
   @doc """
   Get statistics about the generated code.
   """
+  @spec code_stats(String.t()) :: map()
   def code_stats(code) do
     lines = String.split(code, "\n")
     

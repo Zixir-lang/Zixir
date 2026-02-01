@@ -20,13 +20,17 @@ defmodule Zixir.Modules do
     "std/list" => :list,
     "std/io" => :io,
     "std/json" => :json,
-    "std/regex" => :regex,
-    "std/http" => :http,
-    "std/file" => :file
+    "std/random" => :random,
+    "std/stat" => :stat,
+    "std/time" => :time
   }
 
   # Client API
 
+  @doc """
+  Start the Modules service.
+  """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -35,13 +39,15 @@ defmodule Zixir.Modules do
   Resolve and load a module by path.
   Returns {:ok, module_ast} or {:error, reason}
   """
+  @spec resolve(String.t(), String.t() | nil) :: {:ok, term()} | {:error, String.t()}
   def resolve(path, from_file \\ nil) do
-    GenServer.call(__MODULE__, {:resolve, path, from_file}, 30_000)
+    GenServer.call(__MODULE__, {:resolve, path, from_file}, Application.get_env(:zixir, :modules_timeout, 30_000))
   end
 
   @doc """
   Import a module and merge its public exports into the current scope.
   """
+  @spec import_module(String.t(), String.t() | nil) :: {:ok, term()} | {:error, String.t()}
   def import_module(path, from_file \\ nil) do
     case resolve(path, from_file) do
       {:ok, module} -> {:ok, extract_exports(module)}
@@ -52,6 +58,7 @@ defmodule Zixir.Modules do
   @doc """
   Check if a module is cached.
   """
+  @spec cached?(String.t()) :: boolean()
   def cached?(path) do
     GenServer.call(__MODULE__, {:cached?, path})
   end
@@ -59,6 +66,7 @@ defmodule Zixir.Modules do
   @doc """
   Clear the module cache.
   """
+  @spec clear_cache() :: :ok
   def clear_cache do
     GenServer.cast(__MODULE__, :clear_cache)
   end
@@ -66,6 +74,7 @@ defmodule Zixir.Modules do
   @doc """
   Get cache statistics.
   """
+  @spec cache_stats() :: map()
   def cache_stats do
     GenServer.call(__MODULE__, :cache_stats)
   end
@@ -73,6 +82,7 @@ defmodule Zixir.Modules do
   @doc """
   Get the search paths for module resolution.
   """
+  @spec search_paths() :: list(String.t())
   def search_paths do
     default_paths = [
       Path.join(File.cwd!(), "lib"),
@@ -223,7 +233,7 @@ defmodule Zixir.Modules do
     if found do
       {:ok, found}
     else
-      {:error, "File not found: #{path}"}
+      Zixir.Errors.file_not_found(path)
     end
   end
 
@@ -240,41 +250,262 @@ defmodule Zixir.Modules do
 
   defp generate_stdlib_module("std/math") do
     {:program, [
+      # Trigonometric functions
       {:function, "sin", [{"x", {:type, :Float}}], {:type, :Float}, 
-       {:call, {:field, {:var, "python", 1, 1}, "math"}, [
-         {:call, {:var, "sin", 1, 1}, [{:var, "x", 1, 1}]}
-       ]}, true, 1, 1},
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
       {:function, "cos", [{"x", {:type, :Float}}], {:type, :Float}, 
-       {:call, {:field, {:var, "python", 1, 1}, "math"}, [
-         {:call, {:var, "cos", 1, 1}, [{:var, "x", 1, 1}]}
-       ]}, true, 1, 1},
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "tan", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "asin", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "acos", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "atan", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      # Hyperbolic functions
+      {:function, "sinh", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "cosh", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "tanh", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      # Power and logarithmic functions
       {:function, "sqrt", [{"x", {:type, :Float}}], {:type, :Float}, 
-       {:call, {:field, {:var, "python", 1, 1}, "math"}, [
-         {:call, {:var, "sqrt", 1, 1}, [{:var, "x", 1, 1}]}
-       ]}, true, 1, 1},
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
       {:function, "pow", [{"x", {:type, :Float}}, {"y", {:type, :Float}}], {:type, :Float}, 
-       {:call, {:field, {:var, "python", 1, 1}, "math"}, [
-         {:call, {:var, "pow", 1, 1}, [{:var, "x", 1, 1}, {:var, "y", 1, 1}]}
-       ]}, true, 1, 1}
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}, {:var, "y", 1, 1}]}, true, 1, 1},
+      {:function, "log", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "log10", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "log2", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "exp", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "exp2", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      # Rounding functions
+      {:function, "floor", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "ceil", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "round", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "trunc", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      # Other functions
+      {:function, "abs", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "sign", [{"x", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "factorial", [{"n", {:type, :Int}}], {:type, :Int}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "n", 1, 1}]}, true, 1, 1},
+      # Constants
+      {:function, "pi", [], {:type, :Float}, 
+       {:number, 3.141592653589793, 1, 1}, true, 1, 1},
+      {:function, "e", [], {:type, :Float}, 
+       {:number, 2.718281828459045, 1, 1}, true, 1, 1}
     ]}
   end
 
   defp generate_stdlib_module("std/list") do
     {:program, [
+      # Transform
       {:function, "map", [{"list", {:type, :Array, {:type, :Float}}}, {"f", {:type, :Function}}], 
        {:type, :Array, {:type, :Float}}, 
-       {:call, {:field, {:var, "engine", 1, 1}, "map_mul"}, [{:var, "list", 1, 1}]}, 
-       true, 1, 1},
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "map2", [{"l1", {:type, :Array, {:type, :Float}}}, {"l2", {:type, :Array, {:type, :Float}}}, {"f", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "l1", 1, 1}, {:var, "l2", 1, 1}]}, true, 1, 1},
+      {:function, "flat_map", [{"list", {:type, :Array, {:type, :Float}}}, {"f", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      # Filter
       {:function, "filter", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], 
        {:type, :Array, {:type, :Float}}, 
-       {:call, {:field, {:var, "engine", 1, 1}, "filter_gt"}, [{:var, "list", 1, 1}]}, 
-       true, 1, 1},
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "filter_map", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}, {"f", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "reject", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      # Reduce/Aggregate
       {:function, "sum", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
-       {:call, {:field, {:var, "engine", 1, 1}, "list_sum"}, [{:var, "list", 1, 1}]}, 
-       true, 1, 1},
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "product", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "reduce", [{"list", {:type, :Array, {:type, :Float}}}, {"acc", {:type, :Float}}, {"f", {:type, :Function}}], 
+       {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "acc", 1, 1}]}, true, 1, 1},
+      {:function, "foldl", [{"list", {:type, :Array, {:type, :Float}}}, {"acc", {:type, :Float}}, {"f", {:type, :Function}}], 
+       {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "acc", 1, 1}]}, true, 1, 1},
+      {:function, "foldr", [{"list", {:type, :Array, {:type, :Float}}}, {"acc", {:type, :Float}}, {"f", {:type, :Function}}], 
+       {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "acc", 1, 1}]}, true, 1, 1},
+      # Query
+      {:function, "length", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Int}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "head", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "tail", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "last", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "at", [{"list", {:type, :Array, {:type, :Float}}}, {"n", {:type, :Int}}], {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "n", 1, 1}]}, true, 1, 1},
+      # Check
+      {:function, "empty?", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Bool}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "member?", [{"list", {:type, :Array, {:type, :Float}}}, {"x", {:type, :Float}}], {:type, :Bool}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "x", 1, 1}]}, true, 1, 1},
+      {:function, "all?", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], {:type, :Bool}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "any?", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], {:type, :Bool}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      # Sort
       {:function, "sort", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Array, {:type, :Float}}, 
-       {:call, {:field, {:var, "engine", 1, 1}, "sort_asc"}, [{:var, "list", 1, 1}]}, 
-       true, 1, 1}
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "sort_by", [{"list", {:type, :Array, {:type, :Float}}}, {"f", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "uniq", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      # Combine
+      {:function, "append", [{"l1", {:type, :Array, {:type, :Float}}}, {"l2", {:type, :Array, {:type, :Float}}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "l1", 1, 1}, {:var, "l2", 1, 1}]}, true, 1, 1},
+      {:function, "concat", [{"list", {:type, :Array, {:type, :Array, {:type, :Float}}}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "zip", [{"l1", {:type, :Array, {:type, :Float}}}, {"l2", {:type, :Array, {:type, :Float}}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "l1", 1, 1}, {:var, "l2", 1, 1}]}, true, 1, 1},
+      # Take/Drop
+      {:function, "take", [{"list", {:type, :Array, {:type, :Float}}}, {"n", {:type, :Int}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "n", 1, 1}]}, true, 1, 1},
+      {:function, "drop", [{"list", {:type, :Array, {:type, :Float}}}, {"n", {:type, :Int}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}, {:var, "n", 1, 1}]}, true, 1, 1},
+      {:function, "take_while", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "drop_while", [{"list", {:type, :Array, {:type, :Float}}}, {"pred", {:type, :Function}}], 
+       {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/string") do
+    {:program, [
+      {:function, "length", [{"s", {:type, :String}}], {:type, :Int}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "uppercase", [{"s", {:type, :String}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "lowercase", [{"s", {:type, :String}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "trim", [{"s", {:type, :String}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "split", [{"s", {:type, :String}}, {"sep", {:type, :String}}], 
+       {:type, :Array, {:type, :String}}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "sep", 1, 1}]}, true, 1, 1},
+      {:function, "join", [{"list", {:type, :Array, {:type, :String}}}, {"sep", {:type, :String}}], 
+       {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}, {:var, "sep", 1, 1}]}, true, 1, 1},
+      {:function, "replace", [{"s", {:type, :String}}, {"old", {:type, :String}}, {"new", {:type, :String}}], 
+       {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "old", 1, 1}, {:var, "new", 1, 1}]}, true, 1, 1},
+      {:function, "contains?", [{"s", {:type, :String}}, {"sub", {:type, :String}}], {:type, :Bool}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "sub", 1, 1}]}, true, 1, 1},
+      {:function, "starts_with?", [{"s", {:type, :String}}, {"prefix", {:type, :String}}], {:type, :Bool}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "prefix", 1, 1}]}, true, 1, 1},
+      {:function, "ends_with?", [{"s", {:type, :String}}, {"suffix", {:type, :String}}], {:type, :Bool}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "suffix", 1, 1}]}, true, 1, 1},
+      {:function, "slice", [{"s", {:type, :String}}, {"start", {:type, :Int}}, {"len", {:type, :Int}}], 
+       {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "start", 1, 1}, {:var, "len", 1, 1}]}, true, 1, 1},
+      {:function, "to_int", [{"s", {:type, :String}}], {:type, :Int}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "to_float", [{"s", {:type, :String}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "reverse", [{"s", {:type, :String}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/io") do
+    {:program, [
+      {:function, "print", [{"s", {:type, :String}}], {:type, :Void}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "println", [{"s", {:type, :String}}], {:type, :Void}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "read_line", [], {:type, :String}, 
+       {:call, {:var, "engine", 1, 1}, []}, true, 1, 1},
+      {:function, "read_all", [], {:type, :String}, 
+       {:call, {:var, "engine", 1, 1}, []}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/json") do
+    {:program, [
+      {:function, "encode", [{"data", {:type, :Dynamic}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "data", 1, 1}]}, true, 1, 1},
+      {:function, "decode", [{"s", {:type, :String}}], {:type, :Dynamic}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}]}, true, 1, 1},
+      {:function, "encode_pretty", [{"data", {:type, :Dynamic}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "data", 1, 1}]}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/random") do
+    {:program, [
+      {:function, "uniform", [], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, []}, true, 1, 1},
+      {:function, "uniform", [{"n", {:type, :Int}}], {:type, :Int}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "n", 1, 1}]}, true, 1, 1},
+      {:function, "uniform_range", [{"a", {:type, :Float}}, {"b", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "a", 1, 1}, {:var, "b", 1, 1}]}, true, 1, 1},
+      {:function, "normal", [{"mean", {:type, :Float}}, {"std", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "mean", 1, 1}, {:var, "std", 1, 1}]}, true, 1, 1},
+      {:function, "shuffle", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Array, {:type, :Float}}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "seed", [{"n", {:type, :Int}}], {:type, :Void}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "n", 1, 1}]}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/stat") do
+    {:program, [
+      {:function, "mean", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "engine", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "median", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "variance", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "std_dev", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "mode", [{"list", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}]}, true, 1, 1},
+      {:function, "percentile", [{"list", {:type, :Array, {:type, :Float}}}, {"p", {:type, :Float}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "list", 1, 1}, {:var, "p", 1, 1}]}, true, 1, 1},
+      {:function, "correlation", [{"l1", {:type, :Array, {:type, :Float}}}, {"l2", {:type, :Array, {:type, :Float}}}], {:type, :Float}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "l1", 1, 1}, {:var, "l2", 1, 1}]}, true, 1, 1}
+    ]}
+  end
+
+  defp generate_stdlib_module("std/time") do
+    {:program, [
+      {:function, "now", [], {:type, :Int}, 
+       {:call, {:var, "python", 1, 1}, []}, true, 1, 1},
+      {:function, "sleep", [{"ms", {:type, :Int}}], {:type, :Void}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "ms", 1, 1}]}, true, 1, 1},
+      {:function, "format_timestamp", [{"ts", {:type, :Int}}, {"fmt", {:type, :String}}], {:type, :String}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "ts", 1, 1}, {:var, "fmt", 1, 1}]}, true, 1, 1},
+      {:function, "parse_timestamp", [{"s", {:type, :String}}, {"fmt", {:type, :String}}], {:type, :Int}, 
+       {:call, {:var, "python", 1, 1}, [{:var, "s", 1, 1}, {:var, "fmt", 1, 1}]}, true, 1, 1}
     ]}
   end
 
@@ -296,7 +527,7 @@ defmodule Zixir.Modules do
     if found do
       {:ok, found}
     else
-      {:error, "Module not found in search paths: #{path}"}
+      Zixir.Errors.file_not_found_in_paths(path, [])
     end
   end
 

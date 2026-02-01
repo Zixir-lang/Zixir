@@ -42,6 +42,7 @@ defmodule Zixir.Observability do
   @doc """
   Start the Observability service.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     case GenServer.start_link(__MODULE__, opts, name: __MODULE__) do
       {:ok, pid} -> {:ok, pid}
@@ -55,6 +56,7 @@ defmodule Zixir.Observability do
   @doc """
   Log at debug level with structured data.
   """
+  @spec debug(String.t(), keyword()) :: :ok
   def debug(message, metadata \\ []) do
     log(:debug, message, metadata)
   end
@@ -62,6 +64,7 @@ defmodule Zixir.Observability do
   @doc """
   Log at info level with structured data.
   """
+  @spec info(String.t(), keyword()) :: :ok
   def info(message, metadata \\ []) do
     log(:info, message, metadata)
   end
@@ -69,6 +72,7 @@ defmodule Zixir.Observability do
   @doc """
   Log at warning level with structured data.
   """
+  @spec warning(String.t(), keyword()) :: :ok
   def warning(message, metadata \\ []) do
     log(:warning, message, metadata)
   end
@@ -76,6 +80,7 @@ defmodule Zixir.Observability do
   @doc """
   Log at error level with structured data.
   """
+  @spec error(String.t(), keyword()) :: :ok
   def error(message, metadata \\ []) do
     log(:error, message, metadata)
   end
@@ -83,6 +88,7 @@ defmodule Zixir.Observability do
   @doc """
   Send an alert for critical events.
   """
+  @spec alert(String.t(), keyword()) :: :ok
   def alert(message, metadata \\ []) do
     log(:error, "ALERT: #{message}", metadata)
     
@@ -93,6 +99,7 @@ defmodule Zixir.Observability do
   @doc """
   Log workflow step execution.
   """
+  @spec log_step(String.t(), String.t(), atom(), keyword()) :: :ok
   def log_step(workflow_name, step_name, status, metadata \\ []) do
     log(:info, "Workflow step #{status}", [
       workflow: workflow_name,

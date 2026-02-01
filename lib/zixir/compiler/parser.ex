@@ -1,7 +1,7 @@
 defmodule Zixir.Compiler.Parser do
   @moduledoc """
   Phase 1: New recursive descent parser for Zixir.
-  
+   
   Simpler and more powerful than NimbleParsec version.
   Generates Zixir AST that compiles directly to Zig.
   """
@@ -654,9 +654,6 @@ defmodule Zixir.Compiler.Parser do
     parse_expression(tokens)
   end
 
-  @doc """
-  Parse list comprehension: [expr for var in iterable if condition]
-  """
   defp parse_list_comp([{:for, line, col} | rest]) do
     parse_list_comp_impl(rest, line, col, nil, nil)
   end
@@ -683,9 +680,6 @@ defmodule Zixir.Compiler.Parser do
     {{:list_comp, generator, filter, map_expr, line, col}, rest}
   end
 
-  @doc """
-  Parse map literal: {key => value, ...}
-  """
   defp parse_map_literal([{:op, "{", line, col} | rest]) do
     {entries, rest2} = parse_map_entries(rest)
     rest = case rest2 do
@@ -716,9 +710,6 @@ defmodule Zixir.Compiler.Parser do
     end
   end
 
-  @doc """
-  Parse struct definition: struct { field: Type, ... }
-  """
   defp parse_struct([{:ident, name, _, _} | [{:op, "{", line, col} | rest]]) do
     {fields, rest2} = parse_struct_fields(rest)
     rest = case rest2 do
@@ -768,9 +759,6 @@ defmodule Zixir.Compiler.Parser do
 
   defp parse_type_expression(tokens), do: {{:type, :auto}, tokens}
 
-  @doc """
-  Parse try/catch expression.
-  """
   defp parse_try([{:op, "{", line, col} | rest]) do
     {body, rest2} = parse_block(rest)
     
@@ -806,9 +794,6 @@ defmodule Zixir.Compiler.Parser do
     end
   end
 
-  @doc """
-  Parse async/await expressions.
-  """
   defp parse_async([{:ident, name, line, col} | [{:op, "(", _, _} | _] = rest]) do
     case parse_expression([{:ident, name, line, col} | rest]) do
       {{:call, _, _} = call_expr, rest2} ->
@@ -846,9 +831,6 @@ defmodule Zixir.Compiler.Parser do
 
   defp parse_range(tokens), do: {nil, tokens}
 
-  @doc """
-  Parse defer statement.
-  """
   defp parse_defer([{:op, "{", line, col} | rest]) do
     {expr, rest2} = parse_expression(rest)
     rest = case rest2 do
@@ -860,9 +842,6 @@ defmodule Zixir.Compiler.Parser do
 
   defp parse_defer(tokens), do: {nil, tokens}
 
-  @doc """
-  Parse comptime block.
-  """
   defp parse_comptime([{:op, "{", line, col} | rest]) do
     {body, rest2} = parse_block(rest)
     {{:comptime, body, line, col}, rest2}

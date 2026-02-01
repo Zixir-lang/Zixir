@@ -36,6 +36,10 @@ defmodule Zixir.LSP.Server do
 
   # Client API
 
+  @doc """
+  Start the LSP server GenServer.
+  """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -43,6 +47,7 @@ defmodule Zixir.LSP.Server do
   @doc """
   Start the LSP server and listen on stdin/stdout.
   """
+  @spec run() :: :ok
   def run do
     {:ok, _} = start_link()
     
@@ -570,8 +575,8 @@ defmodule Zixir.LSP.Server do
 
   defp get_type_from_statement(_, _), do: nil
 
-  defp format_type({:type, name}), do: Atom.to_string(name)
   defp format_type({:type, :auto}), do: "auto"
+  defp format_type({:type, name}) when is_atom(name), do: Atom.to_string(name)
   defp format_type(_), do: "unknown"
 
   defp get_completions(doc, line, character) do

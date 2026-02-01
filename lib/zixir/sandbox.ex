@@ -11,10 +11,10 @@ defmodule Zixir.Sandbox do
   
   ## Example
   
-      # Execute with timeout
+      # Execute with timeout (uses configured default)
       Zixir.Sandbox.with_timeout(fn ->
         python "model" "train" (data)
-      end, 30_000)
+      end)
       
       # Execute with multiple limits
       Zixir.Sandbox.execute(fn ->
@@ -31,7 +31,7 @@ defmodule Zixir.Sandbox do
   require Logger
 
   @default_limits %{
-    timeout: 30_000,
+    timeout: Application.get_env(:zixir, :sandbox_timeout, 30_000),
     memory_limit_bytes: nil,  # nil = no limit
     cpu_percent: nil,         # nil = no limit
     max_calls: nil,
@@ -41,6 +41,7 @@ defmodule Zixir.Sandbox do
   @doc """
   Start the Sandbox supervisor.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -52,7 +53,9 @@ defmodule Zixir.Sandbox do
     * `:timeout` - Maximum time in milliseconds (default: 30000)
     * `:on_timeout` - Action on timeout: :kill (default), :error, :continue
   """
-  def with_timeout(func, timeout_ms \\ 30_000, opts \\ []) when is_function(func) do
+  @spec with_timeout(function(), integer() | nil, keyword()) :: {:ok, any()} | {:error, String.t()} | {:timeout, Task.t()}
+  def with_timeout(func, timeout_ms \\ nil, opts \\ []) when is_function(func) do
+    timeout_ms = timeout_ms || @default_limits.timeout
     on_timeout = Keyword.get(opts, :on_timeout, :kill)
     
     task = Task.async(fn ->
@@ -96,6 +99,7 @@ defmodule Zixir.Sandbox do
     * `:max_calls` - Maximum number of function calls
     * `:max_depth` - Maximum call stack depth
   """
+  @spec execute(function(), keyword()) :: {:ok, any()} | {:error, String.t()}
   def execute(func, limits \\ []) when is_function(func) do
     limits = parse_limits(limits)
     
@@ -115,6 +119,7 @@ defmodule Zixir.Sandbox do
   @doc """
   Create a sandboxed version of a function.
   """
+  @spec sandbox(function(), keyword()) :: function()
   def sandbox(func, limits \\ []) when is_function(func) do
     fn ->
       execute(func, limits)
@@ -298,7 +303,7 @@ defmodule Zixir.Sandbox do
           Map.put(acc, :timeout, value)
         
         :memory_limit ->
-          bytes = parse_memory_string(value)
+          bytes = Zixir.Utils.parse_memory_size(value)
           Map.put(acc, :memory_limit_bytes, bytes)
         
         :memory_limit_bytes ->
@@ -317,29 +322,6 @@ defmodule Zixir.Sandbox do
           acc
       end
     end)
-  end
-
-  defp parse_memory_string(value) when is_integer(value), do: value
-  
-  defp parse_memory_string(value) when is_binary(value) do
-    value = value |> String.trim() |> String.upcase()
-    
-    cond do
-      String.ends_with?(value, "GB") ->
-        num = value |> String.replace("GB", "") |> String.trim() |> String.to_integer()
-        num * 1024 * 1024 * 1024
-      
-      String.ends_with?(value, "MB") ->
-        num = value |> String.replace("MB", "") |> String.trim() |> String.to_integer()
-        num * 1024 * 1024
-      
-      String.ends_with?(value, "KB") ->
-        num = value |> String.replace("KB", "") |> String.trim() |> String.to_integer()
-        num * 1024
-      
-      true ->
-        String.to_integer(value)
-    end
   end
 
   defp get_memory_usage do
