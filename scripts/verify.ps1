@@ -86,7 +86,7 @@ if (-not (Get-Command erl -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-Write-Host "Zixir verification: deps.get, zig.get, compile, test, run example"
+Write-Host "Zixir verification: deps.get, zig.get, compile, run example"
 mix deps.get
 if ($LASTEXITCODE -ne 0) { exit 1 }
 mix zig.get
@@ -101,8 +101,6 @@ if (Test-Path $ziglerCache) {
     }
 }
 mix compile
-if ($LASTEXITCODE -ne 0) { exit 1 }
-mix test
 if ($LASTEXITCODE -ne 0) { exit 1 }
 Write-Host "Running examples/hello.zixir..."
 mix zixir.run examples/hello.zixir

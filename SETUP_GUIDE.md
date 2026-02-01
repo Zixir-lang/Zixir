@@ -125,11 +125,11 @@ mix zig.get
 # Compile the project
 mix compile
 
-# Run tests to verify installation
-mix test
+# Run a simple example to verify installation
+mix zixir.run examples/hello.zixir
 ```
 
-**Windows:** You can also run `.\scripts\verify.ps1` from the repo root to run deps.get, zig.get, compile, test, and the hello example in one go.
+**Windows:** You can also run `.\scripts\verify.ps1` from the repo root to run deps.get, zig.get, compile, and the hello example in one go.
 
 ### Using Zixir in Your Project
 

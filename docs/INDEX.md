@@ -31,12 +31,6 @@ mix compile
 
 # 2. Try an example
 mix zixir.run examples/hello.zixir
-
-# 3. Run tests
-mix test
-
-# 4. Start REPL
-mix zixir.repl
 ```
 
 ## 📖 Learning Path

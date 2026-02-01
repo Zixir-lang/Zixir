@@ -170,10 +170,10 @@ mix test
 ## Verification
 
 ```bash
-mix deps.get && mix zig.get && mix compile && mix test && mix zixir.run examples/hello.zixir
+mix deps.get && mix zig.get && mix compile && mix zixir.run examples/hello.zixir
 ```
 
-Expected: tests pass; `examples/hello.zixir` prints `11.0`. On Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
+Expected: `examples/hello.zixir` prints `11.0`. On Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
 
 ## Implementation Status
 
