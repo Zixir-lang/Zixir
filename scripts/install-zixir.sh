@@ -42,6 +42,41 @@ echo "Version: $VERSION"
 echo "=============================================="
 echo ""
 
+# Special case: Check if we're in an old/broken installation without the script
+CURRENT_DIR="$(pwd)"
+SCRIPT_NAME="$(basename "$0")"
+if [ -f "$CURRENT_DIR/mix.exs" ] && [ -d "$CURRENT_DIR/.git" ] && [ ! -f "$CURRENT_DIR/scripts/install-zixir.sh" ]; then
+  echo "Detected old/broken Zixir installation at $CURRENT_DIR"
+  echo "This installation is missing the v5.2.0 tag and updated installer."
+  echo ""
+  
+  if [ $FORCE -eq 0 ]; then
+    printf "Delete this installation and start fresh? [Y/n] (Recommended) "
+    read -r ans
+    case "$ans" in
+      [nN]*)
+        echo "Installation cancelled. To manually fix, run: git fetch origin --tags"
+        exit 0
+        ;;
+    esac
+  fi
+  
+  echo "Removing old installation..."
+  PARENT_DIR="$(dirname "$CURRENT_DIR")"
+  cd "$PARENT_DIR"
+  rm -rf "$CURRENT_DIR"
+  
+  echo "Cloning fresh Zixir $VERSION..."
+  git clone "$REPO_URL" "$CURRENT_DIR"
+  cd "$CURRENT_DIR"
+  git checkout "$VERSION"
+  
+  # Now run the script from the fresh clone
+  echo "Running installer from fresh clone..."
+  "$CURRENT_DIR/scripts/install-zixir.sh" "$PARENT_DIR"
+  exit 0
+fi
+
 # Check if we're already in repo root
 if [ -f mix.exs ] && [ -d .git ]; then
   ZIXIR_DIR="$(pwd)"

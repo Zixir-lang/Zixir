@@ -29,6 +29,41 @@ Write-Host "Version: $Version" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Special case: Check if we're in an old/broken installation without the script
+$CurrentDir = Get-Location
+$ScriptName = $MyInvocation.MyCommand.Name
+if ((Test-Path (Join-Path $CurrentDir "mix.exs")) -and 
+    (Test-Path (Join-Path $CurrentDir ".git")) -and 
+    (-not (Test-Path (Join-Path $CurrentDir "scripts\install-zixir.ps1")))) {
+    
+    Write-Host "Detected old/broken Zixir installation at $CurrentDir" -ForegroundColor Yellow
+    Write-Host "This installation is missing the v5.2.0 tag and updated installer." -ForegroundColor Yellow
+    Write-Host ""
+    
+    if (-not $Force) {
+        $ans = Read-Host "Delete this installation and start fresh? [Y/n] (Recommended)"
+        if ($ans -match '^[nN]') {
+            Write-Host "Installation cancelled. To manually fix, run: git fetch origin --tags" -ForegroundColor Yellow
+            exit 0
+        }
+    }
+    
+    Write-Host "Removing old installation..." -ForegroundColor Yellow
+    $ParentDir = Split-Path $CurrentDir -Parent
+    Set-Location $ParentDir
+    Remove-Item -Recurse -Force $CurrentDir
+    
+    Write-Host "Cloning fresh Zixir $Version..." -ForegroundColor Cyan
+    git clone $RepoUrl $CurrentDir
+    Set-Location $CurrentDir
+    git checkout $Version
+    
+    # Now run the script from the fresh clone
+    Write-Host "Running installer from fresh clone..." -ForegroundColor Green
+    & (Join-Path $CurrentDir "scripts\install-zixir.ps1") -InstallDir $ParentDir
+    exit 0
+}
+
 # Check if we're already in repo root
 if ((Test-Path "mix.exs") -and (Test-Path ".git")) {
     $ZixirDir = (Get-Location).Path
