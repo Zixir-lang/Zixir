@@ -1,7 +1,7 @@
 defmodule Zixir.MixProject do
   use Mix.Project
 
-  @version "5.1.0"
+  @version "5.2.0"
   @source_url "https://github.com/Zixir-lang/Zixir"
 
   def project do
