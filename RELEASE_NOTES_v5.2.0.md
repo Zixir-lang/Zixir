@@ -13,6 +13,7 @@ Patch release with bug fixes, documentation improvements, and type-safety enhanc
 
 ## Improvements
 
+- **install-zixir.ps1** — Fixed PowerShell parse error (split git fetch line); clearer "Install CUDA now? [y/N]" prompt
 - **Type safety** — Added comprehensive `@spec` annotations (85+ functions)
 - **Errors** — Added standardized error module (`Zixir.Errors`)
 - **Compiler** — Removed compiler warning suppressions (5 files)
