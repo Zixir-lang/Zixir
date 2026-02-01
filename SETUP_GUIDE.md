@@ -132,6 +132,11 @@ mix zixir.run examples/hello.zixir
 
 **Windows:** You can also run `.\scripts\verify.ps1` from the repo root to run deps.get, zig.get, compile, and the hello example in one go.
 
+**Optional (GPU):** To install platform-specific GPU dependencies (CUDA / ROCm / Metal) for ML or GPU offload, run from the repo root:
+- **Unix/macOS:** `./scripts/install-gpu-deps.sh` — detects macOS (Metal) or Linux and prints or runs the right steps.
+- **Windows:** `.\scripts\install-gpu-deps.ps1` — checks for CUDA (nvcc) and prints install instructions or package-manager commands.
+See [GPU Computing](#gpu-computing) below for manual setup.
+
 ### Using Zixir in Your Project
 
 Add to your `mix.exs`:

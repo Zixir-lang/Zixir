@@ -25,6 +25,7 @@ Patch release with bug fixes, documentation improvements, and type-safety enhanc
 - **Elixir** 1.14+ / OTP 25+
 - **Zig** 0.15+ (build-time; run `mix zig.get` after `mix deps.get`)
 - **Python** 3.8+ *(optional)* for ML/specialist calls
+- **GPU** *(optional)* — CUDA (NVIDIA, Windows/Linux), ROCm (AMD, Linux), or Metal (macOS). See [SETUP_GUIDE.md](SETUP_GUIDE.md#gpu-computing).
 
 ## Quick start
 
@@ -36,6 +37,10 @@ mix deps.get
 mix zig.get
 mix compile
 ```
+
+**Optional (GPU):** Install platform-specific GPU deps from repo root:
+- **Unix/macOS:** `./scripts/install-gpu-deps.sh` (Metal on macOS; CUDA or ROCm on Linux)
+- **Windows:** `.\scripts\install-gpu-deps.ps1` (CUDA)
 
 ## License
 
