@@ -29,6 +29,28 @@ Patch release with bug fixes, documentation improvements, and type-safety enhanc
 
 ## Quick start
 
+**One-shot installer (includes Quick start + optional GPU: Metal / CUDA / ROCm):**
+
+```bash
+# Unix/macOS — clone, checkout v5.2.0, mix deps.get, mix zig.get, mix compile, then optional Metal (macOS) or CUDA/ROCm (Linux)
+git clone https://github.com/Zixir-lang/Zixir.git
+cd Zixir
+git checkout v5.2.0
+./scripts/install-zixir.sh
+```
+
+```powershell
+# Windows — clone, checkout v5.2.0, mix deps.get, mix zig.get, mix compile, then optional CUDA
+git clone https://github.com/Zixir-lang/Zixir.git
+cd Zixir
+git checkout v5.2.0
+.\scripts\install-zixir.ps1
+```
+
+The installer runs `mix deps.get`, `mix zig.get`, `mix compile`, then prompts to install platform GPU deps: **Metal** (macOS), **CUDA** (Windows/Linux NVIDIA), **ROCm** (Linux AMD).
+
+**Manual (no installer script):**
+
 ```bash
 git clone https://github.com/Zixir-lang/Zixir.git
 cd Zixir
@@ -38,9 +60,7 @@ mix zig.get
 mix compile
 ```
 
-**Optional (GPU):** Install platform-specific GPU deps from repo root:
-- **Quick check:** `./scripts/install-gpu-deps.sh` (Unix/macOS) or `.\scripts\install-gpu-deps.ps1` (Windows)
-- **Full install:** `./scripts/install-optional-deps.sh` (Metal on macOS; CUDA or ROCm on Linux) or `.\scripts\install-optional-deps.ps1 -Install` (Windows CUDA)
+**Optional (GPU) after manual setup:** From repo root: `./scripts/install-optional-deps.sh` (Unix: Metal/CUDA/ROCm) or `.\scripts\install-optional-deps.ps1 -Install` (Windows: CUDA).
 
 ## License
 

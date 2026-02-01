@@ -112,6 +112,12 @@ Ensure Git is installed and available in PATH.
 
 ### Clone and Setup
 
+**One-shot installer (Quick start + optional GPU):** Runs `git clone`, `cd Zixir`, `git checkout v5.2.0`, `mix deps.get`, `mix zig.get`, `mix compile`, then optionally installs platform GPU deps: **Metal** (macOS), **CUDA** (Windows/Linux NVIDIA), **ROCm** (Linux AMD).
+- **Unix/macOS:** `./scripts/install-zixir.sh [install-dir]` — e.g. `./scripts/install-zixir.sh` (current dir) or `./scripts/install-zixir.sh /opt`
+- **Windows:** `.\scripts\install-zixir.ps1 [install-dir]` — e.g. `.\scripts\install-zixir.ps1` or `.\scripts\install-zixir.ps1 C:\dev` (includes CUDA script)
+
+**Manual steps:**
+
 ```bash
 # Clone the repository
 git clone https://github.com/Zixir-lang/Zixir.git
