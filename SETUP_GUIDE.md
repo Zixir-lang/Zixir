@@ -32,10 +32,13 @@ A complete setup guide for the Zixir programming language with all implemented f
 
 | Software | Purpose | Platform |
 |----------|---------|----------|
+| **Beaver** (`{:beaver, "~> 0.4"}` in deps) | MLIR (Phase 4) optimizations | Unix only; not Windows |
 | **CUDA Toolkit** | NVIDIA GPU | Linux/Windows |
 | **ROCm** | AMD GPU | Linux |
 | **Xcode Command Line Tools** | Metal GPU | macOS |
 | **NumPy** | Python array support | All |
+
+See [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md) for how to enable optional MLIR.
 
 ---
 

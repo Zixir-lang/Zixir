@@ -40,12 +40,18 @@ defmodule Zixir.Compiler.MLIR do
   """
   def apply_basic_optimizations(ast, opts \\ []) do
     passes = opts[:passes] || []
-    
+    # When Beaver/MLIR is unavailable, map MLIR pass names to AST-level optimizations
     Enum.reduce(passes, ast, fn pass, acc ->
       case pass do
         :constant_folding -> constant_folding(acc)
         :dead_code_elimination -> dead_code_elimination(acc)
         :inline_small_functions -> inline_small_functions(acc)
+        :canonicalize -> constant_folding(acc)
+        :cse -> common_subexpression_elimination(acc)
+        :vectorize -> vectorize_loops(acc)
+        :inline -> inline_functions(acc)
+        :gpu_offload -> mark_gpu_candidate(acc)
+        :parallelize -> parallelize_loops(acc)
         _ -> acc
       end
     end)

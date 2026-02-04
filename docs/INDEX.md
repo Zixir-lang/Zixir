@@ -9,10 +9,19 @@ Welcome to Zixir! This index will help you find the documentation you need.
 - **[SETUP_GUIDE.md](../SETUP_GUIDE.md)** - Step-by-step install (Elixir, Zig, Python) per OS
 - **[GUIDE.md](../GUIDE.md)** - Complete user guide with examples
 - **[QUICKREF.md](../QUICKREF.md)** - Quick reference cheat sheet
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - How to build, test, and contribute
+- **[ROADMAP.md](../ROADMAP.md)** - Public roadmap and priorities
+
+### Why Zixir and use cases
+- **[WHY_ZIXIR_AND_COMPARISON.md](WHY_ZIXIR_AND_COMPARISON.md)** - Why Zixir exists and comparison with Airflow, Prefect, Temporal
+- **[USE_CASES.md](USE_CASES.md)** - Real-world use cases (pipelines, agentic, numeric services, ETL, edge)
+- **[CONFIG_AND_DEPLOY.md](CONFIG_AND_DEPLOY.md)** - Configuration options and production deployment
+- **[STANDARD_LIBRARY.md](STANDARD_LIBRARY.md)** - What's in the box (engine, CLI, Elixir API, workflow, cache)
 
 ### Language Reference
 - **[LANGUAGE.md](LANGUAGE.md)** - Formal language specification
 - **[COMPILER_SUMMARY.md](../COMPILER_SUMMARY.md)** - Compiler architecture overview
+- **[MLIR_AND_PYTHON.md](MLIR_AND_PYTHON.md)** - How MLIR (Phase 4) fits with the three-tier runtime (Elixir, Zig, Python)
 
 ### Examples
 - **[tutorial.zr](../examples/tutorial.zr)** - Step-by-step tutorial

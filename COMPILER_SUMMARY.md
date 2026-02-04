@@ -1,15 +1,16 @@
 # Zixir Compiler - 5 Phase Implementation Summary
 
-For current implementation status and gaps, see [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md).
+For current implementation status and gaps, see [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md).  
+For how **MLIR** fits with the three-tier runtime (Elixir, Zig, **Python**), see [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md).
 
 ## Overview
 
 The Zixir compiler has been transformed from a simple DSL into a full systems programming language with:
 - **Native compilation** (Zig backend)
-- **Python FFI** (100-1000x faster than ports)
+- **Python FFI** (100-1000x faster than ports when NIF built; port default)
 - **Type inference** (Hindley-Milner style)
-- **MLIR optimization** (vectorization, parallelization)
-- **GPU acceleration** (CUDA/ROCm support)
+- **MLIR optimization** (Phase 4, **optional**): vectorization, CSE, constant folding, LICM. With Beaver (Unix) → full MLIR; without → fallback AST passes. Does not call Python. See [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md).
+- **GPU acceleration** (CUDA/ROCm/Metal support when toolchain available)
 
 ## Architecture
 

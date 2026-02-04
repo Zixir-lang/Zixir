@@ -46,7 +46,10 @@ Zixir is a **three-tier language and runtime** (Elixir + Zig + Python) with a **
 
 ### 4. MLIR (Phase 4)
 
-- Text generation and optimizations (e.g. CSE, constant folding, LICM); optional in pipeline
+- **Role:** Optional optimization layer between type checking and codegen; optimizes the numeric/hot path. Does **not** call Python; Python is the specialist tier for library calls (see [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md)).
+- **With Beaver (Unix):** Real MLIR when `{:beaver, "~> 0.4"}` is in deps.
+- **Without Beaver:** AST-level passes (constant folding, CSE, LICM, vectorization hints, inlining) in `Zixir.Compiler.MLIR`. Used when the full pipeline is run via `Zixir.Compiler.compile/2`.
+- **Note:** `mix zixir run` uses the short path (parse → Zig); for MLIR optimizations use `Zixir.Compiler.compile/2` with `mlir: true`.
 
 ### 5. GPU (Phase 5)
 
@@ -74,7 +77,7 @@ Zixir is a **three-tier language and runtime** (Elixir + Zig + Python) with a **
 | Zig Backend    | Complete | Codegen, functions, optimization passes; JIT and file compilation working |
 | Engine NIFs    | Complete | 20+ Zig operations (sum, product, dot, etc.) |
 | Type System    | Complete | Inference, lambda/map/struct types |
-| MLIR           | Complete | Text generation + optimizations (CSE, constant folding, LICM) |
+| MLIR           | Optional | Phase 4: Beaver (Unix) for full MLIR; else AST optimizations (CSE, constant folding, LICM). See [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md). |
 | Quality/Drift  | Complete | Validation, detection, auto-fix |
 | Experiment     | Complete | A/B testing framework, statistics |
 | Python Port    | Working  | `Zixir.call_python/3` via ports |

@@ -109,6 +109,8 @@ flowchart TB
 
 **Platforms:** Windows, macOS, Linux. Zigler compiles NIFs at `mix compile`; Python script: `priv/python/port_bridge.py`.
 
+**Optional: MLIR (Phase 4)** — For extra optimizations (vectorization, CSE, constant folding) you can add the Beaver dependency on Unix: `{:beaver, "~> 0.4"}` in `mix.exs`. Without it, the compiler still runs AST-level optimizations. See [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md). Windows: Beaver/Kinda not supported; use default (no Beaver).
+
 **New to Zixir?** For step-by-step install of Elixir, Zig, and Python per OS, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
 
 ## Setup
@@ -169,7 +171,7 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 | Engine NIFs | Complete | 20+ Zig operations (sum, product, dot, etc.) |
 | Zig Backend | Complete | Codegen, functions, optimization passes |
 | Type System | Complete | Inference, lambda/map/struct types |
-| MLIR | Complete | Text generation + optimizations (CSE, constant folding, LICM) |
+| MLIR | Optional | Phase 4: with Beaver (Unix) → full MLIR; without → AST optimizations (CSE, constant folding, LICM). See [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md). |
 | Quality/Drift | Complete | Validation, detection, auto-fix |
 | Experiment | Complete | A/B testing framework, statistics |
 | Python Port | Working | `Zixir.call_python/3` via ports |
@@ -192,7 +194,7 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 
 None at this time.
 
-**Note:** See [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md) for detailed implementation status.
+**Note:** See [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md) for detailed implementation status. For how MLIR (Phase 4) fits with the three-tier runtime and Python, see [docs/MLIR_AND_PYTHON.md](docs/MLIR_AND_PYTHON.md). To contribute, see [CONTRIBUTING.md](CONTRIBUTING.md). For roadmap and use cases, see [ROADMAP.md](ROADMAP.md) and [docs/USE_CASES.md](docs/USE_CASES.md).
 
 ## License
 

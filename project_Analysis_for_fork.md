@@ -11,7 +11,7 @@ Zixir is a three-tier runtime combining Elixir (orchestrator), Zig (engine), and
 | Orchestrator | Elixir / OTP | Failures, concurrency, intent, routing |
 | Engine | Zig + Zigler | Memory-critical math, high-speed data (NIFs) |
 | Specialist | Python via Port | Library calls only (no Python in BEAM) |
-| IR (optional) | Beaver / MLIR | Codegen and optimization |
+| IR (optional) | Beaver / MLIR | Optimizes hot path (CSE, constant folding, LICM); does not call Python. See docs/MLIR_AND_PYTHON.md. |
 
 ## Goals
 
