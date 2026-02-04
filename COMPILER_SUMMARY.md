@@ -1,5 +1,7 @@
 # Zixir Compiler - 5 Phase Implementation Summary
 
+For current implementation status and gaps, see [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md).
+
 ## Overview
 
 The Zixir compiler has been transformed from a simple DSL into a full systems programming language with:

@@ -35,6 +35,7 @@ Zixir is a three-tier runtime combining Elixir (orchestrator), Zig (engine), and
 - **Engine**: Zigler modules in `lib/zixir/engine/` or `zig/`/`native/`
 - **Specialist**: `priv/python/` — single entry script, wire format, adapter for libraries
 - **Optional MLIR**: `lib/zixir/mlir.ex` or mix task
+- **VS Code**: `.vscode/` — Zixir language extension (syntax, LSP client); install from this folder for “Install Extension from Location”. See `docs/VSCODE_INTEGRATION.md` and `PROJECT_ANALYSIS.md` for implementation status.
 
 ## Production Extension Alignment
 

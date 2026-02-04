@@ -6,6 +6,15 @@ defmodule Zixir.Compiler.Parser do
   Generates Zixir AST that compiles directly to Zig.
   """
 
+  # Suppress warnings for features not yet integrated
+  @compile {:nowarn_unused_function, [
+    :parse_list_comp, :parse_map_literal, :parse_struct, :parse_try,
+    :parse_async, :parse_await, :parse_range, :parse_defer, :parse_comptime,
+    :parse_map_entries, :parse_map_entries_impl, :parse_struct_fields,
+    :parse_struct_fields_impl, :parse_catches, :parse_catches_impl,
+    :parse_list_comp_impl, :parse_type_expression
+  ]}
+
   defmodule ParseError do
     defexception [:message, :line, :column]
   end

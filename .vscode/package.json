@@ -1,0 +1,77 @@
+{
+  "name": "zixir-language-client",
+  "displayName": "Zixir Language Client",
+  "description": "VS Code client for Zixir Language Server",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "main": "./client/out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "zixir",
+        "aliases": ["Zixir", "zixir"],
+        "extensions": [".zixir", ".zr"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "../assets/zixir-icon.png",
+          "dark": "../assets/zixir-icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "zixir",
+        "scopeName": "source.zixir",
+        "path": "./syntaxes/zixir.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Zixir",
+      "properties": {
+        "zixir.server.path": {
+          "type": "string",
+          "default": "mix",
+          "description": "Path to the mix executable"
+        },
+        "zixir.server.args": {
+          "type": "array",
+          "default": ["zixir.lsp"],
+          "description": "Arguments to pass to the LSP server"
+        },
+        "zixir.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./client/tsconfig.json",
+    "watch": "tsc -w -p ./client/tsconfig.json",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint client --ext .ts",
+    "test": "node ./client/out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "^16.18.0",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "eslint": "^8.34.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
+  }
+}

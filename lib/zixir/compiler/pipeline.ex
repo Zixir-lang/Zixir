@@ -186,10 +186,9 @@ defmodule Zixir.Compiler.Pipeline do
     _runtime_path = Path.join([Application.app_dir(:zixir), "priv", "zig", "zixir_runtime.zig"])
     
     preamble = """
-    // Zixir Runtime Preamble
+    // Zixir Runtime Preamble (JIT: single-file, provides std/zixir/engine)
     const std = @import("std");
     
-    // Import runtime if available
     const zixir = if (@hasDecl(@import("root"), "zixir_runtime"))
       @import("root").zixir_runtime
     else
@@ -197,11 +196,32 @@ defmodule Zixir.Compiler.Pipeline do
         pub fn print(msg: []const u8) void {
           std.debug.print("{s}", .{msg});
         }
-        
         pub fn println(msg: []const u8) void {
-          std.debug.print("{s}\n", .{msg});
+          std.debug.print("{s}\\n", .{msg});
         }
       };
+    
+    const engine = struct {
+      pub fn list_sum(arr: []const f64) f64 {
+        var sum: f64 = 0.0;
+        for (arr) |item| sum += item;
+        return sum;
+      }
+      pub fn list_product(arr: []const f64) f64 {
+        var prod: f64 = 1.0;
+        for (arr) |item| prod *= item;
+        return prod;
+      }
+      pub fn dot_product(a: []const f64, b: []const f64) f64 {
+        if (a.len != b.len) return 0.0;
+        var sum: f64 = 0.0;
+        for (a, b) |x, y| sum += x * y;
+        return sum;
+      }
+      pub fn string_count(s: []const u8) i64 {
+        return @intCast(s.len);
+      }
+    };
     
     """
     

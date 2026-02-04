@@ -1,0 +1,41 @@
+# Enterprise test environment - Zixir
+# Run from project root: mix zixir run examples/enterprise_test.zr
+#
+# Simulates: analytics aggregates, pipeline math, and a single metric output.
+
+# ============================================
+# 1. Simulated batch metrics (e.g. request latencies, throughput)
+# ============================================
+let batch_a = [12.5, 18.2, 9.8, 22.1, 15.0]
+let batch_b = [8.0, 14.0, 11.0, 19.0, 13.0]
+
+# ============================================
+# 2. Engine ops: fast aggregates (Zig NIFs)
+# ============================================
+let total_a = engine.list_sum(batch_a)
+let total_b = engine.list_sum(batch_b)
+
+# Dot product (e.g. weights * features for scoring)
+let weights = [0.2, 0.3, 0.5]
+let features = [10.0, 20.0, 30.0]
+let score = engine.dot_product(weights, features)
+
+# ============================================
+# 3. Derived metrics (simple pipeline)
+# ============================================
+let count = 5.0
+let avg_a = total_a / count
+let avg_b = total_b / count
+let combined_metric = avg_a + avg_b + score * 0.01
+
+# ============================================
+# 4. Optional: Python specialist (e.g. math, numpy)
+# ============================================
+# python "math" "sqrt" (combined_metric) - use when interpreter supports it
+# For compiler/JIT we use a numeric result (no Python call in this script)
+
+# ============================================
+# 5. Final output (last expression = result)
+# ============================================
+# Single number: useful as a health/metric check in CI or dashboards (includes score contribution)
+combined_metric

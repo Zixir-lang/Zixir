@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Start Zixir LSP",
+      "type": "external",
+      "command": "${workspaceFolder}/scripts/start-zixir-lsp.bat",
+      "problemMatcher": ["$eslint-stylish"],
+      "presentation": {
+        "panel": "shared",
+        "focus": true,
+        "reveal": "always"
+      }
+    }
+  ]
+}

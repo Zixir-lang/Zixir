@@ -26,5 +26,12 @@ Thumbs.db
 *.swo
 *~
 
+# VS Code extension
+.vscode/node_modules/
+
+# Zixir runtime / cache
+_zixir_cache/
+_zixir_workflows/
+
 # Misc
 /nul

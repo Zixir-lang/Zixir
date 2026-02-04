@@ -157,7 +157,7 @@ mix test
 
 ## Verification
 
-After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
+After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT run: `mix zixir run examples/enterprise_test.zr` (expected: `28.75`). Windows: `scripts\verify.ps1`. If "mix is not recognized", install [Elixir](https://elixir-lang.org/install.html#windows) and add to PATH.
 
 ## Implementation Status
 

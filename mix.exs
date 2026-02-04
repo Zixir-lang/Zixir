@@ -15,7 +15,9 @@ defmodule Zixir.MixProject do
       package: package(),
       docs: docs(),
       aliases: aliases(),
-      releases: releases()
+      releases: releases(),
+      test_pattern: "*_test.exs",
+      test_ignore_filters: [~r/test\/support\//]
     ]
   end
 
