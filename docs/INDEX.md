@@ -17,6 +17,7 @@ Welcome to Zixir! This index will help you find the documentation you need.
 - **[USE_CASES.md](USE_CASES.md)** - Real-world use cases (pipelines, agentic, numeric services, ETL, edge)
 - **[CONFIG_AND_DEPLOY.md](CONFIG_AND_DEPLOY.md)** - Configuration options and production deployment
 - **[STANDARD_LIBRARY.md](STANDARD_LIBRARY.md)** - What's in the box (engine, CLI, Elixir API, workflow, cache)
+- **[VECTORDB_BACKENDS.md](VECTORDB_BACKENDS.md)** - VectorDB backend setup (pip install), resilience (pooling, backoff, circuit breaker), 9 backends (memory, chroma, pinecone, weaviate, qdrant, milvus, pgvector, redis, azure)
 
 ### Language Reference
 - **[LANGUAGE.md](LANGUAGE.md)** - Formal language specification

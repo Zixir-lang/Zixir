@@ -123,7 +123,7 @@ mix zig.get   # after deps.get, for Zigler
 mix compile
 ```
 
-For Python specialist: ensure Python is on `PATH` or set in config; recommend a virtualenv.
+For Python specialist: ensure Python is on `PATH` or set in config; recommend a virtualenv. For **VectorDB** (nine backends: memory, chroma, pinecone, weaviate, qdrant, milvus, pgvector, redis, azure), see [docs/VECTORDB_BACKENDS.md](docs/VECTORDB_BACKENDS.md) for `pip install` and setup.
 
 ## Usage
 
@@ -182,6 +182,7 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 | Portable CLI | Working | `zixir_run.sh` / `zixir_run.bat` from release; run from any path |
 | LSP Server | ✅ Ready | `mix zixir.lsp` + VS Code integration |
 | Package Manager | Complete | `Zixir.Package`: resolve, install (Git/path), list, cache; `zixir.toml` manifest |
+| VectorDB | Complete | Nine backends (memory, chroma, pinecone, weaviate, qdrant, milvus, pgvector, redis, azure); cloud resilience (pooling, backoff, circuit breaker, caching, health, metrics). See [docs/VECTORDB_BACKENDS.md](docs/VECTORDB_BACKENDS.md). |
 
 ### ⚠️ Partially Implemented
 
