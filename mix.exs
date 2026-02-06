@@ -1,7 +1,7 @@
 defmodule Zixir.MixProject do
   use Mix.Project
 
-  @version "6.0.0"
+  @version "6.1.0"
   @source_url "https://github.com/Zixir-lang/Zixir"
 
   def project do
@@ -44,7 +44,8 @@ defmodule Zixir.MixProject do
       {:zigler, [github: "E-xyza/zigler", ref: "0.15.2", runtime: false]},
       {:erlport, "~> 0.10"},
       {:jason, "~> 1.4"},
-      {:nimble_parsec, "~> 1.4"}
+      {:nimble_parsec, "~> 1.4"},
+      {:httpoison, "~> 2.2"}
       # Optional MLIR (Beaver): add {:beaver, "~> 0.4"} on Unix only; Kinda does not support Windows.
     ]
   end
