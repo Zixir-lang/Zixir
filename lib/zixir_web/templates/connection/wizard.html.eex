@@ -1,0 +1,378 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-6">
+    <a href="/" class="hover:text-white transition-colors">Dashboard</a>
+    <span>/</span>
+    <a href="/connections" class="hover:text-white transition-colors">Connections</a>
+    <span>/</span>
+    <span class="text-white">New Connection</span>
+  </nav>
+
+  <!-- Wizard Header -->
+  <div class="mb-8 text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/30">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-bold text-white mb-2">Connection Wizard</h1>
+    <p class="text-slate-400">Set up your database connection in 3 simple steps</p>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="mb-8">
+    <div class="flex items-center justify-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-zixir-600 text-white flex items-center justify-center font-semibold text-sm">1</div>
+        <span class="text-white font-medium">Select Type</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm">2</div>
+        <span class="text-slate-400">Configure</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm">3</div>
+        <span class="text-slate-400">Test & Save</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: Select Connection Type -->
+  <div id="wizard-step-1" class="wizard-step">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Select your database type</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- SQL Server -->
+      <button onclick="selectConnectionType('sqlserver')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">SQL Server</h3>
+        <p class="text-slate-400 text-sm">Microsoft SQL Server database</p>
+      </button>
+
+      <!-- PostgreSQL -->
+      <button onclick="selectConnectionType('postgresql')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">PostgreSQL</h3>
+        <p class="text-slate-400 text-sm">Open source relational database</p>
+      </button>
+
+      <!-- MySQL -->
+      <button onclick="selectConnectionType('mysql')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500/30 transition-colors">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">MySQL</h3>
+        <p class="text-slate-400 text-sm">Popular open source database</p>
+      </button>
+
+      <!-- SQLite -->
+      <button onclick="selectConnectionType('sqlite')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-cyan-500/30 transition-colors">
+          <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">SQLite</h3>
+        <p class="text-slate-400 text-sm">Lightweight file-based database</p>
+      </button>
+
+      <!-- ODBC -->
+      <button onclick="selectConnectionType('odbc')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-purple-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/30 transition-colors">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">ODBC</h3>
+        <p class="text-slate-400 text-sm">Generic ODBC connection</p>
+      </button>
+    </div>
+    
+    <div class="flex justify-end mt-6 max-w-lg mx-auto">
+      <a href="/connections" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+  <!-- Step 2: Configuration Form (Hidden initially) -->
+  <div id="wizard-step-2" class="wizard-step hidden">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Configure your connection</h2>
+    
+    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 max-w-lg mx-auto">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Connection Name</label>
+          <input type="text" id="conn-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="e.g., Production Database">
+        </div>
+        
+        <div id="dsn-field">
+          <label class="block text-sm text-slate-400 mb-2">DSN / Host</label>
+          <input type="text" id="conn-dsn" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="localhost or DSN name">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Port</label>
+            <input type="text" id="conn-port" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="5432">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Database</label>
+            <input type="text" id="conn-database" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="mydb">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Username</label>
+          <input type="text" id="conn-username" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="username">
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Password</label>
+          <input type="password" id="conn-password" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="••••••••">
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between mt-6 max-w-lg mx-auto">
+      <button onclick="goToStep(1)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/connections" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+        <button onclick="goToStep(3)" class="px-6 py-2 bg-zixir-600 hover:bg-zixir-500 text-white rounded-lg transition-colors">
+          Next: Test Connection →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Test & Save (Hidden initially) -->
+  <div id="wizard-step-3" class="wizard-step hidden">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Test your connection</h2>
+    
+    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 max-w-lg mx-auto text-center">
+      <div id="test-status" class="mb-6">
+        <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <p class="text-slate-400">Click the button below to test your connection</p>
+      </div>
+      
+      <button onclick="testConnection()" id="test-btn" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors font-medium">
+        Test Connection
+      </button>
+    </div>
+    
+    <div class="flex justify-between mt-6 max-w-lg mx-auto">
+      <button onclick="goToStep(2)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/connections" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+        <button onclick="saveConnection()" id="save-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          Save Connection
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedType = '';
+  
+  function selectConnectionType(type) {
+    selectedType = type;
+    goToStep(2);
+    
+    // Set default port based on type
+    const portMap = {
+      'sqlserver': '1433',
+      'postgresql': '5432',
+      'mysql': '3306',
+      'sqlite': '',
+      'odbc': ''
+    };
+    
+    document.getElementById('conn-port').value = portMap[type] || '';
+  }
+  
+  function goToStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
+    
+    // Show current step
+    document.getElementById(`wizard-step-${step}`).classList.remove('hidden');
+    
+    // Update progress indicators
+    updateProgress(step);
+  }
+  
+  function updateProgress(currentStep) {
+    const steps = document.querySelectorAll('.progress-step');
+    steps.forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector('.step-circle');
+      const label = step.querySelector('.step-label');
+      
+      if (stepNum < currentStep) {
+        circle.classList.add('bg-emerald-600', 'text-white');
+        circle.classList.remove('bg-slate-700', 'text-slate-400');
+      } else if (stepNum === currentStep) {
+        circle.classList.add('bg-zixir-600', 'text-white');
+        circle.classList.remove('bg-slate-700', 'text-slate-400');
+      } else {
+        circle.classList.add('bg-slate-700', 'text-slate-400');
+        circle.classList.remove('bg-zixir-600', 'bg-emerald-600', 'text-white');
+      }
+    });
+  }
+  
+  function testConnection() {
+    const btn = document.getElementById('test-btn');
+    const statusDiv = document.getElementById('test-status');
+    
+    const driver = selectedType;
+    const host = document.getElementById('conn-dsn').value;
+    const port = document.getElementById('conn-port').value;
+    const database = document.getElementById('conn-database').value;
+    const username = document.getElementById('conn-username').value;
+    const password = document.getElementById('conn-password').value;
+    
+    // Validate required fields
+    if (!host || !database || !username || !password) {
+      Toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    btn.innerHTML = '<span class="spinner mr-2"></span>Testing...';
+    btn.disabled = true;
+    
+    // Call real API endpoint
+    fetch('/api/wizard/connection/test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        driver: driver,
+        host: host,
+        port: port,
+        database: database,
+        username: username,
+        password: password
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        btn.innerHTML = '✓ Connection Successful';
+        btn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        
+        statusDiv.innerHTML = `
+          <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <p class="text-emerald-400 font-medium">${data.message}</p>
+          <p class="text-slate-400 text-sm mt-1">Latency: ${data.latency_ms}ms</p>
+        `;
+        
+        document.getElementById('save-btn').disabled = false;
+        Toast.success('Connection test successful');
+      } else {
+        throw new Error(data.message || 'Connection failed');
+      }
+    })
+    .catch(error => {
+      btn.innerHTML = 'Test Connection';
+      btn.disabled = false;
+      
+      statusDiv.innerHTML = `
+        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <p class="text-red-400 font-medium">Connection failed</p>
+        <p class="text-slate-400 text-sm mt-1">${error.message}</p>
+      `;
+      
+      Toast.error('Connection test failed: ' + error.message);
+    });
+  }
+  
+  function saveConnection() {
+    const name = document.getElementById('conn-name').value;
+    const driver = selectedType;
+    const host = document.getElementById('conn-dsn').value;
+    const port = document.getElementById('conn-port').value;
+    const database = document.getElementById('conn-database').value;
+    const username = document.getElementById('conn-username').value;
+    const password = document.getElementById('conn-password').value;
+    
+    if (!name) {
+      Toast.error('Please enter a connection name');
+      return;
+    }
+    
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.innerHTML = '<span class="spinner mr-2"></span>Saving...';
+    saveBtn.disabled = true;
+    
+    // Call real API endpoint to save connection
+    fetch('/api/wizard/connection/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: name,
+        driver: driver,
+        host: host,
+        port: port,
+        database: database,
+        username: username,
+        password: password
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'created') {
+        Toast.success(data.message);
+        
+        // Redirect to connections list
+        setTimeout(() => {
+          window.location.href = '/connections';
+        }, 1500);
+      } else {
+        throw new Error(data.message || 'Failed to save connection');
+      }
+    })
+    .catch(error => {
+      saveBtn.innerHTML = 'Save Connection';
+      saveBtn.disabled = false;
+      Toast.error('Failed to save connection: ' + error.message);
+    });
+  }
+</script>

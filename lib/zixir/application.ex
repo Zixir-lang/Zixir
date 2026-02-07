@@ -11,6 +11,8 @@ defmodule Zixir.Application do
     children = [
       # Core infrastructure
       {Registry, keys: :unique, name: Zixir.Python.Registry},
+      {Registry, keys: :duplicate, name: Zixir.Events.Registry},
+      Zixir.Events,
       Zixir.Memory,
       
       # Python bridge
@@ -21,7 +23,7 @@ defmodule Zixir.Application do
       Zixir.Modules,
       
       # AI Automation services
-      Zixir.Workflow,
+      # Zixir.Workflow,  # Not a GenServer, use directly
       Zixir.Sandbox,
       Zixir.Stream,
       Zixir.Observability,
@@ -33,7 +35,10 @@ defmodule Zixir.Application do
       Zixir.Quality,
       
       # Intent router (last, depends on all above)
-      Zixir.Intent
+      Zixir.Intent,
+      
+      # Web Dashboard
+      ZixirWeb.Endpoint
     ]
 
     opts = [

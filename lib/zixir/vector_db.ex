@@ -65,10 +65,6 @@ defmodule Zixir.VectorDB do
   @doc """
   Get the backend module for a given backend type.
   """
-  @spec backend_module(atom()) :: module() | nil
-  def backend_module(:memory), do: Zixir.VectorDB.Memory
-  def backend_module(_), do: nil
-
   @typedoc "Vector as list of floats"
   @type vector :: [float()]
 

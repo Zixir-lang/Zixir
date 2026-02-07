@@ -1,0 +1,125 @@
+<%= if @workflows == [] do %>
+  <!-- Empty State with Theme -->
+  <tr>
+    <td colspan="5">
+      <div class="empty-state">
+        <div class="w-16 h-16 bg-gradient-to-br from-orange-500/20 via-purple-500/20 to-yellow-500/20 rounded-2xl flex items-center justify-center border border-orange-500/20 mx-auto mb-4">
+          <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">No workflows yet</h3>
+        <p class="empty-state-desc">Get started by creating your first workflow to automate your tasks.</p>
+        <a href="/workflows" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all shadow-lg shadow-orange-500/25">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Create Workflow
+        </a>
+      </div>
+    </td>
+  </tr>
+<% else %>
+  <%= for workflow <- @workflows do %>
+    <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors group">
+      <td class="p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg flex items-center justify-center group-hover:from-orange-500/30 group-hover:to-purple-500/30 transition-all border border-orange-500/20">
+            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-white font-medium"><%= workflow.name %></p>
+            <p class="text-slate-500 text-sm font-mono"><%= workflow.id %></p>
+          </div>
+        </div>
+      </td>
+      <td class="p-4">
+        <% status_class = case workflow.status do
+          "running" -> "bg-gradient-to-r from-orange-500 to-yellow-400 text-white border-orange-500/50"
+          "completed" -> "bg-gradient-to-r from-purple-500 to-purple-400 text-white border-purple-500/50"
+          "failed" -> "bg-gradient-to-r from-red-500 to-red-400 text-white border-red-500/50"
+          _ -> "bg-slate-700 text-slate-300 border-slate-600"
+        end %>
+        <span class="px-2 py-1 text-xs font-medium rounded-full border <%= status_class %>">
+          <%= workflow.status %>
+        </span>
+      </td>
+      <td class="p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-orange-500 via-purple-500 to-yellow-400 rounded-full transition-all duration-500" style="width: <%= workflow.progress %>"></div>
+          </div>
+          <span class="text-slate-400 text-sm w-10"><%= workflow.progress %>%</span>
+        </div>
+      </td>
+      <td class="p-4 text-slate-400 text-sm">
+        <%= if workflow.started_at do
+          workflow.started_at |> DateTime.from_iso8601() |> elem(1) |> Calendar.strftime("%b %d, %H:%M")
+        else
+          "--"
+        end %>
+      </td>
+      <td class="p-4">
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <%= case workflow.status do %>
+            <% "running" -> %>
+              <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                      data-tooltip="Stop"
+                      onclick="stopWorkflow('<%= workflow.id %>')">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </button>
+            <% "failed" -> %>
+              <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                      data-tooltip="Retry"
+                      onclick="retryWorkflow('<%= workflow.id %>')">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+              </button>
+            <% "completed" -> %>
+              <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                      data-tooltip="Run Again"
+                      onclick="startWorkflow('<%= workflow.id %>')">
+                <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </button>
+            <% _ -> %>
+              <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                      data-tooltip="Start"
+                      onclick="startWorkflow('<%= workflow.id %>')">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </button>
+          <% end %>
+          
+          <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                  data-tooltip="View Details"
+                  hx-get="/api/workflow/<%= workflow.id %>"
+                  hx-target="#modal-content"
+                  onclick="showModal()">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+          
+          <button class="p-2 hover:bg-red-500/20 rounded-lg transition-colors tooltip tooltip-bottom" 
+                  data-tooltip="Delete"
+                  onclick="deleteWorkflow('<%= workflow.id %>')">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+<% end %>

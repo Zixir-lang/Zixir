@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>404 - Page Not Found</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-6xl font-bold text-zixir-500 mb-4">404</h1>
+    <p class="text-xl text-slate-400">Page not found</p>
+    <a href="/" class="mt-4 inline-block px-6 py-2 bg-zixir-600 text-white rounded-lg hover:bg-zixir-700">Go Home</a>
+  </div>
+</body>
+</html>

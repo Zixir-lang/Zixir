@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zixir v7.0.0 - AI Workflow Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <link rel="stylesheet" href="/css/app.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zixir: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              300: '#fdba74',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+              950: '#431407',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Critical inline styles for initial load */
+    .htmx-request .htmx-indicator { display: inline; }
+    .htmx-indicator { display: none; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 antialiased min-h-screen">
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+  
+  <!-- Confirmation Dialog -->
+  <div id="confirm-dialog" class="dialog-overlay" style="display: none;">
+    <div class="dialog-box">
+      <h3 class="text-lg font-semibold text-white mb-2" id="dialog-title">Confirm Action</h3>
+      <p class="text-slate-400 mb-6" id="dialog-message">Are you sure you want to proceed?</p>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeDialog()" class="px-4 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </button>
+        <button id="dialog-confirm-btn" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <%= render "_sidebar.html", inner_content: @inner_content %>
+  
+  <script src="/js/app.js"></script>
+</body>
+</html>

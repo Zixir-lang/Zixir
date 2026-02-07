@@ -1,0 +1,88 @@
+<%= if @connections == [] do %>
+  <!-- Empty State with Theme -->
+  <tr>
+    <td colspan="6">
+      <div class="empty-state">
+        <div class="w-16 h-16 bg-gradient-to-br from-purple-500/20 via-orange-500/20 to-yellow-500/20 rounded-2xl flex items-center justify-center border border-purple-500/20 mx-auto mb-4">
+          <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">No connections yet</h3>
+        <p class="empty-state-desc">Set up your first database connection to start working with external data sources.</p>
+        <a href="/connections" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-gradient-to-r from-purple-600 via-orange-500 to-yellow-400 hover:from-purple-500 hover:via-orange-400 hover:to-yellow-300 text-white rounded-lg transition-all shadow-lg shadow-purple-500/25">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Add Connection
+        </a>
+      </div>
+    </td>
+  </tr>
+<% else %>
+  <%= for connection <- @connections do %>
+    <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors group">
+      <td class="p-4 min-w-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-orange-500/20 rounded-lg flex items-center justify-center group-hover:from-purple-500/30 group-hover:to-orange-500/30 transition-all border border-purple-500/20">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-white font-medium truncate" title="<%= connection.name %>"><%= connection.name %></p>
+            <p class="text-slate-500 text-sm font-mono truncate" title="<%= connection.id %>"><%= connection.id %></p>
+          </div>
+        </div>
+      </td>
+      <td class="p-4 min-w-0">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500/20 to-orange-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider max-w-[8rem] truncate" title="<%= connection.type %>"><%= connection.type %></span>
+      </td>
+      <td class="p-4 text-slate-400 text-sm font-mono min-w-0 max-w-[10rem] truncate" title="<%= connection.dsn %>"><%= connection.dsn %></td>
+      <td class="p-4 min-w-0">
+        <% status_class = case connection.status do
+          "connected" -> "bg-gradient-to-r from-orange-500 to-yellow-400 text-white border-orange-500/50"
+          "disconnected" -> "bg-gradient-to-r from-red-500 to-red-400 text-white border-red-500/50"
+          _ -> "bg-slate-700 text-slate-300 border-slate-600"
+        end %>
+        <span class="inline-block px-2 py-1 text-xs font-medium rounded-full border max-w-[6.5rem] truncate <%= status_class %>" title="<%= connection.status %>"><%= connection.status %></span>
+      </td>
+      <td class="p-4 text-slate-400 text-sm">
+        <%= if Map.get(connection, :latency_ms) do %>
+          <span class="text-emerald-400 font-medium"><%= connection.latency_ms %>ms</span>
+        <% else %>
+          <span class="text-slate-600">--</span>
+        <% end %>
+      </td>
+      <td class="p-4">
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                  data-tooltip="Test Connection"
+                  data-connection-id="<%= connection.id %>"
+                  onclick="testConnection('<%= connection.id %>')">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </button>
+          <button class="p-2 hover:bg-slate-700 rounded-lg transition-colors tooltip tooltip-bottom" 
+                  data-tooltip="Configure"
+                  hx-get="/api/connection/<%= connection.id %>"
+                  hx-target="#modal-content"
+                  onclick="showModal()">
+            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </button>
+          <button class="p-2 hover:bg-red-500/20 rounded-lg transition-colors tooltip tooltip-bottom" 
+                  data-tooltip="Delete"
+                  onclick="deleteConnection('<%= connection.id %>')">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+<% end %>

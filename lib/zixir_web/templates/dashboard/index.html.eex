@@ -1,0 +1,261 @@
+<!-- Welcome Banner with Zixir Orange-Purple-Yellow Theme -->
+<div class="mb-8 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-700/50 relative overflow-hidden">
+  <!-- Animated Gradient Background -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-500/20 via-purple-600/20 to-yellow-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+  <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-600/10 via-orange-500/10 to-yellow-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+  
+  <div class="relative flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <!-- Zixir Logo with Theme Colors -->
+      <div class="relative">
+        <div class="absolute -inset-2 bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 rounded-2xl blur opacity-60"></div>
+        <div class="relative w-16 h-16 bg-gradient-to-br from-orange-500 via-purple-600 to-yellow-400 rounded-2xl flex items-center justify-center shadow-2xl">
+          <img src="/images/zixir-icon.png" alt="Zixir" class="w-12 h-12 object-contain drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+          <span class="hidden text-white font-bold text-2xl drop-shadow-lg">Z</span>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-purple-400 to-yellow-400">Welcome to Zixir</h1>
+          <span class="px-2 py-0.5 bg-gradient-to-r from-orange-500/20 via-purple-500/20 to-yellow-500/20 text-orange-300 text-xs font-semibold rounded-full border border-orange-500/30">v7.0.0</span>
+        </div>
+        <p class="text-slate-400 mt-1">Real-time workflow monitoring and management platform</p>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <button onclick="startTour()" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm font-medium border border-slate-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Take Tour
+      </button>
+      <a href="/workflows" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all text-sm font-medium shadow-lg shadow-orange-500/25">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        New Workflow
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-white">Dashboard</h2>
+    <p class="text-slate-400 mt-1">Real-time monitoring and overview</p>
+  </div>
+  <div class="flex items-center gap-4">
+    <!-- Global Search -->
+    <div class="search-container relative">
+      <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="text" 
+             id="global-search" 
+             class="search-input w-64" 
+             placeholder="Search workflows, connections... (Ctrl+K)"
+             data-search-target="#workflows-table">
+    </div>
+    
+    <div class="flex items-center gap-3 text-sm text-slate-400">
+      <!-- SSE Connection Status -->
+      <div class="flex items-center gap-2" title="Real-time connection status">
+        <span id="sse-status" class="w-2 h-2 rounded-full bg-slate-500"></span>
+        <span id="sse-label">Connecting...</span>
+      </div>
+      <span class="htmx-indicator">
+        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Metrics Cards with Skeleton Loading -->
+<div id="metrics-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+     hx-get="/api/metrics/fragment"
+     hx-trigger="load"
+     hx-swap="innerHTML"
+     data-sse-topic="metrics">
+  <!-- Skeleton Cards -->
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="skeleton skeleton-text w-32 mb-3"></div>
+        <div class="skeleton skeleton-title"></div>
+      </div>
+      <div class="skeleton w-12 h-12 rounded-xl"></div>
+    </div>
+  </div>
+  
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="skeleton skeleton-text w-28 mb-3"></div>
+        <div class="skeleton skeleton-title"></div>
+      </div>
+      <div class="skeleton w-12 h-12 rounded-xl"></div>
+    </div>
+  </div>
+  
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="skeleton skeleton-text w-24 mb-3"></div>
+        <div class="skeleton skeleton-title"></div>
+      </div>
+      <div class="skeleton w-12 h-12 rounded-xl"></div>
+    </div>
+  </div>
+  
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="skeleton skeleton-text w-20 mb-3"></div>
+        <div class="skeleton skeleton-title"></div>
+      </div>
+      <div class="skeleton w-12 h-12 rounded-xl"></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Active Workflows -->
+  <div class="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800">
+    <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-white">Active Workflows</h2>
+      <a href="/workflows" class="text-sm text-orange-400 hover:text-orange-300 transition-colors">View all →</a>
+    </div>
+    <div id="workflows-list"
+         hx-get="/api/workflows/fragment"
+         hx-trigger="load"
+         hx-swap="innerHTML"
+         data-sse-topic="workflows">
+      <!-- Skeleton Loading State -->
+      <div class="p-6 space-y-4">
+        <%= for _ <- 1..4 do %>
+          <div class="flex items-center gap-4 p-4 bg-slate-800/30 rounded-lg">
+            <div class="skeleton w-10 h-10 rounded-lg"></div>
+            <div class="flex-1">
+              <div class="skeleton skeleton-text w-48 mb-2"></div>
+              <div class="skeleton skeleton-text w-24"></div>
+            </div>
+            <div class="skeleton w-20 h-6 rounded-full"></div>
+            <div class="skeleton w-24 h-2 rounded-full"></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connections -->
+  <div class="bg-slate-900 rounded-xl border border-slate-800 min-w-0 overflow-hidden">
+    <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-white">Connections</h2>
+      <a href="/connections" class="text-sm text-purple-400 hover:text-purple-300 transition-colors shrink-0">Manage →</a>
+    </div>
+    <div id="connections-list"
+         class="min-w-0 overflow-hidden"
+         hx-get="/api/connections/dashboard-fragment"
+         hx-trigger="load"
+         hx-swap="innerHTML"
+         data-sse-topic="connections">
+      <!-- Skeleton Loading State -->
+      <div class="p-6 space-y-4">
+        <%= for _ <- 1..3 do %>
+          <div class="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
+            <div class="skeleton w-10 h-10 rounded-lg"></div>
+            <div class="flex-1">
+              <div class="skeleton skeleton-text w-32 mb-1"></div>
+              <div class="skeleton skeleton-text w-20"></div>
+            </div>
+            <div class="skeleton w-16 h-5 rounded-full"></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vector Databases -->
+<div class="mt-6 bg-slate-900 rounded-xl border border-slate-800">
+  <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-white">Vector Databases</h2>
+    <a href="/vector-db" class="text-sm text-yellow-400 hover:text-yellow-300 transition-colors">View status →</a>
+  </div>
+   <div id="vector-status"
+        hx-get="/api/vector-status/fragment"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+        data-sse-topic="vector_db">
+    <!-- Skeleton Loading State -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <%= for _ <- 1..3 do %>
+          <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+            <div class="flex items-center justify-between mb-3">
+              <div class="skeleton w-24 h-5"></div>
+              <div class="skeleton w-2 h-2 rounded-full"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="skeleton skeleton-text w-full"></div>
+              <div class="skeleton skeleton-text w-3/4"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions Floating Button -->
+<div class="fixed bottom-6 right-6 z-40">
+  <button onclick="document.getElementById('quick-actions').classList.toggle('hidden')" 
+          class="w-14 h-14 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center transition-all hover:scale-110 tooltip"
+          data-tooltip="Quick Actions">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+    </svg>
+  </button>
+  
+  <div id="quick-actions" class="hidden absolute bottom-16 right-0 bg-slate-800 border border-slate-700 rounded-xl shadow-xl p-2 w-48">
+    <a href="/workflows" class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
+      New Workflow
+    </a>
+    <a href="/connections" class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+      </svg>
+      New Connection
+    </a>
+    <a href="/vector-db" class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+      </svg>
+      Add Vector DB
+    </a>
+  </div>
+</div>
+
+<script>
+  // Initialize search on this page
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        // Filter workflows if they're loaded
+        const workflowRows = document.querySelectorAll('#workflows-list tbody tr');
+        workflowRows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(query) ? '' : 'none';
+        });
+      });
+    }
+  });
+</script>

@@ -17,7 +17,7 @@ Process.sleep(500)
 
 # Verify critical services are running
 services = [
-  {Zixir.Workflow, []},
+  # Zixir.Workflow,  # Not a GenServer, use directly
   {Zixir.Sandbox, []},
   {Zixir.Cache, []},
   {Zixir.Observability, []},

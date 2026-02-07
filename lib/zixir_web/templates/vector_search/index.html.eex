@@ -1,0 +1,939 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-white">Vector Search</h1>
+    <p class="text-slate-400 mt-1">Semantic search across your documents</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Search Section -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Search Input -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Search Query</label>
+            <div class="relative">
+              <input
+                type="text"
+                id="search-query"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 pl-12 text-white focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50"
+                placeholder="Enter your search query..."
+                onkeypress="if(event.key==='Enter') performSearch()">
+              <svg class="w-5 h-5 text-yellow-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <!-- Search History Dropdown -->
+              <div id="search-history-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+                <!-- History items populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter & Sort Row -->
+          <div class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[140px]">
+              <label class="block text-xs text-slate-500 mb-1">Collection</label>
+              <select id="collection-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500">
+                <option value="default">Default</option>
+                <option value="documentation">Documentation</option>
+                <option value="knowledge_base">Knowledge Base</option>
+              </select>
+            </div>
+            <div class="w-28">
+              <label class="block text-xs text-slate-500 mb-1">Per Page</label>
+              <select id="limit-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+              </select>
+            </div>
+            <div class="w-28">
+              <label class="block text-xs text-slate-500 mb-1">Sort By</label>
+              <select id="sort-by" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500">
+                <option value="score">Score</option>
+                <option value="date">Date</option>
+                <option value="relevance">Relevance</option>
+              </select>
+            </div>
+            <div class="w-24">
+              <label class="block text-xs text-slate-500 mb-1">Order</label>
+              <select id="sort-order" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500">
+                <option value="desc">↓ High</option>
+                <option value="asc">↑ Low</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Filter Row -->
+          <div class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[140px]">
+              <label class="block text-xs text-slate-500 mb-1">Filter By</label>
+              <select id="filter-by" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500">
+                <option value="">No Filter</option>
+                <option value="category">Category</option>
+                <option value="source">Source</option>
+              </select>
+            </div>
+            <div class="flex-1 min-w-[140px]">
+              <label class="block text-xs text-slate-500 mb-1">Filter Value</label>
+              <input
+                type="text"
+                id="filter-value"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-500"
+                placeholder="e.g., tutorial">
+            </div>
+            <div class="flex gap-2 pt-5">
+              <button onclick="performSearch()" class="px-5 py-2 bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-400 hover:from-yellow-400 hover:via-orange-400 hover:to-yellow-300 text-white rounded-lg transition-all shadow-lg shadow-yellow-500/25 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                Search
+              </button>
+              <button onclick="clearFilters()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-sm">
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Header with Export -->
+      <div id="results-header" class="hidden flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="results-count" class="text-sm text-slate-400"></span>
+          <span id="search-time" class="text-xs text-slate-500"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportResults('json')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-xs flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Results -->
+      <div id="search-results" class="space-y-3">
+        <div class="text-center py-12 text-slate-500">
+          <div class="w-16 h-16 bg-gradient-to-br from-yellow-500/20 via-orange-500/20 to-yellow-400/20 rounded-2xl flex items-center justify-center border border-yellow-500/20 mx-auto mb-4">
+            <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <p>Enter a query to search your documents</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="hidden flex items-center justify-center gap-2 py-4">
+        <button onclick="goToPage(1)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-sm">
+          « First
+        </button>
+        <button onclick="goToPrevPage()" id="btn-prev" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          ‹ Prev
+        </button>
+        <span id="page-info" class="px-4 py-1.5 text-sm text-slate-400"></span>
+        <button onclick="goToNextPage()" id="btn-next" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          Next ›
+        </button>
+        <button onclick="goToLastPage()" id="btn-last" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-sm">
+          Last »
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Add Document with File Upload -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
+        <h2 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Add Document
+        </h2>
+
+        <!-- Tabs -->
+        <div class="flex gap-1 mb-4 border-b border-slate-700">
+          <button onclick="switchTab('paste')" id="tab-paste" class="px-3 py-2 text-xs text-orange-400 border-b-2 border-orange-400">Paste</button>
+          <button onclick="switchTab('upload')" id="tab-upload" class="px-3 py-2 text-xs text-slate-400 hover:text-white">Upload</button>
+          <button onclick="switchTab('folder')" id="tab-folder" class="px-3 py-2 text-xs text-slate-400 hover:text-white">Folder</button>
+        </div>
+
+        <!-- Paste Tab -->
+        <div id="tab-content-paste" class="space-y-3">
+          <textarea
+            id="document-text"
+            rows="4"
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-300 text-sm focus:outline-none focus:border-orange-500 resize-none"
+            placeholder="Paste or type document content..."></textarea>
+          <select id="doc-collection" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
+            <option value="default">Default Collection</option>
+            <option value="documentation">Documentation</option>
+            <option value="knowledge_base">Knowledge Base</option>
+          </select>
+          <button onclick="embedDocument()" class="w-full px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-orange-500 hover:to-yellow-400 text-white text-sm rounded-lg transition-all">
+            Embed & Store
+          </button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="tab-content-upload" class="hidden space-y-3">
+          <!-- Drop Zone -->
+          <div id="drop-zone" class="border-2 border-dashed border-slate-700 rounded-lg p-6 text-center hover:border-orange-500/50 transition-all cursor-pointer"
+               onclick="document.getElementById('file-input').click()"
+               ondrop="handleDrop(event)"
+               ondragover="handleDragOver(event)"
+               ondragleave="handleDragLeave(event)">
+            <input type="file" id="file-input" class="hidden" multiple onchange="handleFileSelect(event)">
+            <svg class="w-10 h-10 text-slate-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <p class="text-xs text-slate-400">Drag files here or click to browse</p>
+            <p class="text-xs text-slate-500 mt-1">TXT, MD, JSON, PDF, DOCX, HTML • Max 25MB</p>
+          </div>
+
+          <!-- Selected Files -->
+          <div id="selected-files" class="space-y-2"></div>
+
+          <!-- Upload Button -->
+          <button onclick="uploadFiles()" id="btn-upload" class="w-full px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-orange-500 hover:to-yellow-400 text-white text-sm rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Upload & Process
+          </button>
+
+          <!-- Progress -->
+          <div id="upload-progress" class="hidden">
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div id="progress-bar" class="bg-gradient-to-r from-orange-500 to-yellow-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="text-xs text-slate-400 mt-1 text-center">Uploading...</p>
+          </div>
+        </div>
+
+        <!-- Folder Tab -->
+        <div id="tab-content-folder" class="hidden space-y-3">
+          <div class="bg-slate-950 border border-slate-700 rounded-lg p-4">
+            <p class="text-xs text-slate-400 mb-3">Select a folder to scan and upload all supported files recursively.</p>
+
+            <!-- Folder Path Input -->
+            <div class="flex gap-2 mb-3">
+              <input
+                type="text"
+                id="folder-path"
+                class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500"
+                placeholder="Enter folder path...">
+              <button onclick="browseFolder()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Supported Files Preview -->
+            <div id="folder-preview" class="hidden mb-3">
+              <p class="text-xs text-slate-400 mb-2">Files to upload:</p>
+              <div id="folder-files" class="max-h-32 overflow-y-auto space-y-1 text-xs text-slate-500"></div>
+            </div>
+
+            <!-- Scan Button -->
+            <button onclick="scanFolder()" class="w-full px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-500 hover:from-orange-500 hover:to-yellow-400 text-white text-sm rounded-lg transition-all" id="btn-scan-folder">
+              Scan & Upload Folder
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collections -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800">
+        <div class="p-6 border-b border-slate-800">
+          <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            Collections
+          </h2>
+        </div>
+        <div id="collections-list" class="p-4 space-y-1">
+          <!-- Collections will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Similarity Visualization -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
+        <h2 class="text-sm font-semibold text-white mb-4">Similarity Scores</h2>
+        <div id="similarity-chart" class="space-y-2">
+          <p class="text-xs text-slate-500 text-center">Search to see similarity visualization</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // State
+  let currentPage = 1;
+  let totalPages = 1;
+  let currentResults = [];
+  let searchHistory = JSON.parse(localStorage.getItem('zixir_search_history') || '[]');
+
+  // Load collections on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCollections();
+    loadSearchHistory();
+  });
+
+  // Toggle search history dropdown
+  document.getElementById('search-query').addEventListener('focus', function() {
+    if (searchHistory.length > 0) {
+      document.getElementById('search-history-dropdown').classList.remove('hidden');
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#search-query') && !e.target.closest('#search-history-dropdown')) {
+      document.getElementById('search-history-dropdown').classList.add('hidden');
+    }
+  });
+
+  async function loadCollections() {
+    try {
+      const response = await fetch('/api/vector/collections');
+      const data = await response.json();
+
+      const container = document.getElementById('collections-list');
+      container.innerHTML = data.collections.map(coll => `
+        <div class="px-3 py-2 rounded-lg hover:bg-slate-800 cursor-pointer group">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-300 group-hover:text-yellow-400 transition-colors">${coll.name}</span>
+            <span class="text-xs text-slate-500">${formatNumber(coll.vector_count)}</span>
+          </div>
+          <div class="text-xs text-slate-500 mt-1">${coll.size_mb} MB • ${coll.dimensions}d</div>
+        </div>
+      `).join('');
+    } catch (error) {
+      console.error('Failed to load collections:', error);
+    }
+  }
+
+  async function performSearch(page = 1) {
+    const query = document.getElementById('search-query').value.trim();
+    const collection = document.getElementById('collection-select').value;
+    const limit = document.getElementById('limit-select').value;
+    const sortBy = document.getElementById('sort-by').value;
+    const sortOrder = document.getElementById('sort-order').value;
+    const filterBy = document.getElementById('filter-by').value;
+    const filterValue = document.getElementById('filter-value').value.trim();
+
+    if (!query) {
+      Toast.error('Please enter a search query');
+      return;
+    }
+
+    // Save to search history
+    saveToHistory(query);
+
+    const resultsDiv = document.getElementById('search-results');
+    resultsDiv.innerHTML = '<div class="flex items-center justify-center py-12"><span class="spinner"></span></div>';
+
+    try {
+      const params = new URLSearchParams({
+        query,
+        collection,
+        limit,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+        page
+      });
+
+      if (filterBy && filterValue) {
+        params.append('filter_by', filterBy);
+        params.append('filter_value', filterValue);
+      }
+
+      const response = await fetch('/api/vector-search?' + params.toString(), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        currentResults = data.results;
+        currentPage = data.pagination.page;
+        totalPages = data.pagination.total_pages;
+
+        displayResults(data.results);
+        updatePagination(data.pagination);
+        updateSimilarityChart(data.results);
+        updateResultsHeader(data);
+
+        // Update URL with search params
+        const url = new URL(window.location);
+        url.searchParams.set('q', query);
+        url.searchParams.set('page', currentPage);
+        window.history.replaceState({}, '', url);
+
+        Toast.success(`Found ${data.pagination.total_count} results in ${data.search_time_ms}ms`);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      resultsDiv.innerHTML = `<div class="text-center py-12 text-red-400">Search failed: ${error.message}</div>`;
+    }
+  }
+
+  function displayResults(results) {
+    const container = document.getElementById('search-results');
+
+    if (results.length === 0) {
+      container.innerHTML = '<div class="text-center py-12 text-slate-500">No results found</div>';
+      return;
+    }
+
+    container.innerHTML = results.map((result, idx) => `
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 hover:border-yellow-500/30 transition-all group">
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg flex items-center justify-center border border-yellow-500/20">
+              <span class="text-sm font-bold text-yellow-400">${idx + 1}</span>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2 py-0.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">
+                ${(result.score * 100).toFixed(1)}% match
+              </span>
+              <span class="text-xs text-slate-500 font-mono">${result.id}</span>
+              <span class="text-xs text-slate-600">•</span>
+              <span class="text-xs text-slate-500">${formatDate(result.created_at)}</span>
+            </div>
+            <p class="text-slate-300 text-sm leading-relaxed" id="result-text-${idx}">
+              ${truncateText(result.text, 150)}
+            </p>
+            <div id="result-full-${idx}" class="hidden text-slate-300 text-sm leading-relaxed mt-2">
+              ${escapeHtml(result.text)}
+            </div>
+            <div class="flex items-center gap-2 mt-3">
+              ${result.metadata ? `
+                ${Object.entries(result.metadata).map(([key, val]) => `
+                  <span class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs rounded">${key}: ${val}</span>
+                `).join('')}
+              ` : ''}
+            </div>
+            <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800">
+              <button onclick="togglePreview(${idx})" class="text-xs text-yellow-400 hover:text-yellow-300 flex items-center gap-1">
+                <svg id="icon-expand-${idx}" class="w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                <span id="btn-preview-text-${idx}">Show more</span>
+              </button>
+              <button onclick="copyResult(${idx})" class="text-xs text-slate-400 hover:text-white flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function togglePreview(idx) {
+    const shortText = document.getElementById(`result-text-${idx}`);
+    const fullText = document.getElementById(`result-full-${idx}`);
+    const icon = document.getElementById(`icon-expand-${idx}`);
+    const btnText = document.getElementById(`btn-preview-text-${idx}`);
+
+    if (fullText.classList.contains('hidden')) {
+      shortText.classList.add('hidden');
+      fullText.classList.remove('hidden');
+      icon.classList.add('rotate-180');
+      btnText.textContent = 'Show less';
+    } else {
+      shortText.classList.remove('hidden');
+      fullText.classList.add('hidden');
+      icon.classList.remove('rotate-180');
+      btnText.textContent = 'Show more';
+    }
+  }
+
+  function copyResult(idx) {
+    const result = currentResults[idx];
+    navigator.clipboard.writeText(result.text).then(() => {
+      Toast.success('Copied to clipboard');
+    }).catch(() => {
+      Toast.error('Failed to copy');
+    });
+  }
+
+  function updatePagination(pagination) {
+    const paginationEl = document.getElementById('pagination');
+    const prevBtn = document.getElementById('btn-prev');
+    const nextBtn = document.getElementById('btn-next');
+    const pageInfo = document.getElementById('page-info');
+
+    if (pagination.total_count === 0) {
+      paginationEl.classList.add('hidden');
+      return;
+    }
+
+    paginationEl.classList.remove('hidden');
+    prevBtn.disabled = !pagination.has_prev;
+    nextBtn.disabled = !pagination.has_next;
+    pageInfo.textContent = `Page ${pagination.page} of ${pagination.total_pages} (${pagination.total_count} total)`;
+  }
+
+  function goToPage(page) {
+    if (page >= 1 && page <= totalPages) {
+      performSearch(page);
+    }
+  }
+
+  function goToPrevPage() {
+    if (currentPage > 1) {
+      performSearch(currentPage - 1);
+    }
+  }
+
+  function goToNextPage() {
+    if (currentPage < totalPages) {
+      performSearch(currentPage + 1);
+    }
+  }
+
+  function goToLastPage() {
+    performSearch(totalPages);
+  }
+
+  function updateResultsHeader(data) {
+    const header = document.getElementById('results-header');
+    const count = document.getElementById('results-count');
+    const time = document.getElementById('search-time');
+
+    header.classList.remove('hidden');
+    count.textContent = `${data.pagination.total_count} results found`;
+    time.textContent = `(${data.search_time_ms}ms)`;
+  }
+
+  function clearFilters() {
+    document.getElementById('filter-by').value = '';
+    document.getElementById('filter-value').value = '';
+    performSearch(1);
+  }
+
+  function exportResults(format) {
+    if (currentResults.length === 0) {
+      Toast.error('No results to export');
+      return;
+    }
+
+    const dataStr = JSON.stringify(currentResults, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `search_results_${Date.now()}.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    Toast.success('Results exported');
+  }
+
+  // Search History Functions
+  function loadSearchHistory() {
+    const container = document.getElementById('search-history-dropdown');
+    if (searchHistory.length === 0) {
+      container.innerHTML = '<div class="px-3 py-2 text-xs text-slate-500">No search history</div>';
+      return;
+    }
+
+    container.innerHTML = searchHistory.slice(0, 10).map((item, idx) => `
+      <div onclick="useHistoryItem('${escapeHtml(item.query)}')" class="px-3 py-2 hover:bg-slate-700 cursor-pointer flex items-center justify-between group">
+        <span class="text-sm text-slate-300 truncate flex-1">${escapeHtml(item.query)}</span>
+        <span class="text-xs text-slate-500 ml-2">${formatDate(item.timestamp)}</span>
+        <button onclick="deleteHistoryItem(event, ${idx})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 ml-2">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('') + `
+      <div class="px-3 py-2 border-t border-slate-700">
+        <button onclick="clearHistory()" class="text-xs text-slate-500 hover:text-slate-300">Clear history</button>
+      </div>
+    `;
+  }
+
+  function saveToHistory(query) {
+    const existing = searchHistory.findIndex(h => h.query === query);
+    if (existing !== -1) {
+      searchHistory.splice(existing, 1);
+    }
+    searchHistory.unshift({ query, timestamp: new Date().toISOString() });
+    searchHistory = searchHistory.slice(0, 20);
+    localStorage.setItem('zixir_search_history', JSON.stringify(searchHistory));
+  }
+
+  function useHistoryItem(query) {
+    document.getElementById('search-query').value = query;
+    document.getElementById('search-history-dropdown').classList.add('hidden');
+    performSearch(1);
+  }
+
+  function deleteHistoryItem(e, idx) {
+    e.stopPropagation();
+    searchHistory.splice(idx, 1);
+    localStorage.setItem('zixir_search_history', JSON.stringify(searchHistory));
+    loadSearchHistory();
+  }
+
+  function clearHistory() {
+    searchHistory = [];
+    localStorage.removeItem('zixir_search_history');
+    loadSearchHistory();
+  }
+
+  function updateSimilarityChart(results) {
+    const container = document.getElementById('similarity-chart');
+    const maxScore = Math.max(...results.map(r => r.score));
+
+    container.innerHTML = results.slice(0, 5).map((result, idx) => {
+      const percentage = (result.score / maxScore) * 100;
+      return `
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500 w-6">#${idx + 1}</span>
+          <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+          </div>
+          <span class="text-xs text-slate-400 w-12 text-right">${(result.score * 100).toFixed(0)}%</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function embedDocument() {
+    const text = document.getElementById('document-text').value;
+    const collection = document.getElementById('doc-collection').value;
+
+    if (!text.trim()) {
+      Toast.error('Please enter document text');
+      return;
+    }
+
+    const btn = event.target;
+    btn.innerHTML = '<span class="spinner mr-2"></span>Embedding...';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/vector/embed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, collection, metadata: { source: 'manual' } })
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'embedded') {
+        Toast.success(`Document embedded: ${data.text_preview}`);
+        document.getElementById('document-text').value = '';
+        loadCollections();
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Toast.error('Failed to embed: ' + error.message);
+    } finally {
+      btn.innerHTML = 'Embed & Store';
+      btn.disabled = false;
+    }
+  }
+
+  // Utility Functions
+  function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return num.toString();
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = now - date;
+
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+    return date.toLocaleDateString();
+  }
+
+  function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return escapeHtml(text);
+    return escapeHtml(text.substring(0, maxLength)) + '...';
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ============================================================================
+  // FILE & FOLDER UPLOAD FUNCTIONS
+  // ============================================================================
+
+  const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+  const SUPPORTED_TYPES = [
+    '.txt', '.md', '.markdown',
+    '.json', '.yaml', '.yml', '.csv',
+    '.html', '.htm',
+    '.pdf',
+    '.docx'
+  ];
+
+  let selectedFiles = [];
+  let folderFiles = [];
+
+  // Tab switching
+  function switchTab(tab) {
+    ['paste', 'upload', 'folder'].forEach(t => {
+      document.getElementById('tab-' + t).classList.remove('text-orange-400', 'border-orange-400');
+      document.getElementById('tab-' + t).classList.add('text-slate-400');
+      document.getElementById('tab-content-' + t).classList.add('hidden');
+    });
+    document.getElementById('tab-' + tab).classList.remove('text-slate-400');
+    document.getElementById('tab-' + tab).classList.add('text-orange-400', 'border-b-2', 'border-orange-400');
+    document.getElementById('tab-content-' + tab).classList.remove('hidden');
+  }
+
+  // Drag and drop handlers
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.add('border-orange-500', 'bg-slate-800/50');
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.remove('border-orange-500', 'bg-slate-800/50');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('drop-zone').classList.remove('border-orange-500', 'bg-slate-800/50');
+
+    const files = Array.from(e.dataTransfer.files);
+    addFiles(files);
+  }
+
+  function handleFileSelect(e) {
+    const files = Array.from(e.target.files);
+    addFiles(files);
+    e.target.value = ''; // Reset input
+  }
+
+  function addFiles(files) {
+    const validFiles = files.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        Toast.error(`${file.name} exceeds 25MB limit`);
+        return false;
+      }
+      const ext = '.' + file.name.split('.').pop().toLowerCase();
+      if (!SUPPORTED_TYPES.includes(ext)) {
+        Toast.error(`${file.name} format not supported`);
+        return false;
+      }
+      return true;
+    });
+
+    selectedFiles = [...selectedFiles, ...validFiles];
+    updateSelectedFilesUI();
+
+    if (selectedFiles.length > 0) {
+      document.getElementById('btn-upload').disabled = false;
+    }
+  }
+
+  function updateSelectedFilesUI() {
+    const container = document.getElementById('selected-files');
+
+    if (selectedFiles.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = selectedFiles.map((file, idx) => `
+      <div class="flex items-center justify-between bg-slate-800 rounded-lg px-3 py-2">
+        <div class="flex items-center gap-2 overflow-hidden">
+          <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="text-xs text-slate-300 truncate">${escapeHtml(file.name)}</span>
+          <span class="text-xs text-slate-500">${formatFileSize(file.size)}</span>
+        </div>
+        <button onclick="removeFile(${idx})" class="text-slate-500 hover:text-red-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function removeFile(idx) {
+    selectedFiles.splice(idx, 1);
+    updateSelectedFilesUI();
+    document.getElementById('btn-upload').disabled = selectedFiles.length === 0;
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return bytes + ' B';
+  }
+
+  async function uploadFiles() {
+    if (selectedFiles.length === 0) return;
+
+    const collection = document.getElementById('doc-collection').value;
+    const progressEl = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const btn = document.getElementById('btn-upload');
+
+    progressEl.classList.remove('hidden');
+    btn.disabled = true;
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const progress = ((i + 1) / selectedFiles.length) * 100;
+
+      progressBar.style.width = progress + '%';
+      progressText.textContent = `Uploading ${i + 1}/${selectedFiles.length}: ${file.name}`;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('collection', collection);
+
+        const response = await fetch('/api/vector/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'uploaded') {
+          successCount++;
+        } else {
+          failCount++;
+          console.error(`Failed: ${file.name}`, data.message);
+        }
+      } catch (error) {
+        failCount++;
+        console.error(`Error: ${file.name}`, error);
+      }
+    }
+
+    progressBar.style.width = '100%';
+    progressText.textContent = `Complete: ${successCount} uploaded, ${failCount} failed`;
+
+    selectedFiles = [];
+    updateSelectedFilesUI();
+    btn.disabled = false;
+
+    if (successCount > 0) {
+      Toast.success(`${successCount} file(s) uploaded successfully`);
+      loadCollections();
+    }
+
+    if (failCount > 0) {
+      Toast.error(`${failCount} file(s) failed`);
+    }
+
+    // Hide progress after delay
+    setTimeout(() => {
+      progressEl.classList.add('hidden');
+    }, 2000);
+  }
+
+  // Folder functions
+  async function browseFolder() {
+    // Show input for manual path entry (web browsers don't have folder picker API)
+    document.getElementById('folder-path').focus();
+    Toast.info('Enter folder path manually');
+  }
+
+  async function scanFolder() {
+    const folderPath = document.getElementById('folder-path').value.trim();
+
+    if (!folderPath) {
+      Toast.error('Please enter a folder path');
+      return;
+    }
+
+    if (!FileSystemApiAvailable()) {
+      Toast.error('Folder upload requires server-side processing. Enter folder path on server.');
+      return;
+    }
+
+    const btn = document.getElementById('btn-scan-folder');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner mr-2"></span>Scanning...';
+
+    try {
+      const response = await fetch('/api/vector/upload/formats');
+      const formats = await response.json();
+
+      // Show preview
+      const preview = document.getElementById('folder-preview');
+      const filesList = document.getElementById('folder-files');
+
+      // Mock folder scan (in production, this would scan actual directory)
+      const mockFiles = [
+        `${folderPath}/readme.txt`,
+        `${folderPath}/docs/guide.md`,
+        `${folderPath}/data/config.json`,
+        `${folderPath}/report.pdf`,
+        `${folderPath}/notes.docx`
+      ].filter(f => SUPPORTED_TYPES.some(ext => f.toLowerCase().endsWith(ext)));
+
+      if (mockFiles.length > 0) {
+        folderFiles = mockFiles;
+        filesList.innerHTML = mockFiles.map(f => `
+          <div class="flex items-center gap-2">
+            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span class="truncate">${escapeHtml(f)}</span>
+          </div>
+        `).join('');
+        preview.classList.remove('hidden');
+        btn.textContent = `Upload ${mockFiles.length} Files`;
+      } else {
+        Toast.error('No supported files found in folder');
+      }
+    } catch (error) {
+      Toast.error('Failed to scan folder');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Scan & Upload Folder';
+    }
+  }
+
+  function FileSystemApiAvailable() {
+    return !!(window.showDirectoryPicker || window.webkitdirectory);
+  }
+</script>

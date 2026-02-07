@@ -1,0 +1,812 @@
+<!-- AI Header with Zixir Orange-Purple-Yellow Theme -->
+<div class="mb-8 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-700/50 relative overflow-hidden">
+  <!-- Animated Gradient Background -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-500/20 via-purple-600/20 to-yellow-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+  <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-600/10 via-orange-500/10 to-yellow-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+  
+  <div class="relative flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <!-- AI Icon with Theme Colors -->
+      <div class="relative">
+        <div class="absolute -inset-2 bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 rounded-2xl blur opacity-60"></div>
+        <div class="relative w-16 h-16 bg-gradient-to-br from-orange-500 via-purple-600 to-yellow-400 rounded-2xl flex items-center justify-center shadow-2xl">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-purple-400 to-yellow-400">AI Management</h1>
+          <span class="px-2 py-0.5 bg-gradient-to-r from-orange-500/20 via-purple-500/20 to-yellow-500/20 text-orange-300 text-xs font-semibold rounded-full border border-orange-500/30">v7.0.0</span>
+        </div>
+        <p class="text-slate-400 mt-1">Configure AI providers, monitor usage, and manage budgets</p>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <a href="/ai/playground" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all text-sm font-medium shadow-lg shadow-orange-500/25">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Open Playground
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-white">Overview</h2>
+    <p class="text-slate-400 mt-1">Usage statistics and budget tracking</p>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 text-sm text-slate-400">
+      <span class="htmx-indicator">
+        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+      <span>Auto-refresh: 10s</span>
+    </div>
+  </div>
+</div>
+
+<!-- Usage Overview Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+  <!-- Today's Cost Card -->
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 relative overflow-hidden group">
+    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-500/10 to-purple-600/10 rounded-full blur-xl group-hover:opacity-75 transition-opacity"></div>
+    <div class="flex items-center justify-between mb-2 relative">
+      <span class="text-slate-400 text-sm">Today's Cost</span>
+      <span class="text-emerald-400 text-xs font-medium px-2 py-1 bg-emerald-400/10 rounded">Live</span>
+    </div>
+    <div class="text-3xl font-bold text-white relative">$<%= @usage.today.estimated_cost_usd %></div>
+    <div class="text-slate-400 text-sm mt-1 relative"><%= @usage.today.total_tokens %> tokens</div>
+  </div>
+
+  <!-- This Week Card -->
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 relative overflow-hidden group">
+    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-yellow-400/10 rounded-full blur-xl group-hover:opacity-75 transition-opacity"></div>
+    <div class="flex items-center justify-between mb-2 relative">
+      <span class="text-slate-400 text-sm">This Week</span>
+    </div>
+    <div class="text-3xl font-bold text-white relative">$<%= @usage.this_week.estimated_cost_usd %></div>
+    <div class="text-slate-400 text-sm mt-1 relative"><%= @usage.this_week.requests %> requests</div>
+  </div>
+
+  <!-- This Month Card -->
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 relative overflow-hidden group">
+    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-xl group-hover:opacity-75 transition-opacity"></div>
+    <div class="flex items-center justify-between mb-2 relative">
+      <span class="text-slate-400 text-sm">This Month</span>
+    </div>
+    <div class="text-3xl font-bold text-white relative">$<%= @usage.this_month.estimated_cost_usd %></div>
+    <div class="text-slate-400 text-sm mt-1 relative"><%= @usage.this_month.total_tokens %> tokens</div>
+  </div>
+
+  <!-- Daily Budget Card -->
+  <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 relative overflow-hidden group">
+    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 rounded-full blur-xl group-hover:opacity-75 transition-opacity"></div>
+    <div class="flex items-center justify-between mb-2 relative">
+      <span class="text-slate-400 text-sm">Daily Budget</span>
+      <%= if @budget.enabled do %>
+        <span class="text-emerald-400 text-xs font-medium px-2 py-1 bg-emerald-400/10 rounded">Active</span>
+      <% else %>
+        <span class="text-slate-500 text-xs font-medium px-2 py-1 bg-slate-600/20 rounded">Disabled</span>
+      <% end %>
+    </div>
+    <div class="text-3xl font-bold text-white relative">$<%= @budget.daily_limit_usd %></div>
+    <div class="text-slate-400 text-sm mt-1 relative">Alert at <%= @budget.alert_threshold_percent %>%</div>
+  </div>
+</div>
+
+<!-- Budget Alert Banner -->
+<%= if @budget.alert_triggered do %>
+  <div class="mb-8 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/50 rounded-xl">
+    <div class="flex items-center gap-3">
+      <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <div>
+        <p class="text-amber-400 font-semibold">Budget Alert</p>
+        <p class="text-slate-300 text-sm">Daily spend has reached <%= @budget.alert_threshold_percent %>% of limit ($<%= @budget.current_spend_today %> / $<%= @budget.daily_limit_usd %>)</p>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+  <!-- AI Providers Section -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-white">AI Providers</h2>
+        <p class="text-slate-400 text-sm mt-1">Configure and manage your AI service providers</p>
+      </div>
+    </div>
+    <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-slate-800 bg-slate-800/50">
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Provider</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Status</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Model</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Temperature</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for provider <- @providers do %>
+              <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <% icon_class = case provider.provider do
+                      :openai -> "bg-gradient-to-br from-emerald-500 to-teal-600"
+                      :anthropic -> "bg-gradient-to-br from-amber-500 to-orange-600"
+                      :azure -> "bg-gradient-to-br from-sky-500 to-blue-600"
+                      :local -> "bg-gradient-to-br from-orange-500 to-amber-600"
+                    end %>
+                    <div class="w-10 h-10 rounded-lg <%= icon_class %> flex items-center justify-center flex-shrink-0">
+                      <%= if provider.provider == :local do %>
+                        <span class="text-white font-bold text-sm">O</span>
+                      <% else %>
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z"/>
+                        </svg>
+                      <% end %>
+                    </div>
+                    <div>
+                      <div class="text-white font-medium"><%= provider.name %></div>
+                      <div class="text-slate-400 text-xs"><%= if provider.provider == :local do %>Ollama Local Model<% else %><%= provider.provider %><% end %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4">
+                  <%= if provider.configured do %>
+                    <%= if provider.enabled do %>
+                      <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded">Active</span>
+                    <% else %>
+                      <span class="px-2 py-1 bg-slate-600/20 text-slate-400 text-xs rounded">Disabled</span>
+                    <% end %>
+                  <% else %>
+                    <span class="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded">Not Configured</span>
+                  <% end %>
+                </td>
+                <td class="p-4 text-slate-300"><%= Map.get(provider, :model, "-") %></td>
+                <td class="p-4 text-slate-300"><%= if provider[:temperature], do: provider.temperature, else: "-" %></td>
+                <td class="p-4">
+                  <div class="flex gap-2">
+                    <%= if provider.configured do %>
+                      <button 
+                        onclick="testProvider('<%= provider.provider %>')"
+                        class="px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-500/10 rounded">
+                        Test
+                      </button>
+                      <button 
+                        onclick="editProvider('<%= provider.provider %>')"
+                        class="px-3 py-1.5 text-sm text-slate-400 hover:text-white transition-colors hover:bg-slate-700 rounded">
+                        Edit
+                      </button>
+                    <% else %>
+                      <button 
+                        onclick="configureProvider('<%= provider.provider %>')"
+                        class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors">
+                        Configure
+                      </button>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Providers Section -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Custom Providers</h2>
+        <p class="text-slate-400 text-sm mt-1">Add other AI providers (Groq, Google Gemini, etc.)</p>
+      </div>
+      <button 
+        onclick="openCustomProviderModal()"
+        class="px-4 py-2 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add Custom Provider
+      </button>
+    </div>
+    <div id="custom-providers-list" class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+      <div class="p-8 text-center" id="no-custom-providers">
+        <svg class="w-16 h-16 text-slate-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <p class="text-slate-400">No custom providers configured</p>
+        <p class="text-slate-500 text-sm mt-1">Click "Add Custom Provider" to get started</p>
+      </div>
+      <div id="custom-providers-table" class="hidden">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-slate-800 bg-slate-800/50">
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Provider</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Endpoint</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Model</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Status</th>
+              <th class="p-4 text-left text-sm font-medium text-slate-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="custom-providers-tbody">
+            <!-- Custom providers will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Settings -->
+<div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h2 class="text-xl font-bold text-white">Budget Settings</h2>
+      <p class="text-slate-400 text-sm mt-1">Configure spending limits and alerts</p>
+    </div>
+  </div>
+  <form id="budget-form" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Daily Budget Limit (USD)</label>
+        <input type="number" id="daily-limit" value="<%= @budget.daily_limit_usd %>" step="0.01" min="0"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Alert Threshold (%)</label>
+        <input type="number" id="alert-threshold" value="<%= @budget.alert_threshold_percent %>" min="1" max="100"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      <div class="flex items-end">
+        <label class="flex items-center gap-3 cursor-pointer p-3 bg-slate-800/50 rounded-lg w-full">
+          <input type="checkbox" id="budget-enabled" <%= if @budget.enabled, do: "checked" %>
+                 class="w-5 h-5 rounded bg-slate-700 border-slate-600 text-orange-500 focus:ring-orange-500/50 focus:ring-offset-0">
+          <span class="text-slate-300">Enable Budget Alerts</span>
+        </label>
+      </div>
+    </div>
+    <div class="flex justify-end mt-6">
+      <button type="submit" 
+              class="px-6 py-2.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20">
+        Save Budget Settings
+      </button>
+    </div>
+  </form>
+</div>
+</div>
+
+<!-- Provider Configuration Modal -->
+<div id="provider-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm">
+  <div class="bg-slate-900 rounded-xl border border-slate-700 p-6 w-full max-w-lg mx-4 shadow-2xl shadow-orange-500/10">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold text-white" id="modal-title">Configure Provider</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <form id="provider-form" class="space-y-4">
+      <input type="hidden" id="provider-type">
+      
+      <!-- API Key (for cloud providers) -->
+      <div id="api-key-group">
+        <label class="block text-sm text-slate-300 mb-2">API Key</label>
+        <input type="password" id="api-key" placeholder="sk-..."
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Host & Port (for local/Ollama) -->
+      <div id="local-group" class="space-y-4 hidden">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Host</label>
+            <input type="text" id="ollama-host" value="localhost" placeholder="localhost"
+                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Port</label>
+            <input type="number" id="ollama-port" value="11434" placeholder="11434"
+                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Azure-specific fields -->
+      <div id="azure-group" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm text-slate-300 mb-2">Endpoint URL</label>
+          <input type="text" id="azure-endpoint" placeholder="https://your-resource.openai.azure.com/"
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        </div>
+        <div>
+          <label class="block text-sm text-slate-300 mb-2">Deployment Name</label>
+          <input type="text" id="azure-deployment" placeholder="gpt-4"
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        </div>
+      </div>
+      
+      <!-- Common settings -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm text-slate-300 mb-2">Model</label>
+          <input type="text" id="model" placeholder="gpt-4o-mini"
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        </div>
+        <div>
+          <label class="block text-sm text-slate-300 mb-2">Temperature</label>
+          <input type="number" id="temperature" value="0.1" min="0" max="1" step="0.1"
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        </div>
+      </div>
+      
+      <!-- Embedding Model (for local) -->
+      <div id="embedding-group" class="hidden">
+        <label class="block text-sm text-slate-300 mb-2">Embedding Model</label>
+        <input type="text" id="embedding-model" placeholder="nomic-embed-text"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Name -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Display Name</label>
+        <input type="text" id="provider-name" placeholder="Production OpenAI"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Enabled checkbox -->
+      <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+        <input type="checkbox" id="provider-enabled" checked
+               class="w-5 h-5 rounded bg-slate-700 border-slate-600 text-orange-500 focus:ring-orange-500/50 focus:ring-offset-0">
+        <label for="provider-enabled" class="text-slate-300">Enable this provider</label>
+      </div>
+      
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" onclick="closeModal()" 
+                class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+          Cancel
+        </button>
+        <button type="submit" 
+                class="px-6 py-2.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20">
+          Save Configuration
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Custom Provider Modal -->
+<div id="custom-provider-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm">
+  <div class="bg-slate-900 rounded-xl border border-slate-700 p-6 w-full max-w-lg mx-4 shadow-2xl shadow-orange-500/10">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold text-white" id="custom-modal-title">Add Custom Provider</h3>
+      <button onclick="closeCustomProviderModal()" class="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <form id="custom-provider-form" class="space-y-4">
+      <!-- Provider ID -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Provider ID</label>
+        <input type="text" id="custom-provider-id" placeholder="groq, google-gemini, etc."
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        <p class="text-slate-500 text-xs mt-1">Unique identifier for this provider</p>
+      </div>
+      
+      <!-- Display Name -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Display Name</label>
+        <input type="text" id="custom-provider-name" placeholder="Groq (Llama 3)"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- API Endpoint -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">API Endpoint</label>
+        <input type="text" id="custom-endpoint" placeholder="https://api.groq.com/openai/v1"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        <p class="text-slate-500 text-xs mt-1">OpenAI-compatible endpoint URL</p>
+      </div>
+      
+      <!-- API Key -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">API Key</label>
+        <input type="password" id="custom-api-key" placeholder="gsk-..."
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Model -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Model</label>
+        <input type="text" id="custom-model" placeholder="llama3-8b-8192"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Temperature -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">Temperature</label>
+        <input type="number" id="custom-temperature" value="0.1" min="0" max="1" step="0.1"
+               class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+      </div>
+      
+      <!-- Enabled checkbox -->
+      <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+        <input type="checkbox" id="custom-provider-enabled" checked
+               class="w-5 h-5 rounded bg-slate-700 border-slate-600 text-orange-500 focus:ring-orange-500/50 focus:ring-offset-0">
+        <label for="custom-provider-enabled" class="text-slate-300">Enable this provider</label>
+      </div>
+      
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" onclick="closeCustomProviderModal()" 
+                class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+          Cancel
+        </button>
+        <button type="submit" 
+                class="px-6 py-2.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20">
+          Add Provider
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function testProvider(provider) {
+    Toast.info('Testing connection to ' + provider + '...');
+    
+    fetch('/api/ai/providers/' + provider + '/test', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success') {
+          Toast.success('Connection successful! Latency: ' + data.result.latency_ms + 'ms');
+        } else {
+          Toast.error('Connection failed: ' + data.error);
+        }
+      })
+      .catch(err => Toast.error('Test failed: ' + err.message));
+  }
+
+  function editProvider(provider) {
+    openProviderModal(provider, 'edit');
+  }
+
+  function configureProvider(provider) {
+    openProviderModal(provider, 'configure');
+  }
+
+  function openProviderModal(provider, mode) {
+    const modal = document.getElementById('provider-modal');
+    const title = document.getElementById('modal-title');
+    const apiKeyGroup = document.getElementById('api-key-group');
+    const localGroup = document.getElementById('local-group');
+    const azureGroup = document.getElementById('azure-group');
+    const embeddingGroup = document.getElementById('embedding-group');
+    
+    document.getElementById('provider-type').value = provider;
+    
+    // Reset all groups
+    apiKeyGroup.classList.add('hidden');
+    localGroup.classList.add('hidden');
+    azureGroup.classList.add('hidden');
+    embeddingGroup.classList.add('hidden');
+    
+    // Configure UI based on provider type
+    if (provider === 'local') {
+      title.textContent = mode === 'edit' ? 'Edit Ollama Configuration' : 'Configure Ollama';
+      apiKeyGroup.classList.add('hidden');
+      localGroup.classList.remove('hidden');
+      embeddingGroup.classList.remove('hidden');
+    } else if (provider === 'azure') {
+      title.textContent = mode === 'edit' ? 'Edit Azure OpenAI Configuration' : 'Configure Azure OpenAI';
+      apiKeyGroup.classList.remove('hidden');
+      azureGroup.classList.remove('hidden');
+     } else {
+      title.textContent = mode === 'edit' ? 'Edit ' + provider.charAt(0).toUpperCase() + provider.slice(1) + ' Configuration' : 'Configure ' + provider.charAt(0).toUpperCase() + provider.slice(1);
+      apiKeyGroup.classList.remove('hidden');
+    }
+    
+    // Fetch existing config
+    fetch('/api/ai/providers/' + provider)
+      .then(r => r.json())
+      .then(data => {
+        if (data.config) {
+          const config = data.config;
+          document.getElementById('api-key').value = '';
+          document.getElementById('model').value = config.model || '';
+          document.getElementById('temperature').value = config.temperature || 0.1;
+          document.getElementById('provider-name').value = config.name || '';
+          document.getElementById('provider-enabled').checked = config.enabled !== false;
+          document.getElementById('ollama-host').value = config.host || 'localhost';
+          document.getElementById('ollama-port').value = config.port || 11434;
+          document.getElementById('embedding-model').value = config.embedding_model || '';
+          document.getElementById('azure-endpoint').value = config.endpoint || '';
+          document.getElementById('azure-deployment').value = config.deployment || '';
+        }
+      })
+      .catch(() => {
+        // Default values
+        if (provider === 'local') {
+          document.getElementById('model').value = 'llama3.1';
+          document.getElementById('embedding-model').value = 'nomic-embed-text';
+        } else if (provider === 'azure') {
+          document.getElementById('model').value = 'gpt-4';
+        } else if (provider === 'openai') {
+          document.getElementById('model').value = 'gpt-4o-mini';
+        } else if (provider === 'anthropic') {
+          document.getElementById('model').value = 'claude-3-5-sonnet-20241022';
+        }
+      });
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('provider-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  // Close modal on outside click
+  document.getElementById('provider-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Provider form submission
+  document.getElementById('provider-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const provider = document.getElementById('provider-type').value;
+    const isLocal = provider === 'local';
+    const isAzure = provider === 'azure';
+    
+    const data = {
+      name: document.getElementById('provider-name').value,
+      model: document.getElementById('model').value,
+      temperature: parseFloat(document.getElementById('temperature').value),
+      enabled: document.getElementById('provider-enabled').checked
+    };
+    
+    if (isLocal) {
+      data.host = document.getElementById('ollama-host').value;
+      data.port = parseInt(document.getElementById('ollama-port').value);
+      data.embedding_model = document.getElementById('embedding-model').value;
+    } else if (isAzure) {
+      data.api_key = document.getElementById('api-key').value;
+      data.endpoint = document.getElementById('azure-endpoint').value;
+      data.deployment = document.getElementById('azure-deployment').value;
+    } else {
+      data.api_key = document.getElementById('api-key').value;
+    }
+    
+    fetch('/api/ai/providers/' + provider, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(result => {
+      if (result.status === 'success') {
+        Toast.success('Provider configuration saved');
+        closeModal();
+        location.reload();
+      } else {
+        Toast.error('Failed to save: ' + result.error);
+      }
+    })
+    .catch(err => Toast.error('Error: ' + err.message));
+  });
+
+  // Budget form submission
+  document.getElementById('budget-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const data = {
+      daily_limit_usd: parseFloat(document.getElementById('daily-limit').value),
+      alert_threshold_percent: parseInt(document.getElementById('alert-threshold').value),
+      enabled: document.getElementById('budget-enabled').checked
+    };
+    
+    fetch('/api/ai/budget', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(result => {
+      if (result.status === 'success') {
+        Toast.success('Budget settings saved');
+      } else {
+        Toast.error('Failed to save: ' + result.error);
+      }
+    })
+    .catch(err => Toast.error('Error: ' + err.message));
+  });
+
+  // Custom Provider Modal Functions
+  function openCustomProviderModal() {
+    const modal = document.getElementById('custom-provider-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Clear form
+    document.getElementById('custom-provider-id').value = '';
+    document.getElementById('custom-provider-name').value = '';
+    document.getElementById('custom-endpoint').value = '';
+    document.getElementById('custom-api-key').value = '';
+    document.getElementById('custom-model').value = '';
+    document.getElementById('custom-temperature').value = '0.1';
+    document.getElementById('custom-provider-enabled').checked = true;
+  }
+
+  function closeCustomProviderModal() {
+    const modal = document.getElementById('custom-provider-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  // Close modal on outside click
+  document.getElementById('custom-provider-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeCustomProviderModal();
+  });
+
+  // Custom provider form submission
+  document.getElementById('custom-provider-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const providerId = document.getElementById('custom-provider-id').value.trim();
+    
+    if (!providerId) {
+      Toast.error('Provider ID is required');
+      return;
+    }
+    
+    const data = {
+      provider_id: providerId,
+      name: document.getElementById('custom-provider-name').value || providerId,
+      endpoint: document.getElementById('custom-endpoint').value.trim(),
+      api_key: document.getElementById('custom-api-key').value,
+      model: document.getElementById('custom-model').value.trim(),
+      temperature: parseFloat(document.getElementById('custom-temperature').value),
+      enabled: document.getElementById('custom-provider-enabled').checked
+    };
+    
+    if (!data.endpoint) {
+      Toast.error('API Endpoint is required');
+      return;
+    }
+    
+    if (!data.api_key) {
+      Toast.error('API Key is required');
+      return;
+    }
+    
+    fetch('/api/ai/custom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(result => {
+      if (result.status === 'success') {
+        Toast.success('Custom provider added successfully');
+        closeCustomProviderModal();
+        loadCustomProviders();
+      } else {
+        Toast.error('Failed to add provider: ' + result.error);
+      }
+    })
+    .catch(err => Toast.error('Error: ' + err.message));
+  });
+
+  // Load custom providers
+  function loadCustomProviders() {
+    fetch('/api/ai/custom')
+      .then(r => r.json())
+      .then(data => {
+        const noProviders = document.getElementById('no-custom-providers');
+        const table = document.getElementById('custom-providers-table');
+        const tbody = document.getElementById('custom-providers-tbody');
+        
+        if (data.providers && data.providers.length > 0) {
+          noProviders.classList.add('hidden');
+          table.classList.remove('hidden');
+          
+          tbody.innerHTML = data.providers.map(provider => `
+            <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+              <td class="p-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-white font-medium">${provider.name}</div>
+                    <div class="text-slate-400 text-xs">${provider.id}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 text-slate-300 text-sm truncate max-w-xs">${provider.endpoint || '-'}</td>
+              <td class="p-4 text-slate-300">${provider.model || '-'}</td>
+              <td class="p-4">
+                ${provider.enabled ? 
+                  '<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded">Active</span>' : 
+                  '<span class="px-2 py-1 bg-slate-600/20 text-slate-400 text-xs rounded">Disabled</span>'}
+              </td>
+              <td class="p-4">
+                <div class="flex gap-2">
+                  <button onclick="testCustomProvider('${provider.id}')" class="px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-500/10 rounded">
+                    Test
+                  </button>
+                  <button onclick="deleteCustomProvider('${provider.id}')" class="px-3 py-1.5 text-sm text-red-400 hover:text-red-300 transition-colors hover:bg-red-500/10 rounded">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          noProviders.classList.remove('hidden');
+          table.classList.add('hidden');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load custom providers:', err);
+      });
+  }
+
+  // Test custom provider
+  function testCustomProvider(providerId) {
+    Toast.info('Testing connection to ' + providerId + '...');
+    
+    fetch('/api/ai/custom/' + providerId + '/test', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success') {
+          Toast.success('Connection successful! Latency: ' + data.result.latency_ms + 'ms');
+        } else {
+          Toast.error('Connection failed: ' + data.error);
+        }
+      })
+      .catch(err => Toast.error('Test failed: ' + err.message));
+  }
+
+  // Delete custom provider
+  function deleteCustomProvider(providerId) {
+    if (!confirm('Are you sure you want to delete ' + providerId + '?')) {
+      return;
+    }
+    
+    fetch('/api/ai/custom/' + providerId, { method: 'DELETE' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success') {
+          Toast.success('Provider deleted');
+          loadCustomProviders();
+        } else {
+          Toast.error('Failed to delete: ' + data.error);
+        }
+      })
+      .catch(err => Toast.error('Error: ' + err.message));
+  }
+
+  // Load custom providers on page load
+  loadCustomProviders();
+</script>

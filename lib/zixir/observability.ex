@@ -127,18 +127,38 @@ defmodule Zixir.Observability do
 
   @doc """
   Execute a function within a trace span.
+  
+  Alias for trace/3 for backward compatibility.
+  """
+  def span(name, metadata, func) when is_function(func) do
+    trace(name, func, metadata)
+  end
+
+  @doc """
+  Execute a function within a trace span.
   """
   def trace(name, func, metadata \\ []) when is_function(func) do
-    span_id = start_span(name, nil, metadata)
-    
-    try do
-      result = func.()
-      end_span(span_id, %{status: :success, result: inspect(result)})
-      result
-    rescue
-      e ->
-        end_span(span_id, %{status: :error, error: Exception.message(e)})
-        raise e
+    # Fallback if GenServer not started
+    unless Process.whereis(__MODULE__) do
+      try do
+        result = func.()
+        result
+      rescue
+        e ->
+          raise e
+      end
+    else
+      span_id = start_span(name, nil, metadata)
+
+      try do
+        result = func.()
+        end_span(span_id, %{status: :success, result: inspect(result)})
+        result
+      rescue
+        e ->
+          end_span(span_id, %{status: :error, error: Exception.message(e)})
+          raise e
+      end
     end
   end
 
@@ -148,7 +168,12 @@ defmodule Zixir.Observability do
   Record a metric value.
   """
   def record_metric(name, value, metadata \\ []) do
-    GenServer.cast(__MODULE__, {:record_metric, name, value, metadata})
+    # Fallback if GenServer not started
+    unless Process.whereis(__MODULE__) do
+      :ok
+    else
+      GenServer.cast(__MODULE__, {:record_metric, name, value, metadata})
+    end
   end
 
   @doc """
@@ -321,17 +346,17 @@ defmodule Zixir.Observability do
 
   defp log(level, message, metadata) do
     timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
-    
+
     log_entry = %{
       timestamp: timestamp,
       level: level,
       message: message,
       metadata: Enum.into(metadata, %{})
     }
-    
+
     # Output as JSON
     json = Jason.encode!(log_entry)
-    
+
     # Log to appropriate level
     case level do
       :debug -> Logger.debug(json)

@@ -1,0 +1,1 @@
+<%= render ZixirWeb.LayoutView, "app.html", assigns %>

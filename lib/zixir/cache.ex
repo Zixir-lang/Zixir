@@ -228,6 +228,15 @@ defmodule Zixir.Cache do
   end
 
   @doc """
+  List cache entries with optional prefix filter.
+  """
+  @spec list(keyword()) :: [String.t()]
+  def list(opts \\ []) do
+    prefix = Keyword.get(opts, :prefix, "")
+    GenServer.call(__MODULE__, {:list, prefix})
+  end
+
+  @doc """
   Warm cache by pre-computing values.
   """
   @spec warm(list(String.t()), function()) :: :ok
@@ -399,7 +408,7 @@ defmodule Zixir.Cache do
 
   def handle_call(:stats, _from, state) do
     total_requests = state.hits + state.misses
-    hit_rate = if total_requests > 0, do: state.hits / total_requests, else: 0
+    hit_rate = if total_requests > 0, do: state.hits / total_requests, else: 0.0
     
     stats = %{
       size: state.size,
@@ -410,7 +419,7 @@ defmodule Zixir.Cache do
       memory_usage: estimate_memory_usage(state.cache)
     }
     
-    {:reply, {:ok, stats}, state}
+    {:reply, stats, state}
   end
 
   def handle_call(:clear, _from, state) do
@@ -429,6 +438,15 @@ defmodule Zixir.Cache do
     end
     
     {:reply, :ok, new_state}
+  end
+
+  def handle_call({:list, prefix}, _from, state) do
+    keys = 
+      state.cache
+      |> Map.keys()
+      |> Enum.filter(fn key -> String.starts_with?(key, prefix) end)
+    
+    {:reply, keys, state}
   end
 
   def handle_call({:invalidate, pattern}, _from, state) do

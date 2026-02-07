@@ -1,0 +1,187 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-gray-900">Observability Dashboard</h1>
+      <p class="mt-2 text-gray-600">Real-time monitoring and system health</p>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Alerts Section -->
+    <%= if length(@alerts) > 0 do %>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Active Alerts</h2>
+      <div class="space-y-2">
+        <%= for alert <- @alerts do %>
+        <div class={"p-4 rounded-lg #{alert_level_class(alert.level)}"}>
+          <div class="flex items-center">
+            <span class="font-semibold mr-2"><%= String.upcase(to_string(alert.level)) %>:</span>
+            <span><%= alert.message %></span>
+            <span class="ml-auto text-sm opacity-75">
+              <%= Calendar.strftime(alert.timestamp, "%H:%M:%S") %>
+            </span>
+          </div>
+        </div>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
+
+    <!-- System Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Memory Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-500">Memory Usage</p>
+            <p class="text-2xl font-bold text-gray-900"><%= @system_stats.memory.total %></p>
+          </div>
+        </div>
+        <div class="mt-4 text-sm text-gray-600">
+          <p>Processes: <%= @system_stats.memory.processes %></p>
+          <p>ETS: <%= @system_stats.memory.ets %></p>
+        </div>
+      </div>
+
+      <!-- Workflows Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-green-100 text-green-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-500">Active Workflows</p>
+            <p class="text-2xl font-bold text-gray-900"><%= length(@active_workflows) %></p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <a href="/workflows" class="text-blue-600 hover:text-blue-800 text-sm">View all workflows →</a>
+        </div>
+      </div>
+
+      <!-- LLM Usage Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-500">LLM Cost Today</p>
+            <p class="text-2xl font-bold text-gray-900">$<%= @llm_usage.total_cost %></p>
+          </div>
+        </div>
+        <div class="mt-4 text-sm text-gray-600">
+          <p><%= @llm_usage.total_requests %> requests</p>
+          <p><%= length(Map.keys(@llm_usage.providers)) %> providers</p>
+        </div>
+      </div>
+
+      <!-- Processes Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-500">Active Processes</p>
+            <p class="text-2xl font-bold text-gray-900"><%= @system_stats.processes %></p>
+          </div>
+        </div>
+        <div class="mt-4 text-sm text-gray-600">
+          <p>Atoms: <%= @system_stats.atoms %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Circuit Breakers -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Circuit Breakers</h3>
+        </div>
+        <div class="p-6">
+          <%= if length(@circuit_breakers) > 0 do %>
+          <div class="space-y-3">
+            <%= for cb <- @circuit_breakers do %>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+              <div>
+                <p class="font-medium text-gray-900"><%= cb.name %></p>
+                <p class="text-sm text-gray-500"><%= cb.total_calls %> total calls</p>
+              </div>
+              <span class={"px-3 py-1 rounded-full text-sm font-medium #{circuit_state_class(cb.state)}"}>
+                <%= String.upcase(to_string(cb.state)) %>
+              </span>
+            </div>
+            <% end %>
+          </div>
+          <% else %>
+          <p class="text-gray-500 text-center py-4">No active circuit breakers</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Active Traces -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Recent Traces</h3>
+        </div>
+        <div class="p-6">
+          <%= if length(@recent_traces) > 0 do %>
+          <div class="space-y-3">
+            <%= for trace <- @recent_traces do %>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+              <div>
+                <p class="font-medium text-gray-900"><%= trace.name %></p>
+                <p class="text-sm text-gray-500">ID: <%= String.slice(trace.id, 0, 8) %>...</p>
+              </div>
+              <div class="text-right">
+                <span class={"px-2 py-1 rounded text-xs #{trace_status_class(trace.status)}"}>
+                  <%= trace.status %>
+                </span>
+                <%= if trace.duration_ms do %>
+                <p class="text-sm text-gray-500 mt-1"><%= trace.duration_ms %>ms</p>
+                <% end %>
+              </div>
+            </div>
+            <% end %>
+          </div>
+          <% else %>
+          <p class="text-gray-500 text-center py-4">No active traces</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics Export -->
+    <div class="mt-8 bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Metrics Export</h3>
+      <div class="flex space-x-4">
+        <a href="/observability/export/prometheus" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          Download Prometheus Format
+        </a>
+        <a href="/observability/metrics" 
+           class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+          </svg>
+          View JSON Metrics
+        </a>
+      </div>
+    </div>
+  </main>
+</div>

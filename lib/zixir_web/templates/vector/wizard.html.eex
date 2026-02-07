@@ -1,0 +1,384 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-6">
+    <a href="/" class="hover:text-white transition-colors">Dashboard</a>
+    <span>/</span>
+    <a href="/vector-db" class="hover:text-white transition-colors">Vector DB</a>
+    <span>/</span>
+    <span class="text-white">Add Backend</span>
+  </nav>
+
+  <!-- Wizard Header -->
+  <div class="mb-8 text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-purple-500/30">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-bold text-white mb-2">Vector Database Wizard</h1>
+    <p class="text-slate-400">Connect to your vector database for AI-powered search</p>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="mb-8">
+    <div class="flex items-center justify-center gap-4">
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-zixir-600 text-white flex items-center justify-center font-semibold text-sm step-circle">1</div>
+        <span class="text-white font-medium step-label">Select Backend</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm step-circle">2</div>
+        <span class="text-slate-400 step-label">Configure</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm step-circle">3</div>
+        <span class="text-slate-400 step-label">Test & Save</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: Select Vector DB Type -->
+  <div id="wizard-step-1" class="wizard-step">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Select your vector database</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- pgvector -->
+      <button onclick="selectVectorType('pgvector')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">pgvector</h3>
+        <p class="text-slate-400 text-sm">PostgreSQL extension for vector similarity search</p>
+        <span class="inline-block mt-2 px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Recommended</span>
+      </button>
+
+      <!-- Chroma -->
+      <button onclick="selectVectorType('chroma')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Chroma</h3>
+        <p class="text-slate-400 text-sm">AI-native open-source embedding database</p>
+      </button>
+
+      <!-- Qdrant -->
+      <button onclick="selectVectorType('qdrant')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500/30 transition-colors">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Qdrant</h3>
+        <p class="text-slate-400 text-sm">High-performance vector similarity search engine</p>
+      </button>
+
+      <!-- Milvus -->
+      <button onclick="selectVectorType('milvus')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-cyan-500/30 transition-colors">
+          <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Milvus</h3>
+        <p class="text-slate-400 text-sm">Cloud-native vector database for AI</p>
+      </button>
+
+      <!-- Pinecone -->
+      <button onclick="selectVectorType('pinecone')" class="group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-purple-500/50 hover:bg-slate-700/50 transition-all text-left">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/30 transition-colors">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Pinecone</h3>
+        <p class="text-slate-400 text-sm">Managed vector database service</p>
+        <span class="inline-block mt-2 px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">Cloud</span>
+      </button>
+    </div>
+    
+    <div class="flex justify-end mt-6 max-w-lg mx-auto">
+      <a href="/vector-db" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+  <!-- Step 2: Configuration -->
+  <div id="wizard-step-2" class="wizard-step hidden">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Configure your vector database</h2>
+    
+    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 max-w-lg mx-auto">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Display Name</label>
+          <input type="text" id="vector-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Production Vector DB">
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Host / Endpoint</label>
+          <input type="text" id="vector-host" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500" placeholder="localhost or https://api.example.com">
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Port</label>
+          <input type="text" id="vector-port" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500" placeholder="6333">
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Collection / Index Name</label>
+          <input type="text" id="vector-collection" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500" placeholder="my_vectors">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Vector Dimensions</label>
+            <select id="vector-dimensions" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
+              <option value="384">384 (Small)</option>
+              <option value="768">768 (Medium)</option>
+              <option value="1536" selected>1536 (OpenAI)</option>
+              <option value="3072">3072 (Large)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Distance Metric</label>
+            <select id="vector-metric" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
+              <option value="cosine" selected>Cosine</option>
+              <option value="euclidean">Euclidean</option>
+              <option value="dot">Dot Product</option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">API Key (if required)</label>
+          <input type="password" id="vector-apikey" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500" placeholder="••••••••">
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between mt-6 max-w-lg mx-auto">
+      <button onclick="goToVectorStep(1)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/vector-db" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+        <button onclick="goToVectorStep(3)" class="px-6 py-2 bg-zixir-600 hover:bg-zixir-500 text-white rounded-lg transition-colors">
+          Next: Test Connection →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Test & Save -->
+  <div id="wizard-step-3" class="wizard-step hidden">
+    <h2 class="text-xl font-semibold text-white mb-6 text-center">Test your vector database</h2>
+    
+    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 max-w-lg mx-auto text-center">
+      <div id="vector-test-status" class="mb-6">
+        <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+          </svg>
+        </div>
+        <p class="text-slate-400">Click the button below to test your vector database connection</p>
+      </div>
+      
+      <button onclick="testVectorConnection()" id="vector-test-btn" class="px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors font-medium">
+        Test Connection
+      </button>
+    </div>
+    
+    <div class="flex justify-between mt-6 max-w-lg mx-auto">
+      <button onclick="goToVectorStep(2)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/vector-db" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+        <button onclick="saveVectorConnection()" id="vector-save-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          Save Connection
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedVectorType = '';
+  
+  function selectVectorType(type) {
+    selectedVectorType = type;
+    goToVectorStep(2);
+    
+    // Set default ports
+    const portMap = {
+      'pgvector': '5432',
+      'chroma': '8000',
+      'qdrant': '6333',
+      'milvus': '19530',
+      'pinecone': ''
+    };
+    
+    document.getElementById('vector-port').value = portMap[type] || '';
+  }
+  
+  function goToVectorStep(step) {
+    document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`wizard-step-${step}`).classList.remove('hidden');
+    updateVectorProgress(step);
+  }
+  
+  function updateVectorProgress(currentStep) {
+    const steps = document.querySelectorAll('.progress-step');
+    steps.forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector('.step-circle');
+      const label = step.querySelector('.step-label');
+      
+      if (stepNum < currentStep) {
+        circle.classList.remove('bg-slate-700', 'text-slate-400', 'bg-zixir-600');
+        circle.classList.add('bg-emerald-600', 'text-white');
+        label.classList.remove('text-slate-400');
+        label.classList.add('text-white');
+      } else if (stepNum === currentStep) {
+        circle.classList.remove('bg-slate-700', 'text-slate-400', 'bg-emerald-600');
+        circle.classList.add('bg-zixir-600', 'text-white');
+        label.classList.remove('text-slate-400');
+        label.classList.add('text-white');
+      } else {
+        circle.classList.remove('bg-zixir-600', 'bg-emerald-600', 'text-white');
+        circle.classList.add('bg-slate-700', 'text-slate-400');
+        label.classList.remove('text-white');
+        label.classList.add('text-slate-400');
+      }
+    });
+  }
+  
+  function testVectorConnection() {
+    const btn = document.getElementById('vector-test-btn');
+    const statusDiv = document.getElementById('vector-test-status');
+    
+    const host = document.getElementById('vector-host').value;
+    const port = document.getElementById('vector-port').value;
+    const dimensions = document.getElementById('vector-dimensions').value;
+    const apiKey = document.getElementById('vector-apikey').value;
+    
+    btn.innerHTML = '<span class="spinner mr-2"></span>Testing...';
+    btn.disabled = true;
+    
+    // Call real API endpoint
+    fetch('/api/wizard/vector-db/test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        backend: selectedVectorType,
+        host: host,
+        port: port,
+        dimensions: dimensions,
+        api_key: apiKey
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        btn.innerHTML = '✓ Connection Successful';
+        btn.classList.remove('bg-purple-600', 'hover:bg-purple-500');
+        btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        
+        statusDiv.innerHTML = `
+          <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <p class="text-emerald-400 font-medium">${data.message}</p>
+          <p class="text-slate-400 text-sm mt-1">Backend health: ${data.health.circuit_breaker.state}</p>
+        `;
+        
+        document.getElementById('vector-save-btn').disabled = false;
+        Toast.success('Vector DB connection test successful');
+      } else {
+        throw new Error(data.message || 'Connection failed');
+      }
+    })
+    .catch(error => {
+      btn.innerHTML = 'Test Connection';
+      btn.disabled = false;
+      
+      statusDiv.innerHTML = `
+        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <p class="text-red-400 font-medium">Connection failed</p>
+        <p class="text-slate-400 text-sm mt-1">${error.message}</p>
+      `;
+      
+      Toast.error('Vector DB connection test failed: ' + error.message);
+    });
+  }
+  
+  function saveVectorConnection() {
+    const name = document.getElementById('vector-name').value;
+    const host = document.getElementById('vector-host').value;
+    const port = document.getElementById('vector-port').value;
+    const collection = document.getElementById('vector-collection').value;
+    const dimensions = document.getElementById('vector-dimensions').value;
+    const apiKey = document.getElementById('vector-apikey').value;
+    
+    if (!name) {
+      Toast.error('Please enter a display name');
+      return;
+    }
+    
+    const saveBtn = document.getElementById('vector-save-btn');
+    saveBtn.innerHTML = '<span class="spinner mr-2"></span>Saving...';
+    saveBtn.disabled = true;
+    
+    // Call real API endpoint to save vector DB
+    fetch('/api/wizard/vector-db/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: name,
+        backend: selectedVectorType,
+        host: host,
+        port: port,
+        collection: collection,
+        dimensions: dimensions,
+        api_key: apiKey
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'created') {
+        Toast.success(data.message);
+        
+        setTimeout(() => {
+          window.location.href = '/vector-db';
+        }, 1500);
+      } else {
+        throw new Error(data.message || 'Failed to save vector DB');
+      }
+    })
+    .catch(error => {
+      saveBtn.innerHTML = 'Save Connection';
+      saveBtn.disabled = false;
+      Toast.error('Failed to save vector DB: ' + error.message);
+    });
+  }
+</script>

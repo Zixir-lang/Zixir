@@ -1,0 +1,29 @@
+<%= if @connections == [] do %>
+  <div class="p-6 text-center text-slate-400 text-sm">No connections yet</div>
+<% else %>
+  <div class="p-6 space-y-4 min-w-0 overflow-hidden">
+    <%= for connection <- @connections do %>
+      <% status_class = case connection.status do
+        "connected" -> "bg-gradient-to-r from-orange-500 to-yellow-400 text-white border-orange-500/50"
+        "disconnected" -> "bg-gradient-to-r from-red-500 to-red-400 text-white border-red-500/50"
+        _ -> "bg-slate-700 text-slate-300 border-slate-600"
+      end %>
+      <div class="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg min-w-0 border border-slate-700/50">
+        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500/20 to-orange-500/20 rounded-lg flex items-center justify-center border border-purple-500/20">
+          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-white font-medium truncate" title="<%= connection.name %>"><%= connection.name %></p>
+          <p class="text-slate-500 text-sm font-mono truncate" title="<%= connection.id %>"><%= connection.id %></p>
+          <div class="flex items-center gap-2 mt-1 flex-wrap">
+            <span class="px-2 py-0.5 rounded text-xs font-semibold bg-gradient-to-r from-purple-500/20 to-orange-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider shrink-0 max-w-[6rem] truncate" title="<%= connection.type %>"><%= connection.type %></span>
+            <span class="text-slate-500 text-xs font-mono truncate max-w-[4rem]" title="<%= connection.dsn %>"><%= connection.dsn %></span>
+          </div>
+        </div>
+        <span class="px-2 py-1 text-xs font-medium rounded-full border shrink-0 max-w-[6rem] truncate <%= status_class %>" title="<%= connection.status %>"><%= connection.status %></span>
+      </div>
+    <% end %>
+  </div>
+<% end %>

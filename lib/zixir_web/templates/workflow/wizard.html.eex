@@ -1,0 +1,1078 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-6">
+    <a href="/" class="hover:text-white transition-colors">Dashboard</a>
+    <span>/</span>
+    <a href="/workflows" class="hover:text-white transition-colors">Workflows</a>
+    <span>/</span>
+    <span class="text-white">New Workflow</span>
+  </nav>
+
+  <!-- Wizard Header -->
+  <div class="mb-8 text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-zixir-500 to-zixir-600 rounded-2xl mb-4 shadow-lg shadow-zixir-500/30">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-bold text-white mb-2">Workflow Wizard</h1>
+    <p class="text-slate-400">Create intelligent workflows with AI-powered automation</p>
+    <div class="mt-3">
+      <a href="/ai" class="text-sm text-purple-400 hover:text-purple-300 inline-flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Configure AI Providers
+      </a>
+    </div>
+  </div>
+
+  <!-- AI Provider Status -->
+  <div id="ai-provider-status" class="mb-6 hidden">
+    <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400" id="local-status-dot"></span>
+        <span class="text-sm text-slate-300" id="local-status-text">Checking Ollama status...</span>
+      </div>
+      <a href="/ai" class="text-sm text-purple-400 hover:text-purple-300 ml-auto">Configure →</a>
+    </div>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="mb-8">
+    <div class="flex items-center justify-center gap-4">
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-zixir-600 text-white flex items-center justify-center font-semibold text-sm step-circle">1</div>
+        <span class="text-white font-medium step-label">Choose Template</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm step-circle">2</div>
+        <span class="text-slate-400 step-label">Configure</span>
+      </div>
+      <div class="w-12 h-0.5 bg-slate-700"></div>
+      <div class="flex items-center gap-2 progress-step">
+        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm step-circle">3</div>
+        <span class="text-slate-400 step-label">Review & Deploy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: Choose Template - Enhanced with Categories -->
+  <div id="workflow-step-1" class="wizard-step">
+    <!-- Template Category Filters -->
+    <div class="flex flex-wrap gap-2 mb-6 justify-center">
+      <button onclick="filterTemplates('all')" class="template-filter px-4 py-2 bg-zixir-600 text-white rounded-full text-sm font-medium transition-colors" data-filter="all">
+        All Templates
+      </button>
+      <button onclick="filterTemplates('erp')" class="template-filter px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-full text-sm font-medium transition-colors" data-filter="erp">
+        ERP/Inventory
+      </button>
+      <button onclick="filterTemplates('ai')" class="template-filter px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-full text-sm font-medium transition-colors" data-filter="ai">
+        AI-Powered
+      </button>
+      <button onclick="filterTemplates('data')" class="template-filter px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-full text-sm font-medium transition-colors" data-filter="data">
+        Data Processing
+      </button>
+    </div>
+
+    <!-- Template Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="template-grid">
+      <!-- Invoice Processing - ERP -->
+      <button onclick="selectWorkflowTemplate('invoice-processing')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="erp ai">
+        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Invoice Processing</h3>
+        <p class="text-slate-400 text-sm mb-2">Extract vendor, amounts, and dates from invoices automatically</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded">ERP</span>
+          <span class="inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">AI</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>4 steps</span>
+          <span>•</span>
+          <span>Est. $0.02/run</span>
+        </div>
+      </button>
+
+      <!-- Document Classification - AI -->
+      <button onclick="selectWorkflowTemplate('document-classification')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-purple-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="ai">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/30 transition-colors">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Document Classification</h3>
+        <p class="text-slate-400 text-sm mb-2">Auto-sort documents by type: invoices, receipts, contracts, etc.</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">AI</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>3 steps</span>
+          <span>•</span>
+          <span>Est. $0.01/run</span>
+        </div>
+      </button>
+
+      <!-- Data Pipeline - Data -->
+      <button onclick="selectWorkflowTemplate('data-pipeline')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="data">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Data Pipeline</h3>
+        <p class="text-slate-400 text-sm mb-2">Extract, transform, and load data between databases</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">ETL</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>4 steps</span>
+          <span>•</span>
+          <span>No AI cost</span>
+        </div>
+      </button>
+
+      <!-- Order Processing - ERP -->
+      <button onclick="selectWorkflowTemplate('order-processing')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="erp">
+        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Order Processing</h3>
+        <p class="text-slate-400 text-sm mb-2">Validate, process, and fulfill orders automatically</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded">ERP</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>5 steps</span>
+          <span>•</span>
+          <span>No AI cost</span>
+        </div>
+      </button>
+
+      <!-- AI Analysis - AI -->
+      <button onclick="selectWorkflowTemplate('ai-analysis')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-purple-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="ai">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/30 transition-colors">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">AI Analysis</h3>
+        <p class="text-slate-400 text-sm mb-2">Process text with LLM: classify, extract, summarize</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">AI</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>3 steps</span>
+          <span>•</span>
+          <span>Variable cost</span>
+        </div>
+      </button>
+
+      <!-- Customer Support Triage - AI -->
+      <button onclick="selectWorkflowTemplate('support-triage')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-purple-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="ai">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/30 transition-colors">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Support Triage</h3>
+        <p class="text-slate-400 text-sm mb-2">Classify and route customer tickets automatically</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">AI</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>3 steps</span>
+          <span>•</span>
+          <span>Est. $0.01/run</span>
+        </div>
+      </button>
+
+      <!-- Data Validation - Data AI -->
+      <button onclick="selectWorkflowTemplate('data-validation')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-blue-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="data ai">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Data Validation</h3>
+        <p class="text-slate-400 text-sm mb-2">AI-powered data quality checks and cleansing</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">Data</span>
+          <span class="inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">AI</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>4 steps</span>
+          <span>•</span>
+          <span>Est. $0.02/run</span>
+        </div>
+      </button>
+
+      <!-- Custom Workflow -->
+      <button onclick="selectWorkflowTemplate('custom')" 
+              class="template-card group p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-zixir-500/50 hover:bg-slate-700/50 transition-all text-left"
+              data-category="custom">
+        <div class="w-12 h-12 bg-zixir-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-zixir-500/30 transition-colors">
+          <svg class="w-6 h-6 text-zixir-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold mb-1">Custom Workflow</h3>
+        <p class="text-slate-400 text-sm mb-2">Build your own workflow from scratch</p>
+        <div class="flex gap-2">
+          <span class="inline-block px-2 py-0.5 bg-zixir-500/20 text-zixir-400 text-xs rounded">Custom</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>Flexible</span>
+          <span>•</span>
+          <span>Variable</span>
+        </div>
+      </button>
+    </div>
+    
+    <div class="flex justify-end mt-6">
+      <a href="/workflows" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        Cancel
+      </a>
+    </div>
+  </div>
+
+  <!-- Step 2: Configure - Template-Specific Fields -->
+  <div id="workflow-step-2" class="wizard-step hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Configuration -->
+      <div class="lg:col-span-2">
+        <h2 class="text-xl font-semibold text-white mb-6">Configure your workflow</h2>
+        
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <!-- Basic Info -->
+          <div class="space-y-4 mb-6">
+            <div>
+              <label class="block text-sm text-slate-400 mb-2">Workflow Name <span class="text-red-400">*</span></label>
+              <input type="text" id="workflow-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500" placeholder="e.g., Daily Invoice Processing">
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-400 mb-2">Description</label>
+              <textarea id="workflow-desc" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500" placeholder="What does this workflow do?"></textarea>
+            </div>
+          </div>
+
+          <!-- Template-Specific Configuration -->
+          <div id="template-specific-config" class="border-t border-slate-700 pt-6 mb-6">
+            <!-- Injected dynamically based on template -->
+          </div>
+
+          <!-- Common Configuration -->
+          <div class="border-t border-slate-700 pt-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-slate-400 mb-2">Schedule</label>
+                <select id="workflow-schedule" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">
+                  <option value="manual">Manual (Run on demand)</option>
+                  <option value="hourly">Every hour</option>
+                  <option value="daily">Daily at midnight</option>
+                  <option value="weekly">Weekly on Monday</option>
+                  <option value="custom">Custom (Cron)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-slate-400 mb-2">Batch Size</label>
+                <input type="number" id="batch-size" value="100" min="1" max="1000"
+                       class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">
+                <p class="text-xs text-slate-500 mt-1">Records processed per run</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 p-4 bg-slate-900 rounded-lg border border-slate-700">
+              <input type="checkbox" id="workflow-notify" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-zixir-600 focus:ring-zixir-500">
+              <label for="workflow-notify" class="text-sm text-slate-300">Send notifications on errors or completion</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Visual Step Preview & Cost -->
+      <div class="lg:col-span-1">
+        <!-- Step Preview -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 mb-6">
+          <h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-zixir-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            Workflow Steps
+          </h3>
+          <div id="step-preview" class="space-y-3">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Cost Estimate -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Cost Estimate
+          </h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-400">Per run</span>
+              <span class="text-white font-medium" id="cost-per-run">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-400">Daily (scheduled)</span>
+              <span class="text-slate-300" id="cost-daily">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-400">Monthly (estimated)</span>
+              <span class="text-emerald-400 font-medium" id="cost-monthly">$0.00</span>
+            </div>
+            <div class="mt-3 p-3 bg-slate-900 rounded-lg">
+              <p class="text-xs text-slate-500">
+                <span class="text-amber-400">*</span> Estimates based on average document size. Actual costs may vary.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between mt-6">
+      <button onclick="goToWorkflowStep(1)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/workflows" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+        <button onclick="goToWorkflowStep(3)" class="px-6 py-2 bg-zixir-600 hover:bg-zixir-500 text-white rounded-lg transition-colors">
+          Next: Review →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Review & Deploy -->
+  <div id="workflow-step-3" class="wizard-step hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <h2 class="text-xl font-semibold text-white mb-6">Review and deploy</h2>
+        
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 mb-6">
+          <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Configuration Summary</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+              <span class="text-slate-400">Workflow Name</span>
+              <span class="text-white font-medium" id="review-name">-</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+              <span class="text-slate-400">Template</span>
+              <span class="text-white font-medium" id="review-template">-</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+              <span class="text-slate-400">Schedule</span>
+              <span class="text-white font-medium" id="review-schedule">-</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+              <span class="text-slate-400">Batch Size</span>
+              <span class="text-white font-medium" id="review-batch">-</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+              <span class="text-slate-400">Notifications</span>
+              <span class="text-white font-medium" id="review-notify">-</span>
+            </div>
+            <div id="review-specific-fields" class="space-y-4">
+              <!-- Template-specific fields -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Workflow Diagram -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Workflow Diagram</h3>
+          <div id="workflow-diagram" class="overflow-x-auto">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-1">
+        <!-- Deployment Card -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-lg font-semibold text-white mb-4">Ready to Deploy</h3>
+          
+          <div class="space-y-4 mb-6">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 text-sm">Estimated Steps</span>
+              <span class="text-white font-medium" id="deploy-steps">-</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 text-sm">Cost per Run</span>
+              <span class="text-emerald-400 font-medium" id="deploy-cost">-</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 text-sm">Avg. Runtime</span>
+              <span class="text-white" id="deploy-runtime">-</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-6">
+            <p class="text-blue-400 text-sm flex items-start gap-2">
+              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>This workflow will be active immediately after deployment. You can pause or modify it at any time.</span>
+            </p>
+          </div>
+
+          <button onclick="deployWorkflow()" 
+                  id="deploy-btn"
+                  class="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-lg transition-all font-medium flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Deploy Workflow
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between mt-6">
+      <button onclick="goToWorkflowStep(2)" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+        ← Back
+      </button>
+      <div class="flex gap-3">
+        <a href="/workflows" class="px-6 py-2 text-slate-400 hover:text-white transition-colors">
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedTemplate = '';
+  let templateConfig = {};
+  
+  // Template configurations with specific fields
+  const templateConfigs = {
+    'invoice-processing': {
+      name: 'Invoice Processing',
+      steps: [
+        { name: 'Scan Inbox', icon: 'inbox', type: 'trigger' },
+        { name: 'Extract Data', icon: 'ai', type: 'ai' },
+        { name: 'Validate Amount', icon: 'check', type: 'validation' },
+        { name: 'Save to ERP', icon: 'database', type: 'action' }
+      ],
+      fields: [
+        { id: 'source-email', label: 'Source Email', type: 'select', options: ['Accounts Payable', 'Vendors', 'Custom'], required: true },
+        { id: 'extraction-fields', label: 'Fields to Extract', type: 'multiselect', options: ['Invoice Number', 'Vendor', 'Amount', 'Due Date', 'PO Number'], default: ['Invoice Number', 'Vendor', 'Amount'] },
+        { id: 'ai-provider', label: 'AI Provider', type: 'select', options: ['OpenAI', 'Anthropic', 'Azure', 'Local'], default: 'OpenAI' },
+        { id: 'confidence-threshold', label: 'Confidence Threshold', type: 'range', min: 50, max: 100, default: 80, unit: '%' }
+      ],
+      costPerRun: 0.02,
+      connections: ['email', 'erp']
+    },
+    'document-classification': {
+      name: 'Document Classification',
+      steps: [
+        { name: 'Monitor Folder', icon: 'folder', type: 'trigger' },
+        { name: 'Classify Document', icon: 'ai', type: 'ai' },
+        { name: 'Sort by Type', icon: 'sort', type: 'action' }
+      ],
+      fields: [
+        { id: 'source-folder', label: 'Source Folder', type: 'text', placeholder: '/documents/inbox', required: true },
+        { id: 'categories', label: 'Categories', type: 'multiselect', options: ['Invoice', 'Receipt', 'Contract', 'Report', 'Other'], default: ['Invoice', 'Receipt', 'Contract'] },
+        { id: 'ai-provider', label: 'AI Provider', type: 'select', options: ['OpenAI', 'Anthropic', 'Azure', 'Local'], default: 'OpenAI' },
+        { id: 'auto-sort', label: 'Auto-sort to folders', type: 'checkbox', default: true }
+      ],
+      costPerRun: 0.01,
+      connections: ['storage']
+    },
+    'data-pipeline': {
+      name: 'Data Pipeline',
+      steps: [
+        { name: 'Extract Data', icon: 'download', type: 'action' },
+        { name: 'Transform', icon: 'cog', type: 'transform' },
+        { name: 'Load Data', icon: 'upload', type: 'action' }
+      ],
+      fields: [
+        { id: 'source-connection', label: 'Source Connection', type: 'connection', required: true },
+        { id: 'source-table', label: 'Source Table/Query', type: 'text', placeholder: 'SELECT * FROM orders', required: true },
+        { id: 'dest-connection', label: 'Destination Connection', type: 'connection', required: true },
+        { id: 'dest-table', label: 'Destination Table', type: 'text', placeholder: 'analytics.orders', required: true },
+        { id: 'transform-sql', label: 'Transform SQL (optional)', type: 'textarea', placeholder: '-- Add transformations here' }
+      ],
+      costPerRun: 0,
+      connections: ['database', 'database']
+    },
+    'order-processing': {
+      name: 'Order Processing',
+      steps: [
+        { name: 'Receive Order', icon: 'inbox', type: 'trigger' },
+        { name: 'Validate Order', icon: 'check', type: 'validation' },
+        { name: 'Check Inventory', icon: 'search', type: 'action' },
+        { name: 'Process Payment', icon: 'credit-card', type: 'action' },
+        { name: 'Fulfill Order', icon: 'truck', type: 'action' }
+      ],
+      fields: [
+        { id: 'erp-connection', label: 'ERP Connection', type: 'connection', required: true },
+        { id: 'payment-gateway', label: 'Payment Gateway', type: 'select', options: ['Stripe', 'PayPal', 'Square', 'Custom'] },
+        { id: 'auto-fulfill', label: 'Auto-fulfill orders', type: 'checkbox', default: true },
+        { id: 'inventory-threshold', label: 'Low Inventory Alert', type: 'number', default: 10, min: 1 }
+      ],
+      costPerRun: 0,
+      connections: ['erp', 'payment']
+    },
+    'ai-analysis': {
+      name: 'AI Analysis',
+      steps: [
+        { name: 'Fetch Data', icon: 'download', type: 'action' },
+        { name: 'AI Processing', icon: 'ai', type: 'ai' },
+        { name: 'Save Results', icon: 'save', type: 'action' }
+      ],
+      fields: [
+        { id: 'ai-function', label: 'AI Function', type: 'select', options: ['Classify', 'Extract', 'Summarize', 'Sentiment Analysis'], required: true },
+        { id: 'source-connection', label: 'Data Source', type: 'connection', required: true },
+        { id: 'source-field', label: 'Text Field', type: 'text', placeholder: 'description', required: true },
+        { id: 'ai-provider', label: 'AI Provider', type: 'select', options: ['OpenAI', 'Anthropic', 'Azure', 'Local'], default: 'OpenAI' },
+        { id: 'output-dest', label: 'Save Results To', type: 'connection', required: true }
+      ],
+      costPerRun: 0.05,
+      connections: ['database', 'database']
+    },
+    'support-triage': {
+      name: 'Support Ticket Triage',
+      steps: [
+        { name: 'New Ticket', icon: 'inbox', type: 'trigger' },
+        { name: 'Classify Priority', icon: 'ai', type: 'ai' },
+        { name: 'Route to Team', icon: 'user-group', type: 'action' }
+      ],
+      fields: [
+        { id: 'ticket-source', label: 'Ticket Source', type: 'select', options: ['Email', 'Zendesk', 'Freshdesk', 'Custom'], required: true },
+        { id: 'priority-levels', label: 'Priority Levels', type: 'multiselect', options: ['Critical', 'High', 'Medium', 'Low'], default: ['Critical', 'High', 'Medium', 'Low'] },
+        { id: 'ai-provider', label: 'AI Provider', type: 'select', options: ['OpenAI', 'Anthropic', 'Azure', 'Local'], default: 'OpenAI' },
+        { id: 'auto-assign', label: 'Auto-assign tickets', type: 'checkbox', default: true }
+      ],
+      costPerRun: 0.01,
+      connections: ['support']
+    },
+    'data-validation': {
+      name: 'Data Validation',
+      steps: [
+        { name: 'Load Data', icon: 'download', type: 'action' },
+        { name: 'AI Validation', icon: 'ai', type: 'ai' },
+        { name: 'Report Issues', icon: 'exclamation', type: 'action' },
+        { name: 'Clean Data', icon: 'sparkles', type: 'action' }
+      ],
+      fields: [
+        { id: 'source-connection', label: 'Data Source', type: 'connection', required: true },
+        { id: 'validation-rules', label: 'Validation Rules', type: 'multiselect', options: ['Email Format', 'Phone Format', 'Date Range', 'Duplicate Check', 'Required Fields'], default: ['Email Format', 'Required Fields'] },
+        { id: 'ai-provider', label: 'AI Provider', type: 'select', options: ['OpenAI', 'Anthropic', 'Azure', 'Local'], default: 'OpenAI' },
+        { id: 'auto-fix', label: 'Auto-fix minor issues', type: 'checkbox', default: false }
+      ],
+      costPerRun: 0.02,
+      connections: ['database']
+    },
+    'custom': {
+      name: 'Custom Workflow',
+      steps: [
+        { name: 'Step 1', icon: 'cog', type: 'action' },
+        { name: 'Step 2', icon: 'cog', type: 'action' }
+      ],
+      fields: [],
+      costPerRun: 0,
+      connections: []
+    }
+  };
+
+  // Filter templates by category
+  function filterTemplates(category) {
+    const cards = document.querySelectorAll('.template-card');
+    const filters = document.querySelectorAll('.template-filter');
+    
+    // Update filter buttons
+    filters.forEach(btn => {
+      if (btn.dataset.filter === category) {
+        btn.classList.remove('bg-slate-800', 'text-slate-300');
+        btn.classList.add('bg-zixir-600', 'text-white');
+      } else {
+        btn.classList.remove('bg-zixir-600', 'text-white');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+      }
+    });
+    
+    // Show/hide cards
+    cards.forEach(card => {
+      if (category === 'all' || card.dataset.category.includes(category)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Select workflow template
+  function selectWorkflowTemplate(template) {
+    selectedTemplate = template;
+    templateConfig = templateConfigs[template] || templateConfigs['custom'];
+    
+    // Pre-fill name
+    document.getElementById('workflow-name').value = templateConfig.name;
+    
+    // Build template-specific configuration fields
+    buildTemplateConfigFields();
+    
+    // Update step preview
+    updateStepPreview();
+    
+    // Update cost estimate
+    updateCostEstimate();
+    
+    // Move to next step
+    goToWorkflowStep(2);
+  }
+
+  // Build template-specific configuration fields
+  function buildTemplateConfigFields() {
+    const container = document.getElementById('template-specific-config');
+    
+    if (!templateConfig.fields || templateConfig.fields.length === 0) {
+      container.innerHTML = '<p class="text-slate-500 text-sm">No additional configuration required for this template.</p>';
+      return;
+    }
+    
+    let html = '<h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">' +
+               '<svg class="w-4 h-4 text-zixir-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>' +
+               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>' +
+               '</svg>' +
+               'Template Configuration</h3>' +
+               '<div class="space-y-4">';
+    
+    templateConfig.fields.forEach(field => {
+      html += '<div>';
+      html += '<label class="block text-sm text-slate-400 mb-2">' + field.label + (field.required ? ' <span class="text-red-400">*</span>' : '') + '</label>';
+      
+      switch(field.type) {
+        case 'text':
+          html += '<input type="text" id="config-' + field.id + '" ' +
+                  'placeholder="' + (field.placeholder || '') + '" ' +
+                  'value="' + (field.default || '') + '" ' +
+                  'class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">';
+          break;
+        case 'textarea':
+          html += '<textarea id="config-' + field.id + '" rows="3" ' +
+                  'placeholder="' + (field.placeholder || '') + '" ' +
+                  'class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">' +
+                  (field.default || '') + '</textarea>';
+          break;
+        case 'select':
+          html += '<select id="config-' + field.id + '" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">';
+          field.options.forEach(opt => {
+            const selected = opt === field.default ? 'selected' : '';
+            html += '<option value="' + opt + '" ' + selected + '>' + opt + '</option>';
+          });
+          html += '</select>';
+          break;
+        case 'multiselect':
+          html += '<div class="space-y-2">';
+          field.options.forEach(opt => {
+            const checked = field.default && field.default.includes(opt) ? 'checked' : '';
+            html += '<label class="flex items-center gap-2 text-slate-300">' +
+                    '<input type="checkbox" name="config-' + field.id + '" value="' + opt + '" ' + checked + ' ' +
+                    'class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-zixir-600 focus:ring-zixir-500">' +
+                    '<span>' + opt + '</span>' +
+                    '</label>';
+          });
+          html += '</div>';
+          break;
+        case 'checkbox':
+          const checked = field.default ? 'checked' : '';
+          html += '<label class="flex items-center gap-2">' +
+                  '<input type="checkbox" id="config-' + field.id + '" ' + checked + ' ' +
+                  'class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-zixir-600 focus:ring-zixir-500">' +
+                  '<span class="text-slate-300">Enable</span>' +
+                  '</label>';
+          break;
+        case 'range':
+          html += '<div class="flex items-center gap-4">' +
+                  '<input type="range" id="config-' + field.id + '" ' +
+                  'min="' + field.min + '" max="' + field.max + '" value="' + (field.default || field.min) + '" ' +
+                  'class="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">' +
+                  '<span class="text-white font-medium w-16 text-right"><span id="config-' + field.id + '-value">' + (field.default || field.min) + '</span>' + (field.unit || '') + '</span>' +
+                  '</div>';
+          break;
+        case 'connection':
+          html += '<select id="config-' + field.id + '" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zixir-500">' +
+                  '<option value="">Select connection...</option>' +
+                  '<option value="conn_001">SQL Server Production</option>' +
+                  '<option value="conn_002">PostgreSQL Analytics</option>' +
+                  '</select>';
+          break;
+      }
+      html += '</div>';
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+    
+    // Add range input listeners
+    templateConfig.fields.forEach(field => {
+      if (field.type === 'range') {
+        const input = document.getElementById('config-' + field.id);
+        const display = document.getElementById('config-' + field.id + '-value');
+        if (input && display) {
+          input.addEventListener('input', function() {
+            display.textContent = this.value;
+          });
+        }
+      }
+    });
+  }
+
+  // Update step preview
+  function updateStepPreview() {
+    const container = document.getElementById('step-preview');
+    
+    if (!templateConfig.steps || templateConfig.steps.length === 0) {
+      container.innerHTML = '<p class="text-slate-500 text-sm">No steps configured</p>';
+      return;
+    }
+    
+    let html = '';
+    templateConfig.steps.forEach((step, index) => {
+      const iconMap = {
+        'inbox': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>',
+        'ai': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>',
+        'check': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
+        'database': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>',
+        'folder': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>',
+        'sort': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>',
+        'download': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>',
+        'cog': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>',
+        'upload': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>',
+        'credit-card': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>',
+        'truck': '<path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>',
+        'save': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-4 4m0 0l-4-4m4 4V4"/>',
+        'user-group': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>',
+        'exclamation': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+        'sparkles': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>',
+        'search': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>',
+        'transform': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>'
+      };
+      
+      const iconSvg = iconMap[step.icon] || iconMap['cog'];
+      const isLast = index === templateConfig.steps.length - 1;
+      
+      html += '<div class="flex items-start gap-3">';
+      html += '<div class="flex-shrink-0 w-10 h-10 rounded-lg bg-' + (step.type === 'ai' ? 'purple' : 'blue') + '-500/20 flex items-center justify-center">';
+      html += '<svg class="w-5 h-5 text-' + (step.type === 'ai' ? 'purple' : 'blue') + '-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+      html += iconSvg;
+      html += '</svg>';
+      html += '</div>';
+      html += '<div class="flex-1">';
+      html += '<p class="text-white font-medium text-sm">' + step.name + '</p>';
+      html += '<p class="text-slate-500 text-xs capitalize">' + step.type + '</p>';
+      html += '</div>';
+      html += '</div>';
+      
+      if (!isLast) {
+        html += '<div class="ml-5 pl-0.5 h-6 border-l-2 border-slate-700"></div>';
+      }
+    });
+    
+    container.innerHTML = html;
+  }
+
+  // Update cost estimate
+  function updateCostEstimate() {
+    const costPerRun = templateConfig.costPerRun || 0;
+    const scheduleSelect = document.getElementById('workflow-schedule');
+    const runsPerDay = {
+      'manual': 0,
+      'hourly': 24,
+      'daily': 1,
+      'weekly': 0.14,
+      'custom': 1
+    };
+    
+    const schedule = scheduleSelect ? scheduleSelect.value : 'manual';
+    const dailyRuns = runsPerDay[schedule] || 0;
+    const dailyCost = costPerRun * dailyRuns;
+    const monthlyCost = dailyCost * 30;
+    
+    document.getElementById('cost-per-run').textContent = '$' + costPerRun.toFixed(2);
+    document.getElementById('cost-daily').textContent = '$' + dailyCost.toFixed(2);
+    document.getElementById('cost-monthly').textContent = '$' + monthlyCost.toFixed(2);
+  }
+
+  // Navigation
+  function goToWorkflowStep(step) {
+    document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`workflow-step-${step}`).classList.remove('hidden');
+    updateWorkflowProgress(step);
+    
+    if (step === 3) {
+      updateReviewPage();
+      updateWorkflowDiagram();
+    }
+  }
+
+  function updateWorkflowProgress(currentStep) {
+    const steps = document.querySelectorAll('.progress-step');
+    steps.forEach((step, index) => {
+      const stepNum = index + 1;
+      const circle = step.querySelector('.step-circle');
+      const label = step.querySelector('.step-label');
+      
+      if (stepNum < currentStep) {
+        circle.classList.remove('bg-slate-700', 'text-slate-400', 'bg-zixir-600');
+        circle.classList.add('bg-emerald-600', 'text-white');
+        label.classList.remove('text-slate-400');
+        label.classList.add('text-white');
+      } else if (stepNum === currentStep) {
+        circle.classList.remove('bg-slate-700', 'text-slate-400', 'bg-emerald-600');
+        circle.classList.add('bg-zixir-600', 'text-white');
+        label.classList.remove('text-slate-400');
+        label.classList.add('text-white');
+      } else {
+        circle.classList.remove('bg-zixir-600', 'bg-emerald-600', 'text-white');
+        circle.classList.add('bg-slate-700', 'text-slate-400');
+        label.classList.remove('text-white');
+        label.classList.add('text-slate-400');
+      }
+    });
+  }
+
+  // Update review page
+  function updateReviewPage() {
+    const name = document.getElementById('workflow-name').value;
+    const schedule = document.getElementById('workflow-schedule').value;
+    const batchSize = document.getElementById('batch-size').value;
+    const notify = document.getElementById('workflow-notify').checked;
+    
+    document.getElementById('review-name').textContent = name || 'Unnamed Workflow';
+    document.getElementById('review-template').textContent = templateConfig.name;
+    document.getElementById('review-schedule').textContent = schedule.charAt(0).toUpperCase() + schedule.slice(1);
+    document.getElementById('review-batch').textContent = batchSize;
+    document.getElementById('review-notify').textContent = notify ? 'Enabled' : 'Disabled';
+    
+    // Update deployment card
+    document.getElementById('deploy-steps').textContent = templateConfig.steps.length;
+    document.getElementById('deploy-cost').textContent = '$' + (templateConfig.costPerRun || 0).toFixed(2);
+    document.getElementById('deploy-runtime').textContent = '~' + (templateConfig.steps.length * 2) + 's';
+    
+    // Add template-specific fields to review
+    const specificFields = document.getElementById('review-specific-fields');
+    let specificHtml = '';
+    
+    if (templateConfig.fields) {
+      templateConfig.fields.forEach(field => {
+        const el = document.getElementById('config-' + field.id);
+        let value = '';
+        
+        if (el) {
+          if (field.type === 'checkbox') {
+            value = el.checked ? 'Yes' : 'No';
+          } else if (field.type === 'multiselect') {
+            const checked = document.querySelectorAll('input[name="config-' + field.id + ']:checked');
+            value = Array.from(checked).map(cb => cb.value).join(', ') || 'None selected';
+          } else {
+            value = el.value || 'Not set';
+          }
+        }
+        
+        specificHtml += '<div class="flex justify-between items-center py-3 border-b border-slate-700">' +
+                       '<span class="text-slate-400">' + field.label + '</span>' +
+                       '<span class="text-white font-medium">' + value + '</span>' +
+                       '</div>';
+      });
+    }
+    
+    specificFields.innerHTML = specificHtml;
+  }
+
+  // Update workflow diagram
+  function updateWorkflowDiagram() {
+    const container = document.getElementById('workflow-diagram');
+    
+    if (!templateConfig.steps || templateConfig.steps.length === 0) {
+      container.innerHTML = '<p class="text-slate-500">No diagram available</p>';
+      return;
+    }
+    
+    let html = '<div class="flex items-center gap-4 min-w-max">';
+    
+    templateConfig.steps.forEach((step, index) => {
+      const isLast = index === templateConfig.steps.length - 1;
+      
+      html += '<div class="flex flex-col items-center">';
+      html += '<div class="w-16 h-16 rounded-xl bg-' + (step.type === 'ai' ? 'purple' : 'blue') + '-500/20 border-2 border-' + (step.type === 'ai' ? 'purple' : 'blue') + '-500/50 flex items-center justify-center">';
+      html += '<span class="text-white font-bold">' + (index + 1) + '</span>';
+      html += '</div>';
+      html += '<span class="mt-2 text-white text-sm font-medium">' + step.name + '</span>';
+      html += '<span class="text-xs text-slate-500 capitalize">' + step.type + '</span>';
+      html += '</div>';
+      
+      if (!isLast) {
+        html += '<div class="flex items-center">';
+        html += '<svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+        html += '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>';
+        html += '</svg>';
+        html += '</div>';
+      }
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  // Listen for schedule changes to update cost
+  document.getElementById('workflow-schedule')?.addEventListener('change', updateCostEstimate);
+
+  // Deploy workflow
+  function deployWorkflow() {
+    const name = document.getElementById('workflow-name').value;
+    const description = document.getElementById('workflow-desc').value;
+    
+    if (!name) {
+      Toast.error('Please enter a workflow name');
+      return;
+    }
+    
+    const deployBtn = document.getElementById('deploy-btn');
+    deployBtn.innerHTML = '<span class="spinner mr-2"></span>Deploying...';
+    deployBtn.disabled = true;
+    
+    // Gather template-specific config
+    const configData = {};
+    if (templateConfig.fields) {
+      templateConfig.fields.forEach(field => {
+        const el = document.getElementById('config-' + field.id);
+        if (el) {
+          if (field.type === 'checkbox') {
+            configData[field.id] = el.checked;
+          } else if (field.type === 'multiselect') {
+            const checked = document.querySelectorAll('input[name="config-' + field.id + ']:checked');
+            configData[field.id] = Array.from(checked).map(cb => cb.value);
+          } else {
+            configData[field.id] = el.value;
+          }
+        }
+      });
+    }
+    
+    fetch('/api/wizard/workflow/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: name,
+        template: selectedTemplate,
+        description: description,
+        schedule: document.getElementById('workflow-schedule').value,
+        batch_size: document.getElementById('batch-size').value,
+        notify: document.getElementById('workflow-notify').checked,
+        config: configData
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'created') {
+        Toast.success(data.message);
+        setTimeout(() => {
+          window.location.href = '/workflows';
+        }, 1500);
+      } else {
+        throw new Error(data.message || 'Failed to create workflow');
+      }
+    })
+    .catch(error => {
+      deployBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Deploy Workflow';
+      deployBtn.disabled = false;
+      Toast.error('Failed to deploy workflow: ' + error.message);
+    });
+  }
+
+  // Check Local (Ollama) provider status
+  function checkLocalProviderStatus() {
+    fetch('/api/ai/providers/local')
+      .then(r => r.json())
+      .then(data => {
+        const statusEl = document.getElementById('ai-provider-status');
+        const dotEl = document.getElementById('local-status-dot');
+        const textEl = document.getElementById('local-status-text');
+        
+        statusEl.classList.remove('hidden');
+        
+        if (data.config && data.config.enabled) {
+          dotEl.classList.remove('bg-red-400');
+          dotEl.classList.add('bg-emerald-400');
+          textEl.textContent = 'Ollama: ' + (data.config.model || 'Configured');
+        } else {
+          dotEl.classList.remove('bg-emerald-400');
+          dotEl.classList.add('bg-amber-400');
+          textEl.textContent = 'Ollama: Not configured';
+        }
+      })
+      .catch(() => {
+        const statusEl = document.getElementById('ai-provider-status');
+        const dotEl = document.getElementById('local-status-dot');
+        const textEl = document.getElementById('local-status-text');
+        statusEl.classList.remove('hidden');
+        dotEl.classList.add('bg-red-400');
+        textEl.textContent = 'Ollama: Connection failed';
+      });
+  }
+
+  // Check status on page load
+  document.addEventListener('DOMContentLoaded', checkLocalProviderStatus);
+</script>

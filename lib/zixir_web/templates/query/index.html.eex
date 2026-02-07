@@ -1,0 +1,306 @@
+<div class="max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-white">SQL Query Explorer</h1>
+        <p class="text-slate-400 mt-1">Query your databases directly</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="connection-select" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500">
+          <option value="">Select Connection...</option>
+          <option value="conn_001">SQL Server Production</option>
+          <option value="conn_002">PostgreSQL Analytics</option>
+          <option value="conn_003">MySQL Legacy</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Sidebar: Tables -->
+    <div class="lg:col-span-1 space-y-6">
+      <div class="bg-slate-900 rounded-xl border border-slate-800">
+        <div class="p-6 border-b border-slate-800">
+          <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+            </svg>
+            Tables
+          </h2>
+        </div>
+        <div id="tables-list" class="p-4 max-h-96 overflow-y-auto">
+          <!-- Tables will be loaded here -->
+          <div class="space-y-1">
+            <button class="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2" onclick="loadTableSchema('users')">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              users
+              <span class="ml-auto text-xs text-slate-500">15.4k rows</span>
+            </button>
+            <button class="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2" onclick="loadTableSchema('orders')">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              orders
+              <span class="ml-auto text-xs text-slate-500">89.3k rows</span>
+            </button>
+            <button class="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2" onclick="loadTableSchema('products')">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              products
+              <span class="ml-auto text-xs text-slate-500">5.2k rows</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Schema -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800">
+        <div class="p-6 border-b border-slate-800">
+          <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Schema
+          </h2>
+        </div>
+        <div id="table-schema" class="p-4 max-h-64 overflow-y-auto text-sm">
+          <p class="text-slate-500 text-center py-4">Select a table to view schema</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main: Query Editor & Results -->
+    <div class="lg:col-span-3 space-y-6">
+      <!-- Query Editor -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+          <span class="text-sm text-slate-400">Query Editor</span>
+          <div class="flex items-center gap-2">
+            <button onclick="clearQuery()" class="px-3 py-1 text-xs text-slate-400 hover:text-white transition-colors">
+              Clear
+            </button>
+            <button onclick="executeQuery()" class="px-4 py-1.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white text-sm rounded-lg transition-all flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Run Query
+            </button>
+          </div>
+        </div>
+        <div class="p-6">
+          <textarea id="query-editor" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-4 text-slate-300 font-mono text-sm focus:outline-none focus:border-orange-500 resize-none" placeholder="-- Write your SQL query here
+SELECT * FROM users LIMIT 10;"></textarea>
+          <div class="mt-2 flex items-center gap-4 text-xs text-slate-500">
+            <span>Ctrl+Enter to run</span>
+            <span>Ctrl+Space for autocomplete</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Query History -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+          <span class="text-sm text-slate-400">Recent Queries</span>
+          <button onclick="clearHistory()" class="text-xs text-slate-500 hover:text-slate-300">
+            Clear History
+          </button>
+        </div>
+        <div id="query-history" class="divide-y divide-slate-800">
+          <!-- History items will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="query-results" class="bg-slate-900 rounded-xl border border-slate-800 hidden">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-slate-400">Results</span>
+            <span id="result-stats" class="text-xs text-slate-500"></span>
+          </div>
+          <button onclick="exportToCSV()" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export CSV
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table id="results-table" class="w-full text-sm">
+            <!-- Results will be inserted here -->
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Query execution
+  async function executeQuery() {
+    const query = document.getElementById('query-editor').value;
+    const connectionId = document.getElementById('connection-select').value;
+    
+    if (!query.trim()) {
+      Toast.error('Please enter a query');
+      return;
+    }
+    
+    if (!connectionId) {
+      Toast.error('Please select a connection');
+      return;
+    }
+    
+    const runBtn = event.target;
+    runBtn.innerHTML = '<span class="spinner mr-2"></span>Running...';
+    runBtn.disabled = true;
+    
+    try {
+      const response = await fetch('/api/query/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ connection_id: connectionId, query: query })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        displayResults(data.results);
+        addToHistory(query, data.results.row_count);
+        Toast.success(`Query executed: ${data.results.row_count} rows in ${data.results.execution_time_ms}ms`);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Toast.error('Query failed: ' + error.message);
+    } finally {
+      runBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Run Query`;
+      runBtn.disabled = false;
+    }
+  }
+  
+  function displayResults(results) {
+    const resultsDiv = document.getElementById('query-results');
+    const table = document.getElementById('results-table');
+    const stats = document.getElementById('result-stats');
+    
+    // Build table
+    let html = '<thead class="bg-slate-800 text-slate-400"><tr>';
+    results.columns.forEach(col => {
+      html += `<th class="px-4 py-2 text-left font-medium">${col}</th>`;
+    });
+    html += '</tr></thead><tbody class="divide-y divide-slate-800">';
+    
+    results.rows.forEach((row, idx) => {
+      html += `<tr class="hover:bg-slate-800/50 ${idx % 2 === 0 ? 'bg-slate-900' : 'bg-slate-900/50'}">`;
+      row.forEach(cell => {
+        html += `<td class="px-4 py-2 text-slate-300">${cell}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    
+    table.innerHTML = html;
+    stats.textContent = `${results.row_count} rows • ${results.execution_time_ms}ms`;
+    resultsDiv.classList.remove('hidden');
+  }
+  
+  function addToHistory(query, rowCount) {
+    const historyDiv = document.getElementById('query-history');
+    const item = document.createElement('div');
+    item.className = 'px-4 py-3 flex items-center justify-between hover:bg-slate-800/50 cursor-pointer';
+    item.innerHTML = `
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-slate-300 truncate font-mono">${query.substring(0, 60)}${query.length > 60 ? '...' : ''}</p>
+        <p class="text-xs text-slate-500 mt-1">${rowCount} rows • Just now</p>
+      </div>
+      <button class="p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-white" onclick="loadQuery('${query.replace(/'/g, "\\'")}')">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+    `;
+    historyDiv.insertBefore(item, historyDiv.firstChild);
+  }
+  
+  function loadQuery(query) {
+    document.getElementById('query-editor').value = query;
+  }
+  
+  function clearQuery() {
+    document.getElementById('query-editor').value = '';
+    document.getElementById('query-results').classList.add('hidden');
+  }
+  
+  function clearHistory() {
+    document.getElementById('query-history').innerHTML = '';
+  }
+  
+  async function loadTableSchema(tableName) {
+    // In real implementation, fetch from API
+    const schema = [
+      { name: 'id', type: 'INTEGER', nullable: false },
+      { name: 'name', type: 'VARCHAR(255)', nullable: false },
+      { name: 'email', type: 'VARCHAR(255)', nullable: true },
+      { name: 'created_at', type: 'TIMESTAMP', nullable: false }
+    ];
+    
+    const schemaDiv = document.getElementById('table-schema');
+    let html = '<div class="space-y-1">';
+    schema.forEach(col => {
+      html += `
+        <div class="px-3 py-2 rounded hover:bg-slate-800 cursor-pointer" onclick="addColumnToQuery('${col.name}')">
+          <div class="flex items-center gap-2">
+            <span class="text-purple-400 font-mono text-xs">${col.type}</span>
+            <span class="text-slate-300">${col.name}</span>
+            ${col.nullable ? '' : '<span class="text-xs text-red-400">*</span>'}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    schemaDiv.innerHTML = html;
+  }
+  
+  function addColumnToQuery(column) {
+    const editor = document.getElementById('query-editor');
+    const query = editor.value;
+    if (query.includes('SELECT *')) {
+      editor.value = query.replace('SELECT *', `SELECT ${column}`);
+    } else if (query.includes('SELECT')) {
+      editor.value = query.replace('SELECT', `SELECT ${column},`);
+    }
+  }
+  
+  async function exportToCSV() {
+    try {
+      const response = await fetch('/api/query/export/csv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query_id: 'query_123' })
+      });
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'query_results.csv';
+      a.click();
+      Toast.success('CSV exported successfully');
+    } catch (error) {
+      Toast.error('Export failed: ' + error.message);
+    }
+  }
+  
+  // Keyboard shortcut
+  document.getElementById('query-editor').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+      e.preventDefault();
+      executeQuery();
+    }
+  });
+</script>

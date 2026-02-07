@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>500 - Internal Server Error</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-6xl font-bold text-red-500 mb-4">500</h1>
+    <p class="text-xl text-slate-400">Internal server error</p>
+    <a href="/" class="mt-4 inline-block px-6 py-2 bg-zixir-600 text-white rounded-lg hover:bg-zixir-700">Go Home</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!-- Active Workflows - Orange Theme -->
+<div id="metric-active-workflows" class="bg-slate-900 rounded-xl p-6 border border-slate-800 hover:border-orange-500/30 transition-colors group">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-slate-400 text-sm">Active Workflows</p>
+      <p class="metric-value text-3xl font-bold text-white mt-1 group-hover:text-orange-400 transition-colors"><%= @metrics.active_workflows %></p>
+    </div>
+    <div class="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-xl flex items-center justify-center border border-orange-500/20">
+      <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Success Rate - Purple Theme -->
+<div id="metric-success-rate" class="bg-slate-900 rounded-xl p-6 border border-slate-800 hover:border-purple-500/30 transition-colors group">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-slate-400 text-sm">Success Rate</p>
+      <p class="metric-value text-3xl font-bold text-white mt-1 group-hover:text-purple-400 transition-colors"><%= @metrics.success_rate %>%</p>
+    </div>
+    <div class="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl flex items-center justify-center border border-purple-500/20">
+      <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Failed Runs - Yellow/Gold Theme -->
+<div id="metric-failed-runs" class="bg-slate-900 rounded-xl p-6 border border-slate-800 hover:border-yellow-500/30 transition-colors group">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-slate-400 text-sm">Failed Runs</p>
+      <p class="metric-value text-3xl font-bold text-white mt-1 group-hover:text-yellow-400 transition-colors"><%= @metrics.failed_runs %></p>
+    </div>
+    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-xl flex items-center justify-center border border-yellow-500/20">
+      <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Total Runs - Blended Orange-Purple Theme -->
+<div id="metric-total-runs" class="bg-slate-900 rounded-xl p-6 border border-slate-800 hover:border-orange-500/30 transition-colors group">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-slate-400 text-sm">Total Runs</p>
+      <p class="metric-value text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400 mt-1"><%= @metrics.total_runs %></p>
+    </div>
+    <div class="w-12 h-12 bg-gradient-to-br from-orange-500/20 via-purple-500/20 to-yellow-500/20 rounded-xl flex items-center justify-center border border-orange-500/20">
+      <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+    </div>
+  </div>
+</div>
