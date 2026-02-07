@@ -124,6 +124,8 @@ Ensure Git is installed and available in PATH.
 ```bash
 # Clone the repository
 git clone https://github.com/Zixir-lang/Zixir.git
+
+# IMPORTANT: Navigate into the project directory
 cd Zixir
 
 # Install Elixir dependencies
@@ -528,6 +530,24 @@ pip install numpy
 **Solution:** Install Xcode Command Line Tools:
 ```bash
 xcode-select --install
+```
+
+#### Wrong Directory / Task Not Found
+
+```error
+** (Mix) The task "phx.server" could not be found
+```
+
+**Solution:** You are not in the Zixir project directory. Make sure to:
+```bash
+cd Zixir  # Navigate to the project folder
+mix phx.server
+```
+
+**Verify you're in the right place:**
+```bash
+pwd                    # Should show .../Zixir
+ls mix.exs            # Should list the mix.exs file
 ```
 
 #### Zigler Build Errors
