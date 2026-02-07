@@ -176,18 +176,20 @@ git checkout -- .
 git fetch origin --tags
 git checkout v7.0.0
 
-# 4. Clean build
+# 4. Full clean
 mix clean
 mix deps.clean --all
+
+# 5. Get dependencies FIRST
 mix deps.get
 
-# 5. Install Zig compiler
+# 6. Install Zig
 mix zig.get
 
-# 6. Compile the project
+# 7. Compile
 mix compile
 
-# 7. Start the web server
+# 8. Start server
 mix phx.server   # start web UI
 ```
 
