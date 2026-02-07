@@ -114,15 +114,54 @@ flowchart TB
 
 **New to Zixir?** For step-by-step install of Elixir, Zig, and Python per OS, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
 
-## Setup
+## Quick start
 
-From a clone of the repo:
+### First-time install
 
 ```bash
+git clone https://github.com/Zixir-lang/Zixir.git
+cd Zixir
+git checkout v7.0.0
 mix deps.get
 mix zig.get   # after deps.get, for Zigler
 mix compile
+mix phx.server
 ```
+
+Then open **http://localhost:4000** in your browser.
+
+### Clean build (troubleshoot or reinstall)
+
+Use this when you need a clean build, are troubleshooting, or reinstalling:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Zixir-lang/Zixir.git
+
+# 2. Navigate into the project directory (CRITICAL!)
+cd Zixir
+
+# 3. Reset any local changes and fetch tags
+git checkout -- .
+git fetch origin --tags
+git checkout v7.0.0
+
+# 4. Clean build
+mix clean
+mix deps.clean --all
+mix deps.get
+
+# 5. Install Zig compiler
+mix zig.get
+
+# 6. Compile the project
+mix compile
+
+# 7. Start the web server
+mix phx.server
+```
+
+Then open **http://localhost:4000** in your browser.
 
 For Python specialist: ensure Python is on `PATH` or set in config; recommend a virtualenv. For **VectorDB** (nine backends: memory, chroma, pinecone, weaviate, qdrant, milvus, pgvector, redis, azure), see [docs/VECTORDB_BACKENDS.md](docs/VECTORDB_BACKENDS.md) for `pip install` and setup.
 

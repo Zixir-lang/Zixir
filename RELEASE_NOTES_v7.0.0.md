@@ -146,6 +146,8 @@ Release 7.0 introduces the **Zixir Web UI Dashboard**: a full-featured local das
 
 ## Quick start
 
+### First-time install
+
 ```bash
 git clone https://github.com/Zixir-lang/Zixir.git
 cd Zixir
@@ -153,17 +155,43 @@ git checkout v7.0.0
 mix deps.get
 mix zig.get
 mix compile
-mix test
-```
-
-### Run the dashboard
-
-```bash
-# Start the app (dashboard at http://localhost:4000)
 mix phx.server
 ```
 
-Or run `iex -S mix` and open http://localhost:4000 — the dashboard starts with the application.
+Then open **http://localhost:4000** in your browser.
+
+### Clean build (troubleshoot or reinstall)
+
+Use this when you need a clean build, are troubleshooting, or reinstalling:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Zixir-lang/Zixir.git
+
+# 2. Navigate into the project directory (CRITICAL!)
+cd Zixir
+
+# 3. Reset any local changes and fetch tags
+git checkout -- .
+git fetch origin --tags
+git checkout v7.0.0
+
+# 4. Clean build
+mix clean
+mix deps.clean --all
+mix deps.get
+
+# 5. Install Zig compiler
+mix zig.get
+
+# 6. Compile the project
+mix compile
+
+# 7. Start the web server
+mix phx.server
+```
+
+Then open **http://localhost:4000** in your browser.
 
 ---
 
