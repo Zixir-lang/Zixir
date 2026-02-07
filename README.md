@@ -125,7 +125,7 @@ git checkout v7.0.0
 mix deps.get
 mix zig.get   # after deps.get, for Zigler
 mix compile
-mix phx.server
+mix phx.server   # start web UI
 ```
 
 Then open **http://localhost:4000** in your browser.
@@ -158,7 +158,7 @@ mix zig.get
 mix compile
 
 # 7. Start the web server
-mix phx.server
+mix phx.server   # start web UI
 ```
 
 Then open **http://localhost:4000** in your browser.
