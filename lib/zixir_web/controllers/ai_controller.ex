@@ -140,6 +140,16 @@ defmodule ZixirWeb.AIController do
       
       case AIConfig.configure_provider(provider_atom, config) do
         :ok ->
+          # Also save to Ollama config for local provider
+          if provider_atom == :local do
+            Zixir.Ollama.save_config(%{
+              host: config[:host],
+              port: config[:port],
+              model: config[:model],
+              embedding_model: config[:embedding_model]
+            })
+          end
+          
           json(conn, %{
             status: "success",
             message: "Provider #{provider} configured successfully"
@@ -453,6 +463,319 @@ defmodule ZixirWeb.AIController do
     conn
     |> put_view(ZixirWeb.AIView)
     |> render("logs_fragment.html", logs: logs)
+  end
+
+  # ============================================================================
+  # Enhanced Playground Chat Functions
+  # ============================================================================
+
+  @doc """
+  GET /api/ai/context - Get full system context for AI assistant.
+  """
+  def get_context(conn, _params) do
+    context = Zixir.ContextAggregator.build_full_context()
+    json(conn, %{context: context})
+  end
+
+  @doc """
+  POST /api/ai/chat - Send a message to the AI assistant.
+  """
+  def chat(conn, params) do
+    message = params["message"]
+    provider = String.to_atom(params["provider"] || "local")
+    session_id = params["session_id"] || generate_session_id()
+    
+    if is_nil(message) or message == "" do
+      conn
+      |> put_status(400)
+      |> json(%{error: "Message is required"})
+    else
+      start_time = System.monotonic_time(:millisecond)
+      
+      # Save user message
+      Zixir.Playground.Memory.save_message(session_id, :user, message)
+      
+      # Build context
+      system_context = Zixir.ContextAggregator.build_full_context()
+      conversation_history = Zixir.Playground.Memory.get_conversation_history(session_id, 10)
+      
+      # Build system prompt
+      system_prompt = build_system_prompt(system_context, conversation_history)
+      
+      # Check if this is a database query
+      result = case detect_database_intent(message, system_context) do
+        {:database, connection_id} ->
+          handle_database_query(message, connection_id, provider, system_context)
+        
+        _ ->
+          # Regular chat
+          handle_chat_message(message, system_prompt, provider)
+      end
+      
+      latency = System.monotonic_time(:millisecond) - start_time
+      
+      case result do
+        {:ok, response, metadata} ->
+          # Save assistant response
+          Zixir.Playground.Memory.save_message(session_id, :assistant, response, metadata)
+          
+          json(conn, %{
+            status: "success",
+            message: response,
+            session_id: session_id,
+            latency_ms: latency,
+            provider: provider,
+            metadata: metadata
+          })
+        
+        {:error, reason} ->
+          conn
+          |> put_status(500)
+          |> json(%{
+            status: "error",
+            error: inspect(reason),
+            session_id: session_id,
+            latency_ms: latency
+          })
+      end
+    end
+  end
+
+  @doc """
+  POST /api/ai/chat/stream - Stream AI assistant response.
+  """
+  def chat_stream(conn, params) do
+    message = params["message"]
+    provider = String.to_atom(params["provider"] || "local")
+    session_id = params["session_id"] || generate_session_id()
+    
+    if is_nil(message) or message == "" do
+      conn
+      |> put_status(400)
+      |> json(%{error: "Message is required"})
+    else
+      # Save user message
+      Zixir.Playground.Memory.save_message(session_id, :user, message)
+      
+      # Set up SSE stream
+      conn = conn
+      |> put_resp_content_type("text/event-stream")
+      |> send_chunked(200)
+      
+      # Build context
+      system_context = Zixir.ContextAggregator.build_full_context()
+      conversation_history = Zixir.Playground.Memory.get_conversation_history(session_id, 10)
+      system_prompt = build_system_prompt(system_context, conversation_history)
+      
+      # Stream response
+      full_response = ""
+      
+      try do
+        case Zixir.LLM.stream(provider, message, 
+          system: system_prompt,
+          temperature: 0.7
+        ) do
+          {:ok, stream} ->
+            Enum.each(stream, fn chunk ->
+              full_response = full_response <> chunk
+              chunk = Jason.encode!(%{chunk: chunk, done: false})
+              chunk(conn, "data: #{chunk}\n\n")
+            end)
+            
+            # Send completion
+            done_chunk = Jason.encode!(%{done: true, full_response: full_response})
+            chunk(conn, "data: #{done_chunk}\n\n")
+            
+            # Save complete response
+            Zixir.Playground.Memory.save_message(session_id, :assistant, full_response)
+            
+          {:error, reason} ->
+            error_chunk = Jason.encode!(%{error: inspect(reason), done: true})
+            chunk(conn, "data: #{error_chunk}\n\n")
+        end
+      rescue
+        e ->
+          error_chunk = Jason.encode!(%{error: "Stream error: #{inspect(e)}", done: true})
+          chunk(conn, "data: #{error_chunk}\n\n")
+      end
+      
+      conn
+    end
+  end
+
+  @doc """
+  GET /api/ai/chat/history/:session_id - Get conversation history.
+  """
+  def get_chat_history(conn, %{"session_id" => session_id}) do
+    history = Zixir.Playground.Memory.get_conversation_history(session_id)
+    stats = Zixir.Playground.Memory.get_stats(session_id)
+    
+    json(conn, %{
+      session_id: session_id,
+      messages: history,
+      stats: stats
+    })
+  end
+
+  @doc """
+  DELETE /api/ai/chat/history/:session_id - Clear conversation history.
+  """
+  def clear_chat_history(conn, %{"session_id" => session_id}) do
+    Zixir.Playground.Memory.clear_conversation(session_id)
+    json(conn, %{status: "success", message: "Conversation history cleared"})
+  end
+
+  # Private functions for chat handling
+
+  defp build_system_prompt(context, history) do
+    workflows_summary = format_workflows_context(context.workflows)
+    databases_summary = format_databases_context(context.databases)
+    
+    """
+    You are Zixir AI, an intelligent assistant for the Zixir workflow automation platform (v#{context.system.version}).
+
+    ## Current System State
+
+    **Workflows:**
+    #{workflows_summary}
+
+    **Database Connections:**
+    #{databases_summary}
+
+    **System:**
+    - Uptime: #{context.system.uptime_minutes} minutes
+    - Memory: #{context.system.memory_usage} MB
+    - Active Connections: #{context.system.active_connections}
+
+    ## Your Capabilities
+    1. Answer questions about workflows, their status, and history
+    2. Query databases using natural language (I'll convert to SQL)
+    3. Explain system metrics and performance
+    4. Provide insights and recommendations
+    5. Help debug issues and errors
+
+    ## Guidelines
+    - Be helpful, concise, and technical when appropriate
+    - Use markdown formatting for clarity
+    - When querying databases, I'll show you the SQL used
+    - If you need specific data, ask me to query it
+    - Always provide actionable next steps when relevant
+
+    ## Recent Conversation
+    #{format_conversation_history(history)}
+
+    Current time: #{context.timestamp}
+    """
+  end
+
+  defp format_workflows_context(workflows) do
+    summary = "#{workflows.active} active, #{workflows.paused} paused, #{workflows.failed} failed, #{workflows.completed} completed"
+    
+    recent = workflows.recent
+    |> Enum.map(fn w -> "- #{w.name} (#{w.status}, #{w.time_ago})" end)
+    |> Enum.join("\n")
+    
+    "#{summary}\nRecent activity:\n#{recent}"
+  end
+
+  defp format_databases_context(databases) do
+    databases.connections
+    |> Enum.map(fn conn ->
+      "- #{conn.name} (#{conn.type}): #{length(conn.tables)} tables, status: #{conn.status}"
+    end)
+    |> Enum.join("\n")
+  end
+
+  defp format_conversation_history([]), do: "No previous messages in this session."
+  defp format_conversation_history(history) do
+    history
+    |> Enum.map(fn msg ->
+      role = if msg.role == :user, do: "User", else: "Assistant"
+      "#{role}: #{msg.content}"
+    end)
+    |> Enum.join("\n")
+  end
+
+  defp detect_database_intent(message, context) do
+    # Simple intent detection
+    lowered = String.downcase(message)
+    
+    database_keywords = [
+      "show", "query", "select", "from", "table", "database",
+      "how many", "count", "rows", "records", "data"
+    ]
+    
+    has_db_keyword = Enum.any?(database_keywords, &String.contains?(lowered, &1))
+    
+    if has_db_keyword and length(context.databases.connections) > 0 do
+      # Return first available connection
+      conn = hd(context.databases.connections)
+      {:database, conn.id}
+    else
+      :chat
+    end
+  end
+
+  defp handle_database_query(message, connection_id, provider, context) do
+    # Get schema info
+    # Get schema info
+    {:ok, schema_info} = Zixir.Playground.DatabaseBridge.get_schema_info(connection_id)
+    
+    # Generate SQL
+    case Zixir.Playground.DatabaseBridge.natural_language_to_sql(
+      message, connection_id, schema_info
+    ) do
+      {:ok, sql} ->
+        # Execute query
+        case Zixir.Playground.DatabaseBridge.execute_read_query(connection_id, sql) do
+          {:ok, results} ->
+            # Format response
+            text_results = Zixir.Playground.DatabaseBridge.format_results_to_text(results)
+            
+            response = """
+            I queried the database for you:
+
+            ```sql
+            #{sql}
+            ```
+
+            **Results:**
+            #{text_results}
+            """
+            
+            metadata = %{
+              sql: sql,
+              row_count: results.row_count,
+              connection_id: connection_id
+            }
+            
+            {:ok, response, metadata}
+          
+          {:error, reason} ->
+            {:ok, "I tried to run this query but got an error:\n\n```sql\n#{sql}\n```\n\nError: #{inspect(reason)}", %{}}
+        end
+      
+      {:error, reason} ->
+        {:ok, "I couldn't generate a query for that. Error: #{inspect(reason)}", %{}}
+    end
+  end
+
+  defp handle_chat_message(message, system_prompt, provider) do
+    case Zixir.LLM.call(provider, message, 
+      system: system_prompt,
+      temperature: 0.7,
+      max_tokens: 2000
+    ) do
+      {:ok, %{text: response}} ->
+        {:ok, response, %{}}
+      
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp generate_session_id do
+    :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
   end
 
   # ============================================================================

@@ -968,25 +968,41 @@ defmodule ZixirWeb.APIController do
       |> put_status(400)
       |> json(%{status: "error", message: "Query text is required"})
     else
-      # Mock search results with more data for pagination testing
-      all_results = [
-        %{id: "doc_001", text: "Introduction to machine learning concepts. Machine learning is a subset of artificial intelligence that focuses on building systems that learn from data.", score: 0.92, metadata: %{category: "tutorial", source: "wiki"}, created_at: "2024-01-15T10:00:00Z"},
-        %{id: "doc_002", text: "Deep learning fundamentals explained. Neural networks are inspired by the human brain and consist of interconnected nodes.", score: 0.88, metadata: %{category: "tutorial", source: "course"}, created_at: "2024-01-14T09:00:00Z"},
-        %{id: "doc_003", text: "Neural network architectures overview. Common architectures include CNNs, RNNs, Transformers, and GANs.", score: 0.85, metadata: %{category: "reference", source: "paper"}, created_at: "2024-01-13T08:00:00Z"},
-        %{id: "doc_004", text: "Training models with PyTorch. PyTorch provides dynamic computational graphs and intuitive debugging.", score: 0.81, metadata: %{category: "guide", source: "docs"}, created_at: "2024-01-12T07:00:00Z"},
-        %{id: "doc_005", text: "Machine learning best practices. Always split data into training, validation, and test sets.", score: 0.78, metadata: %{category: "best_practices", source: "blog"}, created_at: "2024-01-11T06:00:00Z"},
-        %{id: "doc_006", text: "Natural language processing techniques. NLP enables computers to understand human language through various algorithms.", score: 0.75, metadata: %{category: "tutorial", source: "wiki"}, created_at: "2024-01-10T05:00:00Z"},
-        %{id: "doc_007", text: "Computer vision applications. Image classification, object detection, and segmentation are key computer vision tasks.", score: 0.72, metadata: %{category: "reference", source: "course"}, created_at: "2024-01-09T04:00:00Z"},
-        %{id: "doc_008", text: "Reinforcement learning basics. Agents learn optimal behaviors through environmental rewards and penalties.", score: 0.69, metadata: %{category: "tutorial", source: "paper"}, created_at: "2024-01-08T03:00:00Z"},
-        %{id: "doc_009", text: "Model evaluation metrics. Accuracy, precision, recall, F1-score, and AUC-ROC are common evaluation metrics.", score: 0.66, metadata: %{category: "guide", source: "docs"}, created_at: "2024-01-07T02:00:00Z"},
-        %{id: "doc_010", text: "Feature engineering importance. Good features can significantly improve model performance.", score: 0.63, metadata: %{category: "best_practices", source: "blog"}, created_at: "2024-01-06T01:00:00Z"},
-        %{id: "doc_011", text: "Hyperparameter tuning strategies. Grid search, random search, and Bayesian optimization are common approaches.", score: 0.60, metadata: %{category: "guide", source: "docs"}, created_at: "2024-01-05T12:00:00Z"},
-        %{id: "doc_012", text: "Ensemble methods overview. Bagging, boosting, and stacking combine multiple models for better performance.", score: 0.57, metadata: %{category: "reference", source: "paper"}, created_at: "2024-01-04T11:00:00Z"},
-        %{id: "doc_013", text: "Data preprocessing techniques. Normalization, standardization, and encoding are essential preprocessing steps.", score: 0.54, metadata: %{category: "tutorial", source: "course"}, created_at: "2024-01-03T10:00:00Z"},
-        %{id: "doc_014", text: "Regularization methods prevent overfitting. L1, L2, and dropout are common regularization techniques.", score: 0.51, metadata: %{category: "tutorial", source: "wiki"}, created_at: "2024-01-02T09:00:00Z"},
-        %{id: "doc_015", text: "Gradient descent optimization. Stochastic, batch, and mini-batch variants optimize model parameters.", score: 0.48, metadata: %{category: "reference", source: "paper"}, created_at: "2024-01-01T08:00:00Z"}
-      ]
-
+      # Generate query embedding for semantic search
+      search_start = System.monotonic_time(:millisecond)
+      {:ok, query_embedding} = Zixir.Embedding.generate(query)
+      embedding_time = System.monotonic_time(:millisecond) - search_start
+      
+      # Search all documents in the collection
+      collection_key = "vector_collection:#{collection}:docs"
+      doc_ids = case Zixir.Cache.get(collection_key) do
+        {:ok, ids} -> ids
+        _ -> []
+      end
+      
+      # Score all documents using cosine similarity
+      all_results = 
+        Enum.map(doc_ids, fn doc_id ->
+          case Zixir.Cache.get("vector_doc:#{doc_id}") do
+            {:ok, doc} ->
+              if doc[:embedding] do
+                score = Zixir.Embedding.similarity(query_embedding, doc.embedding)
+                %{
+                  id: doc_id,
+                  text: doc.text,
+                  score: Float.round(score, 3),
+                  metadata: doc.metadata || %{},
+                  created_at: doc.created_at
+                }
+              else
+                nil
+              end
+            _ -> nil
+          end
+        end)
+        |> Enum.reject(&is_nil/1)
+        |> Enum.sort_by(& &1.score, :desc)
+      
       # Apply filters
       filtered_results = all_results
         |> filter_by_field(filter_by, filter_value)
@@ -1031,7 +1047,7 @@ defmodule ZixirWeb.APIController do
           date_from: date_from,
           date_to: date_to
         },
-        search_time_ms: 45
+        search_time_ms: System.monotonic_time(:millisecond) - search_start
       })
     end
   end
@@ -1121,23 +1137,39 @@ defmodule ZixirWeb.APIController do
     else
       doc_id = "doc_#{generate_id()}"
       
-      # In real implementation, this would generate embeddings and store them
+      # Generate lightweight hash-based embedding
+      start_time = System.monotonic_time(:millisecond)
+      {:ok, embedding} = Zixir.Embedding.generate(text)
+      embedding_time = System.monotonic_time(:millisecond) - start_time
+      
       document = %{
         id: doc_id,
         text: text,
         collection: collection,
         metadata: metadata,
-        created_at: DateTime.utc_now() |> DateTime.to_iso8601(),
-        embedding_dimensions: 1536
+        embedding: embedding,
+        embedding_dimensions: length(embedding),
+        created_at: DateTime.utc_now() |> DateTime.to_iso8601()
       }
       
+      # Store in cache
       Zixir.Cache.put("vector_doc:#{doc_id}", document, persistent: true)
+      
+      # Also store in collection index for fast retrieval
+      collection_key = "vector_collection:#{collection}:docs"
+      {:ok, existing_docs} = case Zixir.Cache.get(collection_key) do
+        {:ok, docs} -> {:ok, docs}
+        _ -> {:ok, []}
+      end
+      
+      Zixir.Cache.put(collection_key, [doc_id | existing_docs])
       
       json(conn, %{
         status: "embedded",
         doc_id: doc_id,
         collection: collection,
         text_preview: String.slice(text, 0, 100) <> "...",
+        embedding_time_ms: embedding_time,
         message: "Document embedded successfully"
       })
     end
@@ -1410,18 +1442,33 @@ defmodule ZixirWeb.APIController do
             # Generate document ID
             doc_id = "doc_#{generate_id()}_#{file_metadata.filename}"
 
-            # Create document structure
+            # Generate lightweight hash-based embedding
+            start_time = System.monotonic_time(:millisecond)
+            {:ok, embedding} = Zixir.Embedding.generate(text)
+            embedding_time = System.monotonic_time(:millisecond) - start_time
+
+            # Create document structure with embedding
             document = %{
               id: doc_id,
               text: text,
               collection: collection,
               metadata: merged_metadata,
-              created_at: DateTime.utc_now() |> DateTime.to_iso8601(),
-              embedding_dimensions: 1536
+              embedding: embedding,
+              embedding_dimensions: length(embedding),
+              created_at: DateTime.utc_now() |> DateTime.to_iso8601()
             }
 
             # Store in cache
             Zixir.Cache.put("vector_doc:#{doc_id}", document, persistent: true)
+            
+            # Update collection index
+            collection_key = "vector_collection:#{collection}:docs"
+            {:ok, existing_docs} = case Zixir.Cache.get(collection_key) do
+              {:ok, docs} -> {:ok, docs}
+              _ -> {:ok, []}
+            end
+            
+            Zixir.Cache.put(collection_key, [doc_id | existing_docs])
 
             json(conn, %{
               status: "uploaded",
@@ -1429,8 +1476,9 @@ defmodule ZixirWeb.APIController do
               collection: collection,
               filename: file_metadata.filename,
               size: file_metadata.size_formatted,
+              embedding_time_ms: embedding_time,
               text_preview: String.slice(text, 0, 150) <> "...",
-              message: "File uploaded and processed successfully"
+              message: "File uploaded and embedded successfully"
             })
 
           {:error, reason} ->

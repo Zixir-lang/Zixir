@@ -133,6 +133,13 @@ defmodule ZixirWeb.Router do
     post "/ai/test", AIController, :test_ai_function
     get "/ai/logs", AIController, :get_logs
     get "/ai/logs/fragment", AIController, :logs_fragment
+    
+    # Enhanced Playground Chat
+    get "/ai/context", AIController, :get_context
+    post "/ai/chat", AIController, :chat
+    post "/ai/chat/stream", AIController, :chat_stream
+    get "/ai/chat/history/:session_id", AIController, :get_chat_history
+    delete "/ai/chat/history/:session_id", AIController, :clear_chat_history
 
     # Custom AI Providers
     post "/ai/custom", AIController, :configure_custom_provider

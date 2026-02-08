@@ -1,5 +1,5 @@
 <!-- Playground Header with Zixir Orange-Purple-Yellow Theme -->
-<div class="mb-8 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-700/50 relative overflow-hidden">
+<div class="mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-700/50 relative overflow-hidden">
   <!-- Animated Gradient Background -->
   <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-500/20 via-purple-600/20 to-yellow-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
   <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-600/10 via-orange-500/10 to-yellow-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -11,8 +11,7 @@
         <div class="absolute -inset-2 bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 rounded-2xl blur opacity-60"></div>
         <div class="relative w-16 h-16 bg-gradient-to-br from-orange-500 via-purple-600 to-yellow-400 rounded-2xl flex items-center justify-center shadow-2xl">
           <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
           </svg>
         </div>
       </div>
@@ -21,92 +20,208 @@
           <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-purple-400 to-yellow-400">AI Playground</h1>
           <span class="px-2 py-0.5 bg-gradient-to-r from-orange-500/20 via-purple-500/20 to-yellow-500/20 text-orange-300 text-xs font-semibold rounded-full border border-orange-500/30">v7.0.0</span>
         </div>
-        <p class="text-slate-400 mt-1">Test and experiment with AI functions in real-time</p>
+        <p class="text-slate-400 mt-1">Chat with your Zixir AI assistant about workflows, databases, and more</p>
       </div>
     </div>
     <div class="hidden md:flex items-center gap-3">
+      <!-- Mode Toggle -->
+      <div class="flex bg-slate-800 rounded-lg p-1 border border-slate-700">
+        <button onclick="setMode('chat')" id="mode-chat" class="px-4 py-1.5 rounded bg-gradient-to-r from-orange-600 to-purple-600 text-white text-sm font-medium transition-all">
+          💬 Chat
+        </button>
+        <button onclick="setMode('tasks')" id="mode-tasks" class="px-4 py-1.5 rounded text-slate-400 text-sm hover:text-white transition-all">
+          🛠️ Tasks
+        </button>
+      </div>
       <a href="/ai" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm font-medium border border-slate-700">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        Back to AI Management
+        Back to AI
       </a>
     </div>
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <!-- Input Section -->
-  <div class="bg-slate-900 rounded-xl border border-slate-800 p-6 relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/5 via-purple-600/5 to-yellow-400/5 rounded-full blur-xl"></div>
-    <h2 class="text-lg font-bold text-white mb-4 relative flex items-center gap-2">
-      <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-      </svg>
-      Test Configuration
-    </h2>
-    
-    <div class="space-y-4 relative">
-      <div>
-        <label class="block text-sm text-slate-300 mb-2">AI Function</label>
-        <select id="ai-function" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
-          <option value="classify">Classify Text</option>
-          <option value="extract">Extract Entities</option>
-          <option value="summarize">Summarize</option>
-          <option value="sentiment">Analyze Sentiment</option>
-        </select>
+<!-- Chat Mode (Primary) -->
+<div id="chat-mode" class="space-y-6">
+  <!-- Chat Container -->
+  <div class="bg-slate-900 rounded-xl border border-slate-800 flex flex-col" style="height: 600px;">
+    <!-- Messages Area -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+      <!-- Welcome Message -->
+      <div class="flex gap-3" id="welcome-message">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 flex items-center justify-center flex-shrink-0 shadow-lg">
+          <span class="text-white text-sm font-bold">AI</span>
+        </div>
+        <div class="flex-1 max-w-3xl">
+          <div class="bg-slate-800 rounded-2xl rounded-tl-sm p-4 border border-slate-700/50">
+            <p class="text-slate-200 mb-3">Hello! I'm your Zixir AI assistant. I can help you with:</p>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <div class="flex items-center gap-2 text-sm text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                Analyzing workflows and their status
+              </div>
+              <div class="flex items-center gap-2 text-sm text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                Querying databases with natural language
+              </div>
+              <div class="flex items-center gap-2 text-sm text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                Explaining system metrics and logs
+              </div>
+              <div class="flex items-center gap-2 text-sm text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Providing insights about your data
+              </div>
+            </div>
+            <p class="text-slate-400 text-sm">What would you like to know about your Zixir instance?</p>
+          </div>
+          <span class="text-xs text-slate-600 mt-1 block">Just now</span>
+        </div>
       </div>
+    </div>
 
-      <div>
-        <label class="block text-sm text-slate-300 mb-2">Provider</label>
-        <select id="ai-provider" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
-          <%= for provider <- @providers do %>
-            <%= if provider.configured do %>
-              <option value="<%= provider.provider %>"><%= provider.name %></option>
+    <!-- Quick Actions Bar -->
+    <div class="border-t border-slate-800 p-3 bg-slate-900/50">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="quickAction('workflows')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-orange-400 text-xs rounded-lg transition-all border border-orange-500/30 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Show Workflows
+        </button>
+        <button onclick="quickAction('databases')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-purple-400 text-xs rounded-lg transition-all border border-purple-500/30 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+          </svg>
+          Database Status
+        </button>
+        <button onclick="quickAction('system')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-yellow-400 text-xs rounded-lg transition-all border border-yellow-500/30 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+          </svg>
+          System Metrics
+        </button>
+        <button onclick="quickAction('classify')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs rounded-lg transition-all border border-emerald-500/30 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+          </svg>
+          Classify Text
+        </button>
+        <button onclick="quickAction('query')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 text-xs rounded-lg transition-all border border-blue-500/30 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          Query Data
+        </button>
+        <button onclick="quickAction('help')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded-lg transition-all border border-slate-600 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          What can you do?
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-4 border-t border-slate-800 bg-slate-900">
+      <div class="flex gap-3">
+        <!-- Provider Selector -->
+        <div class="flex-shrink-0">
+          <select id="chat-provider" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-white text-sm focus:outline-none focus:border-orange-500 min-w-[120px]">
+            <%= for provider <- @providers do %>
+              <%= if provider.configured do %>
+                <option value="<%= provider.provider %>"><%= provider.name %></option>
+              <% end %>
             <% end %>
-          <% end %>
-        </select>
-      </div>
-
-      <div id="options-container">
-        <!-- Dynamic options based on function -->
-        <div id="classify-options" class="space-y-2">
-          <label class="block text-sm text-slate-300">Categories (comma-separated)</label>
-          <input type="text" id="classify-labels" value="urgent, normal, low" 
-                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+          </select>
         </div>
-
-        <div id="extract-options" class="space-y-2 hidden">
-          <label class="block text-sm text-slate-300">Fields to Extract (comma-separated)</label>
-          <input type="text" id="extract-fields" value="name, date, amount" 
-                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        
+        <!-- Text Input -->
+        <div class="flex-1 relative">
+          <textarea 
+            id="chat-input" 
+            rows="2" 
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 resize-none pr-12"
+            placeholder="Ask about your workflows, databases, or anything else..."></textarea>
+          <div class="absolute right-3 bottom-3 text-xs text-slate-500">
+            <span id="input-hint">Shift+Enter for new line</span>
+          </div>
         </div>
-
-        <div id="summarize-options" class="space-y-2 hidden">
-          <label class="block text-sm text-slate-300">Max Length (words)</label>
-          <input type="number" id="summarize-length" value="100" 
-                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+        
+        <!-- Send Button -->
+        <button onclick="sendMessage()" id="send-btn" class="flex-shrink-0 px-4 py-3 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all shadow-lg shadow-orange-500/20 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          <span class="hidden sm:inline">Send</span>
+        </button>
+      </div>
+      
+      <!-- Context Status -->
+      <div class="mt-2 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-3 text-slate-500">
+          <span class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            Context loaded
+          </span>
+          <span id="context-details" class="hidden sm:inline">Workflows • Databases • System</span>
         </div>
+        <button onclick="clearChat()" class="text-slate-500 hover:text-red-400 transition-colors flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          Clear chat
+        </button>
       </div>
-
-      <div>
-        <label class="block text-sm text-slate-300 mb-2">Input Text</label>
-        <textarea id="input-text" rows="6" 
-                  class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all resize-none"
-                  placeholder="Enter text to test..."></textarea>
-      </div>
-
-      <button onclick="runTest()" 
-              id="test-btn"
-              class="w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20">
-        Run Test
-      </button>
     </div>
   </div>
 
+  <!-- Typing Indicator (Hidden by default) -->
+  <div id="typing-indicator" class="hidden">
+    <div class="flex gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-sm font-bold">AI</span>
+      </div>
+      <div class="bg-slate-800 rounded-2xl rounded-tl-sm p-4 border border-slate-700/50">
+        <div class="flex gap-1">
+          <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0s"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Mode (Hidden by default) -->
+<div id="task-mode" class="hidden space-y-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Input Section -->
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-6 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/5 via-purple-600/5 to-yellow-400/5 rounded-full blur-xl"></div>
+      <h2 class="text-lg font-bold text-white mb-4 relative flex items-center gap-2">
+        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Task Configuration
+      </h2>
+      
+      <div class="space-y-4 relative">
         <div>
-          <label class="block text-sm text-slate-400 mb-2">Provider</label>
-          <select id="ai-provider" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+          <label class="block text-sm text-slate-300 mb-2">AI Function</label>
+          <select id="ai-function" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
+            <option value="classify">Classify Text</option>
+            <option value="extract">Extract Entities</option>
+            <option value="summarize">Summarize</option>
+            <option value="sentiment">Analyze Sentiment</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-slate-300 mb-2">Provider</label>
+          <select id="ai-provider-task" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
             <%= for provider <- @providers do %>
               <%= if provider.configured do %>
                 <option value="<%= provider.provider %>"><%= provider.name %></option>
@@ -116,37 +231,36 @@
         </div>
 
         <div id="options-container">
-          <!-- Dynamic options based on function -->
           <div id="classify-options" class="space-y-2">
-            <label class="block text-sm text-slate-400">Categories (comma-separated)</label>
+            <label class="block text-sm text-slate-300">Categories (comma-separated)</label>
             <input type="text" id="classify-labels" value="urgent, normal, low" 
-                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white">
+                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
           </div>
 
           <div id="extract-options" class="space-y-2 hidden">
-            <label class="block text-sm text-slate-400">Fields to Extract (comma-separated)</label>
+            <label class="block text-sm text-slate-300">Fields to Extract (comma-separated)</label>
             <input type="text" id="extract-fields" value="name, date, amount" 
-                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white">
+                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
           </div>
 
           <div id="summarize-options" class="space-y-2 hidden">
-            <label class="block text-sm text-slate-400">Max Length (words)</label>
+            <label class="block text-sm text-slate-300">Max Length (words)</label>
             <input type="number" id="summarize-length" value="100" 
-                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white">
+                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all">
           </div>
         </div>
 
         <div>
-          <label class="block text-sm text-slate-400 mb-2">Input Text</label>
+          <label class="block text-sm text-slate-300 mb-2">Input Text</label>
           <textarea id="input-text" rows="6" 
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 resize-none"
-                    placeholder="Enter text to test..."></textarea>
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all resize-none"
+                    placeholder="Enter text to process..."></textarea>
         </div>
 
-        <button onclick="runTest()" 
-                id="test-btn"
-                class="w-full px-4 py-2 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium">
-          Run Test
+        <button onclick="runTask()" 
+                id="task-btn"
+                class="w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 via-purple-600 to-yellow-500 hover:from-orange-500 hover:via-purple-500 hover:to-yellow-400 text-white rounded-lg transition-all font-medium shadow-lg shadow-orange-500/20">
+          Run Task
         </button>
       </div>
     </div>
@@ -161,42 +275,42 @@
         Results
       </h2>
       
-      <div id="output-container" class="space-y-4">
-        <div id="empty-state" class="text-center py-12">
+      <div id="task-output-container" class="space-y-4">
+        <div id="task-empty-state" class="text-center py-12">
           <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
             </svg>
           </div>
-          <p class="text-slate-400">Configure test parameters and click "Run Test"</p>
+          <p class="text-slate-400">Configure task parameters and click "Run Task"</p>
         </div>
 
-        <div id="loading-state" class="hidden text-center py-12">
+        <div id="task-loading-state" class="hidden text-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
           <p class="text-slate-400">Processing with AI...</p>
         </div>
 
-        <div id="result-state" class="hidden space-y-4">
+        <div id="task-result-state" class="hidden space-y-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <span id="result-status" class="px-2 py-1 rounded text-xs font-medium"></span>
-              <span id="result-latency" class="text-slate-400 text-sm"></span>
+              <span id="task-result-status" class="px-2 py-1 rounded text-xs font-medium"></span>
+              <span id="task-result-latency" class="text-slate-400 text-sm"></span>
             </div>
-            <span id="result-provider" class="text-slate-400 text-sm"></span>
+            <span id="task-result-provider" class="text-slate-400 text-sm"></span>
           </div>
 
           <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
             <label class="block text-sm text-slate-300 mb-2">Output</label>
-            <pre id="result-output" class="text-orange-400 font-mono text-sm whitespace-pre-wrap overflow-x-auto"></pre>
+            <pre id="task-result-output" class="text-orange-400 font-mono text-sm whitespace-pre-wrap overflow-x-auto"></pre>
           </div>
         </div>
 
-        <div id="error-state" class="hidden space-y-4">
+        <div id="task-error-state" class="hidden space-y-4">
           <div class="flex items-center gap-3">
             <span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-medium">Error</span>
           </div>
           <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-            <pre id="error-message" class="text-red-400 font-mono text-sm whitespace-pre-wrap"></pre>
+            <pre id="task-error-message" class="text-red-400 font-mono text-sm whitespace-pre-wrap"></pre>
           </div>
         </div>
       </div>
@@ -204,7 +318,245 @@
   </div>
 </div>
 
+<!-- Conversation History Section -->
+<div class="mt-6 bg-slate-900 rounded-xl border border-slate-800 p-4">
+  <h3 class="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    Conversation History
+  </h3>
+  <div id="chat-history" class="space-y-2 text-sm">
+    <p class="text-slate-500 italic">No conversation history yet. Start chatting above!</p>
+  </div>
+</div>
+
+<!-- Session ID (Hidden) -->
+<input type="hidden" id="session-id" value="<%= :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower) %>">
+
 <script>
+  // ============================================================================
+  // MODE MANAGEMENT
+  // ============================================================================
+  
+  function setMode(mode) {
+    const chatBtn = document.getElementById('mode-chat');
+    const taskBtn = document.getElementById('mode-tasks');
+    const chatMode = document.getElementById('chat-mode');
+    const taskMode = document.getElementById('task-mode');
+    
+    if (mode === 'chat') {
+      chatBtn.className = 'px-4 py-1.5 rounded bg-gradient-to-r from-orange-600 to-purple-600 text-white text-sm font-medium transition-all';
+      taskBtn.className = 'px-4 py-1.5 rounded text-slate-400 text-sm hover:text-white transition-all';
+      chatMode.classList.remove('hidden');
+      taskMode.classList.add('hidden');
+    } else {
+      taskBtn.className = 'px-4 py-1.5 rounded bg-gradient-to-r from-orange-600 to-purple-600 text-white text-sm font-medium transition-all';
+      chatBtn.className = 'px-4 py-1.5 rounded text-slate-400 text-sm hover:text-white transition-all';
+      taskMode.classList.remove('hidden');
+      chatMode.classList.add('hidden');
+    }
+  }
+  
+  // ============================================================================
+  // CHAT FUNCTIONALITY
+  // ============================================================================
+  
+  let isProcessing = false;
+  
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    
+    if (!message || isProcessing) return;
+    
+    const provider = document.getElementById('chat-provider').value;
+    const sessionId = document.getElementById('session-id').value;
+    
+    // Add user message to UI
+    addMessage('user', message);
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    isProcessing = true;
+    
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: message,
+          provider: provider,
+          session_id: sessionId
+        })
+      });
+      
+      const data = await response.json();
+      
+      // Hide typing indicator
+      hideTypingIndicator();
+      
+      if (data.status === 'success') {
+        addMessage('assistant', data.message, data.metadata);
+        addToHistory(message);
+      } else {
+        addMessage('error', 'Error: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      hideTypingIndicator();
+      addMessage('error', 'Failed to send message: ' + error.message);
+    } finally {
+      isProcessing = false;
+    }
+  }
+  
+  function addMessage(role, content, metadata = {}) {
+    const container = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'flex gap-3 animate-fade-in';
+    
+    if (role === 'user') {
+      messageDiv.innerHTML = `
+        <div class="flex-1 flex justify-end">
+          <div class="max-w-3xl">
+            <div class="bg-gradient-to-r from-orange-600 to-purple-600 rounded-2xl rounded-tr-sm p-4 text-white">
+              ${escapeHtml(content)}
+            </div>
+            <span class="text-xs text-slate-600 mt-1 block text-right">Just now</span>
+          </div>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0">
+          <span class="text-white text-sm font-bold">You</span>
+        </div>
+      `;
+    } else if (role === 'error') {
+      messageDiv.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+          <span class="text-white text-sm font-bold">!</span>
+        </div>
+        <div class="flex-1 max-w-3xl">
+          <div class="bg-red-500/10 border border-red-500/30 rounded-2xl rounded-tl-sm p-4 text-red-400">
+            ${escapeHtml(content)}
+          </div>
+          <span class="text-xs text-slate-600 mt-1 block">Just now</span>
+        </div>
+      `;
+    } else {
+      // Assistant message
+      let sqlSection = '';
+      if (metadata && metadata.sql) {
+        sqlSection = `
+          <div class="mt-3 p-3 bg-slate-950 rounded-lg border border-slate-700">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+              </svg>
+              <span class="text-xs text-slate-400">Query executed (${metadata.row_count || 0} rows)</span>
+            </div>
+            <code class="text-emerald-400 font-mono text-xs">${escapeHtml(metadata.sql)}</code>
+          </div>
+        `;
+      }
+      
+      messageDiv.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 via-purple-600 to-yellow-400 flex items-center justify-center flex-shrink-0 shadow-lg">
+          <span class="text-white text-sm font-bold">AI</span>
+        </div>
+        <div class="flex-1 max-w-3xl">
+          <div class="bg-slate-800 rounded-2xl rounded-tl-sm p-4 border border-slate-700/50">
+            ${formatContent(content)}
+            ${sqlSection}
+          </div>
+          <span class="text-xs text-slate-600 mt-1 block">Just now</span>
+        </div>
+      `;
+    }
+    
+    container.appendChild(messageDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+  
+  function showTypingIndicator() {
+    const container = document.getElementById('chat-messages');
+    const indicator = document.getElementById('typing-indicator').cloneNode(true);
+    indicator.id = 'typing-indicator-active';
+    indicator.classList.remove('hidden');
+    container.appendChild(indicator);
+    container.scrollTop = container.scrollHeight;
+  }
+  
+  function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator-active');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+  
+  function quickAction(action) {
+    const prompts = {
+      workflows: "Show me an overview of all my workflows and their current status",
+      databases: "What database connections do I have configured?",
+      system: "Show me the current system metrics and performance",
+      classify: "I want to classify some text. Can you help me set that up?",
+      query: "Help me query data from my database. What tables do I have?",
+      help: "What can you help me with? List all your capabilities."
+    };
+    
+    document.getElementById('chat-input').value = prompts[action];
+    sendMessage();
+  }
+  
+  function clearChat() {
+    const container = document.getElementById('chat-messages');
+    // Keep only welcome message
+    const welcome = container.querySelector('#welcome-message');
+    container.innerHTML = '';
+    if (welcome) {
+      container.appendChild(welcome.cloneNode(true));
+    }
+    
+    // Clear session
+    const sessionId = document.getElementById('session-id').value;
+    fetch(`/api/ai/chat/history/${sessionId}`, { method: 'DELETE' });
+    
+    // Clear history display
+    document.getElementById('chat-history').innerHTML = '<p class="text-slate-500 italic">No conversation history yet. Start chatting above!</p>';
+  }
+  
+  function formatContent(content) {
+    // Handle code blocks
+    content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-slate-950 p-3 rounded-lg overflow-x-auto mt-2 mb-2"><code class="text-orange-400 text-sm">$2</code></pre>');
+    
+    // Handle inline code
+    content = content.replace(/`([^`]+)`/g, '<code class="bg-slate-950 px-1.5 py-0.5 rounded text-orange-400 text-sm">$1</code>');
+    
+    // Handle bold
+    content = content.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white">$1</strong>');
+    
+    // Handle italic
+    content = content.replace(/\*([^*]+)\*/g, '<em class="text-slate-300">$1</em>');
+    
+    // Handle line breaks
+    content = content.replace(/\n/g, '<br>');
+    
+    // Handle bullet points
+    content = content.replace(/^- (.+)$/gm, '<li class="ml-4 text-slate-300">$1</li>');
+    content = content.replace(/(<li[^>]*>.*<\/li>\s*)+/g, '<ul class="list-disc space-y-1 mt-2 mb-2">$&</ul>');
+    
+    return content;
+  }
+  
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  // ============================================================================
+  // TASK FUNCTIONALITY
+  // ============================================================================
+  
   // Handle function selection change
   document.getElementById('ai-function').addEventListener('change', function() {
     const func = this.value;
@@ -223,10 +575,10 @@
       document.getElementById('summarize-options').classList.remove('hidden');
     }
   });
-
-  function runTest() {
+  
+  function runTask() {
     const func = document.getElementById('ai-function').value;
-    const provider = document.getElementById('ai-provider').value;
+    const provider = document.getElementById('ai-provider-task').value;
     const input = document.getElementById('input-text').value;
     
     if (!input.trim()) {
@@ -235,10 +587,10 @@
     }
     
     // Show loading state
-    document.getElementById('empty-state').classList.add('hidden');
-    document.getElementById('result-state').classList.add('hidden');
-    document.getElementById('error-state').classList.add('hidden');
-    document.getElementById('loading-state').classList.remove('hidden');
+    document.getElementById('task-empty-state').classList.add('hidden');
+    document.getElementById('task-result-state').classList.add('hidden');
+    document.getElementById('task-error-state').classList.add('hidden');
+    document.getElementById('task-loading-state').classList.remove('hidden');
     
     // Build options based on function
     let options = {};
@@ -263,33 +615,137 @@
     })
     .then(r => r.json())
     .then(data => {
-      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('task-loading-state').classList.add('hidden');
       
       if (data.status === 'success') {
         // Show success state
-        document.getElementById('result-state').classList.remove('hidden');
+        document.getElementById('task-result-state').classList.remove('hidden');
         
-        const statusEl = document.getElementById('result-status');
+        const statusEl = document.getElementById('task-result-status');
         statusEl.textContent = 'Success';
         statusEl.className = 'px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded text-xs font-medium';
         
-        document.getElementById('result-latency').textContent = data.latency_ms + 'ms';
-        document.getElementById('result-provider').textContent = data.provider;
-        document.getElementById('result-output').textContent = JSON.stringify(data.output, null, 2);
+        document.getElementById('task-result-latency').textContent = data.latency_ms + 'ms';
+        document.getElementById('task-result-provider').textContent = data.provider;
+        document.getElementById('task-result-output').textContent = JSON.stringify(data.output, null, 2);
         
-        Toast.success('Test completed successfully');
+        Toast.success('Task completed successfully');
       } else {
         // Show error state
-        document.getElementById('error-state').classList.remove('hidden');
-        document.getElementById('error-message').textContent = data.error || 'Unknown error';
-        Toast.error('Test failed: ' + data.error);
+        document.getElementById('task-error-state').classList.remove('hidden');
+        document.getElementById('task-error-message').textContent = data.error || 'Unknown error';
+        Toast.error('Task failed: ' + data.error);
       }
     })
     .catch(err => {
-      document.getElementById('loading-state').classList.add('hidden');
-      document.getElementById('error-state').classList.remove('hidden');
-      document.getElementById('error-message').textContent = err.message;
+      document.getElementById('task-loading-state').classList.add('hidden');
+      document.getElementById('task-error-state').classList.remove('hidden');
+      document.getElementById('task-error-message').textContent = err.message;
       Toast.error('Error: ' + err.message);
     });
   }
+  
+  // ============================================================================
+  // CONVERSATION HISTORY
+  // ============================================================================
+  
+  function addToHistory(query) {
+    const history = JSON.parse(localStorage.getItem('zixir_chat_history') || '[]');
+    history.unshift({
+      query: query,
+      timestamp: new Date().toISOString(),
+      preview: query.substring(0, 50) + (query.length > 50 ? '...' : '')
+    });
+    localStorage.setItem('zixir_chat_history', JSON.stringify(history.slice(0, 20)));
+    loadHistory();
+  }
+  
+  function loadHistory() {
+    const container = document.getElementById('chat-history');
+    const history = JSON.parse(localStorage.getItem('zixir_chat_history') || '[]');
+    
+    if (history.length === 0) {
+      container.innerHTML = '<p class="text-slate-500 italic">No conversation history yet. Start chatting above!</p>';
+      return;
+    }
+    
+    container.innerHTML = history.map((item, idx) => `
+      <div class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer group" onclick="useHistoryItem('${escapeHtml(item.query)}')">
+        <span class="text-slate-300 truncate flex-1">${escapeHtml(item.preview)}</span>
+        <button onclick="deleteHistoryItem(event, ${idx})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 ml-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+  
+  function useHistoryItem(query) {
+    document.getElementById('chat-input').value = query;
+    document.getElementById('chat-input').focus();
+  }
+  
+  function deleteHistoryItem(e, idx) {
+    e.stopPropagation();
+    let history = JSON.parse(localStorage.getItem('zixir_chat_history') || '[]');
+    history.splice(idx, 1);
+    localStorage.setItem('zixir_chat_history', JSON.stringify(history));
+    loadHistory();
+  }
+  
+  // ============================================================================
+  // KEYBOARD SHORTCUTS
+  // ============================================================================
+  
+  document.getElementById('chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // Allow new line
+        return;
+      } else {
+        // Send message
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+  });
+  
+  // ============================================================================
+  // INITIALIZATION
+  // ============================================================================
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    loadHistory();
+    
+    // Focus input
+    document.getElementById('chat-input').focus();
+    
+    // Load initial context
+    fetch('/api/ai/context')
+      .then(r => r.json())
+      .then(data => {
+        console.log('Context loaded:', data.context);
+      })
+      .catch(err => {
+        console.error('Failed to load context:', err);
+      });
+  });
 </script>
+
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+</style>
