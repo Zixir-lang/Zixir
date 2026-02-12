@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
 $InputPath = Join-Path $RepoRoot "docs\Zixir Language complete guide.md"
-$OutputPath = Join-Path $RepoRoot "docs\Zixir-Language-complete-guide.pdf"
+$OutputPath = Join-Path $RepoRoot "docs\Zixir Language complete guide.pdf"
 
 if (-not (Test-Path $InputPath)) {
     Write-Error "Guide not found at $InputPath"

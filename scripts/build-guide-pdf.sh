@@ -6,7 +6,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 INPUT="$REPO_ROOT/docs/Zixir Language complete guide.md"
-OUTPUT="$REPO_ROOT/docs/Zixir-Language-complete-guide.pdf"
+OUTPUT="$REPO_ROOT/docs/Zixir Language complete guide.pdf"
 
 if [ ! -f "$INPUT" ]; then
   echo "Error: Guide not found at $INPUT"

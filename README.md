@@ -119,7 +119,7 @@ flowchart TB
 
 **Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 22 engine ops documented · full grammar reference.
 
-**PDF:** A PDF copy is available as [docs/Zixir-Language-complete-guide.pdf](docs/Zixir-Language-complete-guide.pdf). To rebuild locally: **Node** — `npx md-to-pdf "docs/Zixir Language complete guide.md"` then rename the output to `Zixir-Language-complete-guide.pdf`; **or** **pandoc** — `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows; requires [pandoc](https://pandoc.org) and LaTeX). To enable automatic PDF build on push: create `.github/workflows/build-guide-pdf.yml` from [scripts/build-guide-pdf-workflow.yml](scripts/build-guide-pdf-workflow.yml) (skip the first 3 comment lines).
+**PDF:** A PDF copy is available at [docs/Zixir Language complete guide.pdf](docs/Zixir%20Language%20complete%20guide.pdf) (same path as the guide, .pdf for download). Website: [zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf](https://zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf). To rebuild locally: **Node** — `npx md-to-pdf "docs/Zixir Language complete guide.md"` (output is already named with spaces); **or** **pandoc** — `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows; requires [pandoc](https://pandoc.org) and LaTeX). To enable automatic PDF build on push: create `.github/workflows/build-guide-pdf.yml` from [scripts/build-guide-pdf-workflow.yml](scripts/build-guide-pdf-workflow.yml) (skip the first 3 comment lines).
 
 ## Requirements
 

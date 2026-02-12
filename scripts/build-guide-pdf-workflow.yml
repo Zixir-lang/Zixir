@@ -29,7 +29,7 @@ jobs:
       - name: Build PDF
         run: |
           pandoc "docs/Zixir Language complete guide.md" \
-            -o "docs/Zixir-Language-complete-guide.pdf" \
+            -o "docs/Zixir Language complete guide.pdf" \
             --pdf-engine=xelatex \
             -V geometry:margin=1in \
             -V fontsize=11pt \
@@ -42,13 +42,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Zixir-Language-complete-guide-pdf
-          path: docs/Zixir-Language-complete-guide.pdf
+          path: "docs/Zixir Language complete guide.pdf"
 
       - name: Commit PDF to repo (if changed)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/Zixir-Language-complete-guide.pdf
+          git add "docs/Zixir Language complete guide.pdf"
           if git diff --staged --quiet; then
             echo "PDF unchanged, skip commit"
           else
