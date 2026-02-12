@@ -2,8 +2,7 @@
 
 <p align="center"><img src="assets/zixir-icon.png" alt="Zixir" width="128" /></p>
 
-**Repository:** [github.com/Zixir-lang/Zixir](https://github.com/Zixir-lang/Zixir)  
-**Zixir project** by **Leo Louvar** — open-source AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.
+**Repository:** [github.com/Zixir-lang/Zixir](https://github.com/Zixir-lang/Zixir) · Created and maintained by **Leo Louvar**.
 
 Zixir is an **AI automation language** that bakes workflow orchestration, resource limits, and observability into one runtime—no Airflow + Redis + Prometheus glue. Small, expression-oriented, on a **three-tier runtime**: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist).
 
@@ -241,4 +240,4 @@ None at this time.
 
 ## Author & License
 
-**Author:** Leo Louvar. **License:** Apache-2.0 — see [LICENSE](LICENSE).
+**Zixir** is created and maintained by **Leo Louvar**. Apache-2.0 — see [LICENSE](LICENSE). Contributors: [CONTRIBUTORS.md](CONTRIBUTORS.md).
