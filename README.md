@@ -4,9 +4,9 @@
 
 **Repository:** [github.com/Zixir-lang/Zixir](https://github.com/Zixir-lang/Zixir) · Created and maintained by **Leo Louvar**.
 
-Zixir is an **AI automation language** that bakes workflow orchestration, resource limits, and observability into one runtime—no Airflow + Redis + Prometheus glue. Small, expression-oriented, on a **three-tier runtime**: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist).
+Zixir is an **immutable AI automation language** that bakes workflow orchestration, resource limits, and observability into one runtime—no Airflow + Redis + Prometheus glue. Small, expression-oriented, on a **three-tier runtime**: **Elixir** (orchestrator), **Zig** (engine), **Python** (specialist).
 
-**Zixir is its own language** (own grammar and semantics), implemented with Elixir, compiling to Zig, and calling into Python. You write `.zixir` source; it is not Elixir or Zig syntax.
+**Zixir is its own language** (own grammar and semantics), implemented with Elixir, compiling to Zig, and calling into Python. You write `.zixir` source; it is not Elixir or Zig syntax. **Zixir is immutable by design**: variables cannot be reassigned, so code is easier to reason about and less prone to bugs than in mutable-by-default languages.
 
 **Who it's for:** Developers and teams building AI automation, agentic workflows, and ML pipelines who prefer a single, expression-oriented language and runtime over managing Airflow, K8s, Redis, and custom YAML. Best fit for engineers who like Elixir/FP, want pattern matching and type inference, and need built-in fault tolerance and observability without extra infra.
 
@@ -18,6 +18,7 @@ Zixir is an **AI automation language** that bakes workflow orchestration, resour
 
 | Strength | Trade-off |
 |----------|-----------|
+| **Immutable by default** (single-assignment; no in-place mutation) | — |
 | Built-in caching (ETS + disk) | — |
 | Pattern matching (native; unique among workflow tools) | — |
 | Interactive REPL | — |
@@ -60,6 +61,7 @@ Your code stays Zixir-only; the runtime is Elixir + Zig (engine/codegen) + Pytho
 | **Pattern matching** | ✅ Native | ❌ | ❌ | ❌ |
 | **Interactive REPL** | ✅ | ❌ | ❌ | ❌ |
 | **Type inference** | ✅ | ❌ | ❌ | ❌ |
+| **Immutable** (no reassignment; safer, easier to reason about) | ✅ | ❌ | ❌ | ❌ |
 | **Native performance** | ✅ Zig NIFs | ❌ | ❌ | ❌ |
 | **LSP Support** | ✅ `mix zixir.lsp` | ❌ | ❌ | ❌ |
 
