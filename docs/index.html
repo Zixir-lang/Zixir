@@ -3,16 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zixir — AI automation language (Elixir + Zig + Python)</title>
+  <title>Zixir — AI automation language by Leo Louvar (Elixir + Zig + Python)</title>
+  <meta name="description" content="Zixir is an AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding. Created and maintained by Leo Louvar. Self-hosted workflows, built-in VectorDB, no Airflow or Redis required.">
+  <meta name="author" content="Leo Louvar">
+  <meta name="keywords" content="Zixir, Leo Louvar, AI automation language, Elixir, Zig, Python, agentic coding, workflow, VectorDB, self-hosted">
+  <link rel="canonical" href="https://zixir-lang.github.io/Zixir/">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://zixir-lang.github.io/Zixir/">
+  <meta property="og:title" content="Zixir — AI automation language by Leo Louvar">
+  <meta property="og:description" content="AI automation language and three-tier runtime (Elixir + Zig + Python). Created and maintained by Leo Louvar. Self-hosted workflows, built-in VectorDB.">
+  <meta property="og:image" content="https://zixir-lang.github.io/Zixir/assets/zixir-icon.png">
+  <meta property="og:site_name" content="Zixir">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Zixir by Leo Louvar — AI automation language">
+  <meta name="twitter:description" content="AI automation language (Elixir + Zig + Python). Created by Leo Louvar. Self-hosted, built-in VectorDB, no extra infra.">
   <link rel="icon" type="image/png" href="assets/zixir-icon.png">
   <link rel="stylesheet" href="css/landing.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "name": "Leo Louvar",
+        "url": "https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTORS.md",
+        "description": "Creator and lead maintainer of Zixir"
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "name": "Zixir",
+        "description": "AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.",
+        "url": "https://github.com/Zixir-lang/Zixir",
+        "codeRepository": "https://github.com/Zixir-lang/Zixir",
+        "author": { "@type": "Person", "name": "Leo Louvar" },
+        "maintainer": { "@type": "Person", "name": "Leo Louvar" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <nav class="landing-nav">
     <a href="https://github.com/Zixir-lang/Zixir">Zixir</a>
     <div class="nav-links">
       <a href="#quick-start">Quick Start</a>
+      <a href="#web-ui">Web UI</a>
       <a href="#why-zixir">Why Zixir</a>
+      <a href="#language">Language</a>
       <a href="#install">Install</a>
       <a href="#configure">Configure</a>
       <a href="#faq">FAQ</a>
@@ -24,6 +63,7 @@
     <img src="assets/zixir-icon.png" alt="Zixir" width="96" height="96">
     <h1>Zixir</h1>
     <p class="tagline">AI automation language — three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.</p>
+    <p class="landing-byline">Created and maintained by <strong>Leo Louvar</strong> · <a href="https://github.com/Zixir-lang/Zixir">GitHub</a></p>
     <div class="landing-install">
       <code id="install-code">git clone https://github.com/Zixir-lang/Zixir.git && cd Zixir && git checkout v7.1.0 && mix deps.get && mix zig.get && mix compile</code>
       <button type="button" class="copy-btn" id="install-copy">Copy</button>
@@ -36,22 +76,44 @@
 
   <section id="quick-start" class="landing-section">
     <h2>Quick Start</h2>
+    <p style="margin-bottom: 1rem; color: var(--zixir-text-muted);">Clone, build, and run Zixir locally. No cloud sign-up — everything runs on your machine.</p>
     <h3>1. Clone</h3>
+    <p style="font-size: 0.85rem; color: var(--zixir-text-muted); margin-bottom: 0.35rem;">Linux / macOS</p>
     <div class="landing-code">git clone https://github.com/Zixir-lang/Zixir.git
 cd Zixir
 git checkout v7.1.0</div>
+    <p style="font-size: 0.85rem; color: var(--zixir-text-muted); margin: 0.75rem 0 0.35rem;">Windows (PowerShell)</p>
+    <div class="landing-code">git clone https://github.com/Zixir-lang/Zixir.git; cd Zixir; git checkout v7.1.0</div>
     <h3>2. Build</h3>
     <div class="landing-code">mix deps.get
 mix zig.get
 mix compile</div>
     <h3>3. Run</h3>
     <div class="landing-code">mix zixir.run examples/hello.zixir</div>
-    <p style="color: var(--zixir-text-muted); font-size: 0.9rem;">Optional: <code>mix phx.server</code> for the web UI at <a href="http://localhost:4000" style="color: var(--zixir-purple-400);">http://localhost:4000</a>.</p>
+    <div class="landing-optional">
+      <strong>Optional — Web UI:</strong> Run <code>mix phx.server</code> and open <a href="http://localhost:4000">http://localhost:4000</a> in your browser for the Zixir dashboard (workflows, AI Playground, vector search, observability). Fully self-hosted; no data leaves your machine.
+    </div>
+  </section>
+
+  <section id="web-ui" class="landing-section">
+    <h2>Web UI &amp; self-hosting</h2>
+    <p style="margin-bottom: 1rem;">Zixir ships with a local web dashboard. Start it with <code>mix phx.server</code> and open <a href="http://localhost:4000" style="color: var(--zixir-purple-400);">http://localhost:4000</a>. Everything runs on your machine — no SaaS, no account, no data sent elsewhere.</p>
+    <h3>What’s in the dashboard</h3>
+    <ul class="landing-feature-list">
+      <li><strong>Dashboard</strong> — Overview, connections, and quick actions</li>
+      <li><strong>AI Playground</strong> — Try AI providers and prompts from the UI</li>
+      <li><strong>Vector search</strong> — Query your VectorDB collections and test embeddings</li>
+      <li><strong>Workflows</strong> — Run and monitor Zixir workflows</li>
+      <li><strong>Observability</strong> — Metrics, tracing, and system health</li>
+      <li><strong>SQL &amp; data</strong> — Explore data and run queries</li>
+    </ul>
+    <p style="color: var(--zixir-text-muted); font-size: 0.9rem;">The UI is part of the same repo. Clone, build, run — you own the full stack. Ideal for local development, air-gapped environments, or teams that want to keep pipelines and data on-premises.</p>
   </section>
 
   <section id="why-zixir" class="landing-section">
     <h2>Why Zixir?</h2>
-    <p style="margin-bottom: 1.5rem;">One language replaces Airflow + Redis + Prometheus. Built-in orchestration, checkpointing, circuit breakers, and caching — no extra infra.</p>
+    <p style="margin-bottom: 0.5rem;">One language replaces Airflow + Redis + Prometheus. Built-in orchestration, checkpointing, circuit breakers, and caching — no extra infra.</p>
+    <p style="margin-bottom: 1.5rem; color: var(--zixir-text-muted); font-size: 0.95rem;"><strong>Self-hosted by default:</strong> Clone the repo, build, and run. The runtime and optional web UI run entirely on your machine. No cloud lock-in, no Redis or K8s required for workflows.</p>
     <div class="landing-cards">
       <div class="landing-card">
         <h4>One language</h4>
@@ -78,6 +140,26 @@ mix compile</div>
         <p>Interactive REPL and <code>mix zixir.lsp</code> for VS Code.</p>
       </div>
     </div>
+  </section>
+
+  <section id="language" class="landing-section">
+    <h2>The Zixir language</h2>
+    <p style="margin-bottom: 1rem;">Zixir is its <strong>own language</strong> — not Elixir syntax. You write <code>.zixir</code> source files with a small, expression-oriented grammar.</p>
+    <h3>Grammar in brief</h3>
+    <ul class="landing-feature-list">
+      <li><strong>let</strong> <code>id = expr</code> — bind a name to a value</li>
+      <li><strong>Expressions</strong> — literals (numbers, strings, lists, maps), variables, binary ops (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>)</li>
+      <li><strong>engine.</strong><code>op(args)</code> — call into the Zig engine (e.g. <code>engine.list_sum([1.0, 2.0, 3.0])</code>)</li>
+      <li><strong>python</strong> <code>"module" "function" (args)</code> — call Python (e.g. <code>python "math" "sqrt" (4.0)</code>)</li>
+      <li><strong>match</strong> — pattern matching on values</li>
+    </ul>
+    <h3>How it runs</h3>
+    <p style="color: var(--zixir-text-muted); font-size: 0.95rem;">Source is parsed in Elixir into a Zixir AST. It can be <strong>interpreted</strong> (<code>Zixir.eval(source)</code> — engine calls run in Zig NIFs, python calls go to Python via a port) or <strong>compiled</strong> (<code>Zixir.Compiler.compile(source)</code> — type-checks, optimizes, emits Zig; then compile to a native binary or run JIT). Your code stays Zixir-only; the runtime is Elixir + Zig + Python.</p>
+    <div class="landing-code" style="margin-top: 1rem;">let x = engine.list_sum([1.0, 2.0, 3.0])
+let y = 10
+x + y
+# result: 16.0</div>
+    <p style="margin-top: 0.75rem; font-size: 0.9rem;"><a href="LANGUAGE.md" style="color: var(--zixir-purple-400);">Full language spec → LANGUAGE.md</a></p>
   </section>
 
   <section id="three-tier" class="landing-section">
@@ -145,6 +227,10 @@ mix compile</div>
   <section id="faq" class="landing-section">
     <h2>FAQ</h2>
     <div class="faq-item">
+      <h4>Who created Zixir?</h4>
+      <p>Zixir was created and is maintained by <strong>Leo Louvar</strong>. The project is open source on <a href="https://github.com/Zixir-lang/Zixir" style="color: var(--zixir-purple-400);">GitHub (Zixir-lang/Zixir)</a>. See <a href="https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTORS.md" style="color: var(--zixir-purple-400);">CONTRIBUTORS.md</a> for more.</p>
+    </div>
+    <div class="faq-item">
       <h4>What is Zixir?</h4>
       <p>An AI automation language with its own grammar. You write .zixir source; it runs on a three-tier runtime (Elixir + Zig + Python) for agentic and ML workflows.</p>
     </div>
@@ -160,13 +246,21 @@ mix compile</div>
       <h4>Where is the full documentation?</h4>
       <p>Start with <a href="INDEX.md" style="color: var(--zixir-purple-400);">docs/INDEX.md</a> and <a href="https://github.com/Zixir-lang/Zixir/blob/master/README.md" style="color: var(--zixir-purple-400);">README.md</a>. Releases: <a href="https://github.com/Zixir-lang/Zixir/releases" style="color: var(--zixir-purple-400);">Releases</a>.</p>
     </div>
+    <div class="faq-item">
+      <h4>How do I run the web UI?</h4>
+      <p>After building the project, run <code>mix phx.server</code>. Open <a href="http://localhost:4000" style="color: var(--zixir-purple-400);">http://localhost:4000</a> in your browser. The dashboard is fully self-hosted; no account or cloud service required.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Can I self-host Zixir without the internet?</h4>
+      <p>Yes. Clone the repo, install Elixir and Zig (and optionally Python) from offline installers, then <code>mix deps.get</code>, <code>mix zig.get</code>, <code>mix compile</code>. The runtime and web UI run entirely locally. No Redis, K8s, or external DB is required for core workflows.</p>
+    </div>
   </section>
 
   <footer class="landing-footer">
     <a href="https://github.com/Zixir-lang/Zixir">GitHub</a> ·
     <a href="https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTING.md">Contributing</a> ·
     <a href="https://github.com/Zixir-lang/Zixir/blob/master/LICENSE">Apache-2.0</a>
-    <p class="author">Zixir is created and maintained by <strong>Leo Louvar</strong>.</p>
+    <p class="author"><strong>Leo Louvar</strong> — creator and developer of Zixir. <a href="https://github.com/Zixir-lang/Zixir">Zixir on GitHub</a></p>
   </footer>
 
   <script src="js/landing.js"></script>
