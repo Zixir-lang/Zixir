@@ -119,7 +119,7 @@ flowchart TB
 
 **Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 22 engine ops documented · full grammar reference.
 
-**PDF:** A PDF copy is built from the guide and available as [docs/Zixir-Language-complete-guide.pdf](docs/Zixir-Language-complete-guide.pdf) (updated when the guide changes). To build it locally: `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows); requires [pandoc](https://pandoc.org) and a LaTeX engine.
+**PDF:** A PDF copy is built from the guide and available as [docs/Zixir-Language-complete-guide.pdf](docs/Zixir-Language-complete-guide.pdf) (updated when the guide changes). To build locally: `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows); requires [pandoc](https://pandoc.org) and a LaTeX engine. To enable automatic PDF build on push: create `.github/workflows/build-guide-pdf.yml` (e.g. on GitHub: Add file → Create new file) and paste the content from [scripts/build-guide-pdf-workflow.yml](scripts/build-guide-pdf-workflow.yml) (skip the first 3 comment lines).
 
 ## Requirements
 

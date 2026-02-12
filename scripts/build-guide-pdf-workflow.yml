@@ -1,0 +1,59 @@
+# Copy this file to .github/workflows/build-guide-pdf.yml to enable automatic PDF build on push.
+# (GitHub web: create New file, path: .github/workflows/build-guide-pdf.yml, paste contents below.)
+---
+# Build Zixir Language complete guide PDF when the guide MD changes (or manually).
+name: Build guide PDF
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths:
+      - "docs/Zixir Language complete guide.md"
+      - "scripts/build-guide-pdf.*"
+      - ".github/workflows/build-guide-pdf.yml"
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-plain-generic
+
+      - name: Build PDF
+        run: |
+          pandoc "docs/Zixir Language complete guide.md" \
+            -o "docs/Zixir-Language-complete-guide.pdf" \
+            --pdf-engine=xelatex \
+            -V geometry:margin=1in \
+            -V fontsize=11pt \
+            -V documentclass=article \
+            --toc \
+            --toc-depth=2 \
+            -f markdown+smart
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zixir-Language-complete-guide-pdf
+          path: docs/Zixir-Language-complete-guide.pdf
+
+      - name: Commit PDF to repo (if changed)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/Zixir-Language-complete-guide.pdf
+          if git diff --staged --quiet; then
+            echo "PDF unchanged, skip commit"
+          else
+            git commit -m "chore: update Zixir Language complete guide PDF"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
