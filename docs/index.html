@@ -18,6 +18,8 @@
   <meta property="og:description" content="AI automation language and three-tier runtime (Elixir + Zig + Python). Created and maintained by Leo Louvar. Self-hosted workflows, built-in VectorDB.">
   <meta property="og:image" content="https://zixir-lang.github.io/Zixir/assets/zixir-icon.png">
   <meta property="og:site_name" content="Zixir">
+  <meta property="profile:first_name" content="Leo">
+  <meta property="profile:last_name" content="Louvar">
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Zixir by Leo Louvar — AI automation language">
@@ -30,9 +32,15 @@
     "@graph": [
       {
         "@type": "Person",
+        "@id": "https://zixir-lang.github.io/Zixir/#creator",
         "name": "Leo Louvar",
+        "jobTitle": "Creator and lead maintainer of Zixir",
+        "description": "Leo Louvar is the creator and developer of Zixir, an AI automation language and three-tier runtime (Elixir + Zig + Python).",
         "url": "https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTORS.md",
-        "description": "Creator and lead maintainer of Zixir"
+        "sameAs": [
+          "https://www.linkedin.com/in/leolouvar",
+          "https://github.com/Zixir-lang/Zixir"
+        ]
       },
       {
         "@type": "SoftwareSourceCode",
@@ -40,8 +48,25 @@
         "description": "AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.",
         "url": "https://github.com/Zixir-lang/Zixir",
         "codeRepository": "https://github.com/Zixir-lang/Zixir",
-        "author": { "@type": "Person", "name": "Leo Louvar" },
-        "maintainer": { "@type": "Person", "name": "Leo Louvar" }
+        "author": { "@id": "https://zixir-lang.github.io/Zixir/#creator" },
+        "maintainer": { "@id": "https://zixir-lang.github.io/Zixir/#creator" }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Zixir — AI automation language by Leo Louvar",
+        "description": "Zixir is an AI automation language created and maintained by Leo Louvar. Elixir + Zig + Python runtime for agentic coding.",
+        "url": "https://zixir-lang.github.io/Zixir/",
+        "author": { "@id": "https://zixir-lang.github.io/Zixir/#creator" },
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://zixir-lang.github.io/Zixir/assets/zixir-icon.png"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Zixir", "item": "https://zixir-lang.github.io/Zixir/" }
+        ]
       }
     ]
   }
@@ -58,12 +83,13 @@
       <a href="#install">Install</a>
       <a href="#configure">Configure</a>
       <a href="#faq">FAQ</a>
+      <a href="#creator">Creator</a>
       <a href="https://github.com/Zixir-lang/Zixir">GitHub</a>
     </div>
   </nav>
 
   <header class="landing-hero">
-    <img src="assets/zixir-icon.png" alt="Zixir" width="96" height="96">
+    <img src="assets/zixir-icon.png" alt="Zixir — AI automation language by Leo Louvar" width="96" height="96">
     <h1>Zixir</h1>
     <p class="tagline">AI automation language — three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.</p>
     <p class="landing-byline">Created and maintained by <strong>Leo Louvar</strong> · <a href="https://github.com/Zixir-lang/Zixir">GitHub</a></p>
@@ -259,11 +285,16 @@ x + y
     </div>
   </section>
 
+  <section id="creator" class="landing-section">
+    <h2>Creator &amp; developer</h2>
+    <p><strong>Leo Louvar</strong> created Zixir and leads its development. Zixir is open source on <a href="https://github.com/Zixir-lang/Zixir" style="color: var(--zixir-purple-400);">GitHub (Zixir-lang/Zixir)</a>. For more about Leo Louvar and contributors, see <a href="https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTORS.md" style="color: var(--zixir-purple-400);">CONTRIBUTORS.md</a> and <a href="https://www.linkedin.com/in/leolouvar" style="color: var(--zixir-purple-400);">LinkedIn</a>.</p>
+  </section>
+
   <footer class="landing-footer">
     <a href="https://github.com/Zixir-lang/Zixir">GitHub</a> ·
     <a href="https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTING.md">Contributing</a> ·
     <a href="https://github.com/Zixir-lang/Zixir/blob/master/LICENSE">Apache-2.0</a>
-    <p class="author"><strong>Leo Louvar</strong> — creator and developer of Zixir. <a href="https://github.com/Zixir-lang/Zixir">Zixir on GitHub</a></p>
+    <p class="author"><a href="https://zixir-lang.github.io/Zixir/#creator" rel="author"><strong>Leo Louvar</strong></a> — creator and developer of Zixir. <a href="https://github.com/Zixir-lang/Zixir">Zixir on GitHub</a></p>
   </footer>
 
   <script src="js/landing.js"></script>
