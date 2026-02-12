@@ -98,6 +98,27 @@ flowchart TB
   Port --> Libs
 ```
 
+## 📚 Zixir Language complete guide
+
+**[Zixir Language complete guide](docs/Zixir%20Language%20complete%20guide.md)** — Learn the language from zero to real projects. This is what the complete guide shows:
+
+**What's inside**
+
+| Part | Content |
+|------|---------|
+| **Part 1: Getting Started (1–5)** | Installation (all platforms), your first program, REPL, Hello world with explanations |
+| **Part 2: Language Fundamentals (6–12)** | Variables and all data types (Int, Float, Bool, String, Arrays, Maps), type explanations, common mistakes, exercises |
+| **Part 3: Control Flow (13–17)** | If/else, while and for loops, pattern matching, decision-making patterns |
+| **Part 4: Functions (18–22)** | Definition and calling, parameters vs arguments, lambdas, recursion, scope and best practices |
+| **Part 5: Power Features (23–28)** | Engine operations (all 22 Zig NIFs), Python integration, performance, when to use what |
+| **Part 6: Real-World Projects (29–35)** | Data pipeline, AI text analysis, LLM integration, workflow automation |
+| **Part 7: Mastery (36–40)** | Best practices, performance tips, debugging guide, patterns and anti-patterns |
+| **Appendices** | Grammar reference, quick reference card, common patterns, engine operations table |
+
+**Key features:** Progressive learning, 20+ complete examples, 4 real projects, exercises with solutions, visual aids, error-handling focus, AI/automation emphasis.
+
+**Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 22 engine ops documented · full grammar reference.
+
 ## Requirements
 
 | Requirement | Notes |

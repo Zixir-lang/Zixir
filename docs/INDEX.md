@@ -6,6 +6,7 @@ Welcome to Zixir! This index will help you find the documentation you need.
 
 ### Getting Started
 - **[README.md](../README.md)** - Project overview and quick setup
+- **[Zixir Language complete guide.md](Zixir%20Language%20complete%20guide.md)** - **Complete learning guide** (40+ pages): getting started, language fundamentals, control flow, functions, engine ops, Python integration, 4 real-world projects, mastery, grammar reference, quick reference card
 - **[SETUP_GUIDE.md](../SETUP_GUIDE.md)** - Step-by-step install (Elixir, Zig, Python) per OS
 - **[GUIDE.md](../GUIDE.md)** - Complete user guide with examples
 - **[QUICKREF.md](../QUICKREF.md)** - Quick reference cheat sheet
