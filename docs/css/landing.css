@@ -1,0 +1,304 @@
+/* Zixir GitHub Pages landing - purple, gold, orange theme */
+:root {
+  --zixir-purple-400: #818cf8;
+  --zixir-purple-500: #6366f1;
+  --zixir-purple-600: #4f46e5;
+  --zixir-violet: #a855f7;
+  --zixir-orange: #f97316;
+  --zixir-orange-light: #fb923c;
+  --zixir-gold: #facc15;
+  --zixir-gold-light: #fde047;
+  --zixir-bg: #0f172a;
+  --zixir-bg-card: #1e293b;
+  --zixir-bg-elevated: #334155;
+  --zixir-border: #334155;
+  --zixir-text: #e2e8f0;
+  --zixir-text-muted: #94a3b8;
+  --zixir-gradient: linear-gradient(135deg, #f97316, #a855f7, #facc15);
+  --zixir-gradient-subtle: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(168, 85, 247, 0.15), rgba(250, 204, 21, 0.1));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--zixir-bg);
+  color: var(--zixir-text);
+  line-height: 1.6;
+}
+
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid var(--zixir-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.landing-nav a {
+  color: var(--zixir-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.landing-nav a:hover {
+  color: var(--zixir-purple-400);
+}
+
+.landing-nav .nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.landing-hero {
+  text-align: center;
+  padding: 4rem 1.5rem 3rem;
+  background: var(--zixir-gradient-subtle);
+  border-bottom: 1px solid var(--zixir-border);
+}
+
+.landing-hero img {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 1rem;
+}
+
+.landing-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  background: var(--zixir-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-hero .tagline {
+  font-size: 1.15rem;
+  color: var(--zixir-text-muted);
+  max-width: 560px;
+  margin: 0 auto 2rem;
+}
+
+.landing-install {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--zixir-bg-card);
+  border: 1px solid var(--zixir-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.landing-install code {
+  flex: 1;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  color: var(--zixir-gold-light);
+}
+
+.landing-install .copy-btn {
+  flex-shrink: 0;
+  background: var(--zixir-purple-600);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.landing-install .copy-btn:hover {
+  background: var(--zixir-purple-500);
+}
+
+.landing-install .copy-btn.copied {
+  background: #059669;
+}
+
+.landing-os-tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.landing-os-tabs button {
+  background: transparent;
+  color: var(--zixir-text-muted);
+  border: 1px solid var(--zixir-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.landing-os-tabs button.active {
+  color: var(--zixir-orange);
+  border-color: var(--zixir-orange);
+}
+
+.landing-os-tabs button:hover:not(.active) {
+  color: var(--zixir-text);
+}
+
+.landing-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.landing-section h2 {
+  font-size: 1.75rem;
+  margin: 0 0 1.5rem;
+  color: var(--zixir-text);
+}
+
+.landing-section h3 {
+  font-size: 1.2rem;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--zixir-purple-400);
+}
+
+.landing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.landing-card {
+  background: var(--zixir-bg-card);
+  border: 1px solid var(--zixir-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.landing-card h4 {
+  margin: 0 0 0.5rem;
+  color: var(--zixir-gold);
+  font-size: 1rem;
+}
+
+.landing-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--zixir-text-muted);
+}
+
+.landing-code {
+  background: var(--zixir-bg-card);
+  border: 1px solid var(--zixir-border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 0.9rem;
+  color: var(--zixir-gold-light);
+}
+
+.landing-code + .landing-code {
+  margin-top: 0.5rem;
+}
+
+.landing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.landing-table th,
+.landing-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border: 1px solid var(--zixir-border);
+}
+
+.landing-table th {
+  background: var(--zixir-bg-card);
+  color: var(--zixir-purple-400);
+}
+
+.landing-table tr:nth-child(even) {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.landing-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 640px) {
+  .landing-tiers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-tier {
+  background: var(--zixir-bg-card);
+  border: 1px solid var(--zixir-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.landing-tier strong {
+  display: block;
+  color: var(--zixir-orange);
+  margin-bottom: 0.5rem;
+}
+
+.landing-tier span {
+  font-size: 0.9rem;
+  color: var(--zixir-text-muted);
+}
+
+.landing-footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid var(--zixir-border);
+  color: var(--zixir-text-muted);
+  font-size: 0.9rem;
+}
+
+.landing-footer a {
+  color: var(--zixir-purple-400);
+  text-decoration: none;
+}
+
+.landing-footer a:hover {
+  text-decoration: underline;
+}
+
+.landing-footer .author {
+  margin-top: 0.5rem;
+}
+
+.faq-item {
+  margin-bottom: 1rem;
+}
+
+.faq-item h4 {
+  color: var(--zixir-text);
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.faq-item p {
+  margin: 0;
+  color: var(--zixir-text-muted);
+  font-size: 0.9rem;
+}

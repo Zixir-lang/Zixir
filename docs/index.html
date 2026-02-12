@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zixir — AI automation language (Elixir + Zig + Python)</title>
+  <link rel="icon" type="image/png" href="assets/zixir-icon.png">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+  <nav class="landing-nav">
+    <a href="https://github.com/Zixir-lang/Zixir">Zixir</a>
+    <div class="nav-links">
+      <a href="#quick-start">Quick Start</a>
+      <a href="#why-zixir">Why Zixir</a>
+      <a href="#install">Install</a>
+      <a href="#configure">Configure</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/Zixir-lang/Zixir">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="landing-hero">
+    <img src="assets/zixir-icon.png" alt="Zixir" width="96" height="96">
+    <h1>Zixir</h1>
+    <p class="tagline">AI automation language — three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.</p>
+    <div class="landing-install">
+      <code id="install-code">git clone https://github.com/Zixir-lang/Zixir.git && cd Zixir && git checkout v7.1.0 && mix deps.get && mix zig.get && mix compile</code>
+      <button type="button" class="copy-btn" id="install-copy">Copy</button>
+    </div>
+    <div class="landing-os-tabs">
+      <button type="button" id="tab-unix" class="active">Linux / macOS</button>
+      <button type="button" id="tab-win">Windows</button>
+    </div>
+  </header>
+
+  <section id="quick-start" class="landing-section">
+    <h2>Quick Start</h2>
+    <h3>1. Clone</h3>
+    <div class="landing-code">git clone https://github.com/Zixir-lang/Zixir.git
+cd Zixir
+git checkout v7.1.0</div>
+    <h3>2. Build</h3>
+    <div class="landing-code">mix deps.get
+mix zig.get
+mix compile</div>
+    <h3>3. Run</h3>
+    <div class="landing-code">mix zixir.run examples/hello.zixir</div>
+    <p style="color: var(--zixir-text-muted); font-size: 0.9rem;">Optional: <code>mix phx.server</code> for the web UI at <a href="http://localhost:4000" style="color: var(--zixir-purple-400);">http://localhost:4000</a>.</p>
+  </section>
+
+  <section id="why-zixir" class="landing-section">
+    <h2>Why Zixir?</h2>
+    <p style="margin-bottom: 1.5rem;">One language replaces Airflow + Redis + Prometheus. Built-in orchestration, checkpointing, circuit breakers, and caching — no extra infra.</p>
+    <div class="landing-cards">
+      <div class="landing-card">
+        <h4>One language</h4>
+        <p>Own grammar and semantics. Write .zixir; runtime is Elixir + Zig + Python.</p>
+      </div>
+      <div class="landing-card">
+        <h4>Three-tier runtime</h4>
+        <p>Elixir orchestrates, Zig runs the engine (NIFs), Python handles ML and data.</p>
+      </div>
+      <div class="landing-card">
+        <h4>Built-in VectorDB</h4>
+        <p>Native in-memory backend plus 9 optional backends (pgvector, Redis, Azure, etc.).</p>
+      </div>
+      <div class="landing-card">
+        <h4>No extra infra</h4>
+        <p>No Redis, K8s, or separate DB for workflows. Elixir runtime only.</p>
+      </div>
+      <div class="landing-card">
+        <h4>Pattern matching</h4>
+        <p>Native pattern matching and type inference. Unique among workflow tools.</p>
+      </div>
+      <div class="landing-card">
+        <h4>REPL &amp; LSP</h4>
+        <p>Interactive REPL and <code>mix zixir.lsp</code> for VS Code.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="three-tier" class="landing-section">
+    <h2>Three-tier runtime</h2>
+    <div class="landing-tiers">
+      <div class="landing-tier">
+        <strong>Elixir</strong>
+        <span>Orchestrator — concurrency, fault tolerance, supervision</span>
+      </div>
+      <div class="landing-tier">
+        <strong>Zig</strong>
+        <span>Engine — parsing, math, core ops (NIFs), no GC</span>
+      </div>
+      <div class="landing-tier">
+        <strong>Python</strong>
+        <span>Specialist — ML, data, APIs via port</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="comparison" class="landing-section">
+    <h2>Zixir vs. alternatives</h2>
+    <div style="overflow-x: auto;">
+      <table class="landing-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Zixir</th>
+            <th>Airflow</th>
+            <th>Prefect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>External infrastructure</td><td>Elixir runtime only</td><td>Redis + DB</td><td>Minimal</td></tr>
+          <tr><td>Setup time</td><td>~20 min</td><td>~2 hours</td><td>~1 hour</td></tr>
+          <tr><td>Pattern matching</td><td>Yes</td><td>No</td><td>No</td></tr>
+          <tr><td>Interactive REPL</td><td>Yes</td><td>No</td><td>No</td></tr>
+          <tr><td>Fault tolerance</td><td>Supervision + circuit breakers</td><td>Basic</td><td>Basic</td></tr>
+          <tr><td>LSP support</td><td><code>mix zixir.lsp</code></td><td>No</td><td>No</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="install" class="landing-section">
+    <h2>Install</h2>
+    <p>Requirements: <strong>Elixir</strong> 1.14+ / OTP 25+, <strong>Zig</strong> 0.15+ (build-time), <strong>Python</strong> 3.8+ (optional, for ML/VectorDB).</p>
+    <p>Platforms: Windows, macOS, Linux. See <a href="https://github.com/Zixir-lang/Zixir/blob/master/SETUP_GUIDE.md" style="color: var(--zixir-purple-400);">SETUP_GUIDE.md</a> for step-by-step install per OS.</p>
+  </section>
+
+  <section id="configure" class="landing-section">
+    <h2>Configure</h2>
+    <ul style="color: var(--zixir-text-muted); font-size: 0.95rem;">
+      <li><strong>Python path:</strong> <code>config :zixir, :python_path</code> if Python is not on PATH.</li>
+      <li><strong>VectorDB:</strong> Nine backends; see <a href="VECTORDB_BACKENDS.md" style="color: var(--zixir-purple-400);">VECTORDB_BACKENDS.md</a> for <code>pip install</code> and setup.</li>
+      <li><strong>Docs:</strong> <a href="INDEX.md" style="color: var(--zixir-purple-400);">INDEX.md</a>, <a href="LANGUAGE.md" style="color: var(--zixir-purple-400);">LANGUAGE.md</a>, <a href="https://github.com/Zixir-lang/Zixir/blob/master/GUIDE.md" style="color: var(--zixir-purple-400);">GUIDE.md</a>.</li>
+    </ul>
+  </section>
+
+  <section id="features" class="landing-section">
+    <h2>What's included</h2>
+    <p>Parser, Engine NIFs (20+ Zig ops), Zig backend, type system, workflow (steps, retries, checkpoints), observability, cache (ETS + disk), CLI/REPL, LSP, package manager, VectorDB (9 backends), optional MLIR.</p>
+  </section>
+
+  <section id="faq" class="landing-section">
+    <h2>FAQ</h2>
+    <div class="faq-item">
+      <h4>What is Zixir?</h4>
+      <p>An AI automation language with its own grammar. You write .zixir source; it runs on a three-tier runtime (Elixir + Zig + Python) for agentic and ML workflows.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Is Zixir the same as Elixir?</h4>
+      <p>No. Zixir is its own language (own syntax and semantics). It is implemented using Elixir and compiles to Zig; it is not Elixir syntax.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What do I need to run Zixir?</h4>
+      <p>Elixir 1.14+, Zig 0.15+ (for build), and optionally Python 3.8+ for ML and VectorDB backends.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Where is the full documentation?</h4>
+      <p>Start with <a href="INDEX.md" style="color: var(--zixir-purple-400);">docs/INDEX.md</a> and <a href="https://github.com/Zixir-lang/Zixir/blob/master/README.md" style="color: var(--zixir-purple-400);">README.md</a>. Releases: <a href="https://github.com/Zixir-lang/Zixir/releases" style="color: var(--zixir-purple-400);">Releases</a>.</p>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <a href="https://github.com/Zixir-lang/Zixir">GitHub</a> ·
+    <a href="https://github.com/Zixir-lang/Zixir/blob/master/CONTRIBUTING.md">Contributing</a> ·
+    <a href="https://github.com/Zixir-lang/Zixir/blob/master/LICENSE">Apache-2.0</a>
+    <p class="author">Zixir is created and maintained by <strong>Leo Louvar</strong>.</p>
+  </footer>
+
+  <script src="js/landing.js"></script>
+</body>
+</html>
