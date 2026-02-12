@@ -7,9 +7,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Zixir — AI automation language by Leo Louvar (Elixir + Zig + Python)</title>
-  <meta name="description" content="Zixir is an AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding. Created and maintained by Leo Louvar. Self-hosted workflows, built-in VectorDB, no Airflow or Redis required.">
+  <meta name="description" content="Zixir is an immutable AI automation language and three-tier runtime (Elixir + Zig + Python) for agentic coding. Safer, easier to reason about. Created by Leo Louvar. Self-hosted workflows, built-in VectorDB, no Airflow or Redis required.">
   <meta name="author" content="Leo Louvar">
-  <meta name="keywords" content="Zixir, Leo Louvar, AI automation language, Elixir, Zig, Python, agentic coding, workflow, VectorDB, self-hosted">
+  <meta name="keywords" content="Zixir, Leo Louvar, AI automation language, immutable language, Elixir, Zig, Python, agentic coding, workflow, VectorDB, self-hosted">
   <link rel="canonical" href="https://zixir-lang.github.io/Zixir/">
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -91,7 +91,7 @@
   <header class="landing-hero">
     <img src="assets/zixir-icon.png" alt="Zixir — AI automation language by Leo Louvar" width="96" height="96">
     <h1>Zixir</h1>
-    <p class="tagline">AI automation language — three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows.</p>
+    <p class="tagline">AI automation language — three-tier runtime (Elixir + Zig + Python) for agentic coding and ML workflows. <strong>Immutable by design</strong> — safer and easier to reason about than languages built around mutable state.</p>
     <p class="landing-byline">Created and maintained by <strong>Leo Louvar</strong> · <a href="https://github.com/Zixir-lang/Zixir">GitHub</a></p>
     <div class="landing-install">
       <code id="install-code">git clone https://github.com/Zixir-lang/Zixir.git && cd Zixir && git checkout v7.1.0 && mix deps.get && mix zig.get && mix compile</code>
@@ -141,7 +141,7 @@ mix compile</div>
 
   <section id="why-zixir" class="landing-section">
     <h2>Why Zixir?</h2>
-    <p style="margin-bottom: 0.5rem;">One language replaces Airflow + Redis + Prometheus. Built-in orchestration, checkpointing, circuit breakers, and caching — no extra infra.</p>
+    <p style="margin-bottom: 0.5rem;">One language replaces Airflow + Redis + Prometheus. Built-in orchestration, checkpointing, circuit breakers, and caching — no extra infra. <strong>Zixir is an immutable language</strong>: variables cannot be reassigned, so code is easier to reason about and less prone to bugs than in many general-purpose languages where mutable state is the default.</p>
     <p style="margin-bottom: 1.5rem; color: var(--zixir-text-muted); font-size: 0.95rem;"><strong>Self-hosted by default:</strong> Clone the repo, build, and run. The runtime and optional web UI run entirely on your machine. No cloud lock-in, no Redis or K8s required for workflows.</p>
     <div class="landing-cards">
       <div class="landing-card">
@@ -161,6 +161,10 @@ mix compile</div>
         <p>No Redis, K8s, or separate DB for workflows. Elixir runtime only.</p>
       </div>
       <div class="landing-card">
+        <h4>Immutable by default</h4>
+        <p>Variables are single-assignment; data doesn’t change in place. A clear improvement over mutable-first languages for correctness and concurrency.</p>
+      </div>
+      <div class="landing-card">
         <h4>Pattern matching</h4>
         <p>Native pattern matching and type inference. Unique among workflow tools.</p>
       </div>
@@ -173,10 +177,10 @@ mix compile</div>
 
   <section id="language" class="landing-section">
     <h2>The Zixir language</h2>
-    <p style="margin-bottom: 1rem;">Zixir is its <strong>own language</strong> — not Elixir syntax. You write <code>.zixir</code> source files with a small, expression-oriented grammar.</p>
+    <p style="margin-bottom: 1rem;">Zixir is its <strong>own language</strong> — not Elixir syntax. You write <code>.zixir</code> source files with a small, expression-oriented grammar. <strong>Zixir is immutable</strong>: once you bind a value with <code>let</code>, it cannot be changed — an advantage for reliability and clarity over mutable-by-default languages.</p>
     <h3>Grammar in brief</h3>
     <ul class="landing-feature-list">
-      <li><strong>let</strong> <code>id = expr</code> — bind a name to a value</li>
+      <li><strong>let</strong> <code>id = expr</code> — bind a name to a value (immutable; no reassignment)</li>
       <li><strong>Expressions</strong> — literals (numbers, strings, lists, maps), variables, binary ops (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>)</li>
       <li><strong>engine.</strong><code>op(args)</code> — call into the Zig engine (e.g. <code>engine.list_sum([1.0, 2.0, 3.0])</code>)</li>
       <li><strong>python</strong> <code>"module" "function" (args)</code> — call Python (e.g. <code>python "math" "sqrt" (4.0)</code>)</li>
