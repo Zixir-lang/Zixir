@@ -563,6 +563,27 @@ let all_values = values(user)  # ["Alice Johnson", 28, "alice@example.com"]
 let size = length(user)        # 3
 ```
 
+### Indexing (arrays and maps)
+
+Zixir uses **bracket notation** for both array and map access:
+
+| Target | Syntax | Index/key | Result |
+|--------|--------|-----------|--------|
+| **Array** | `arr[i]` | Integer, zero-based | Element at position `i`; error if out of bounds |
+| **Map** | `map["key"]` | Any value (often string) | Value for key, or `nil` if key missing |
+
+**Array indexing:** Zero-based and bounds-checked. Use a variable (or expression) on the left: `let arr = [1, 2, 3]` then `arr[0]`. Last element: `arr[length(arr) - 1]`.
+
+**Map indexing:** `user["name"]` returns the value or `nil` if the key is missing. Nested: `company["address"]["city"]`.
+
+```zixir
+let arr = [10, 20, 30]
+arr[0]           # 10
+let m = {"a": 1, "b": 2}
+m["a"]           # 1
+m["missing"]     # nil
+```
+
 ### Type Conversions
 
 Zixir provides built-in functions for type conversion:

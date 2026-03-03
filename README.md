@@ -39,7 +39,7 @@ Elixir orchestrates and restarts failed workers; Zig runs hot-path code; Python 
 
 ### How it works
 
-Zixir has its **own grammar** (`let`, expressions, `engine.op(args)`, `python "module" "function" (args)`, literals, binary ops, 25+ built-in functions). Source is **parsed** in Elixir into a Zixir AST, then either:
+Zixir has its **own grammar** (`let`, expressions, array/map indexing `arr[i]` and `map["key"]`, `engine.op(args)`, `python "module" "function" (args)`, literals, binary ops, 25+ built-in functions). Source is **parsed** in Elixir into a Zixir AST, then either:
 
 - **Interpreted** — `Zixir.eval(source)` evaluates the AST in Elixir; `engine.*` calls run in Zig NIFs, `python` calls go to Python via a port.
 - **Compiled** — `Zixir.Compiler.compile(source)` type-checks, optimizes, and **emits Zig**; the Zig is compiled to a native binary or run JIT.
