@@ -233,8 +233,8 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Parser | Complete | Recursive descent; tokenization, expressions, control flow, modulo (`%`), map indexing, pipe operator (`\|>`) |
-| Interpreter | Complete | 25+ built-in functions, pipe operator (`\|>`), map bracket access, closures, graceful engine error handling |
+| Parser | Complete | Recursive descent; tokenization, expressions, control flow, modulo (`%`), array and map indexing, pipe operator (`\|>`), try/catch parsing; unclosed-block error (no hang) |
+| Interpreter | Complete | 25+ built-in functions, pipe operator (`\|>`), array and map indexing, try/catch evaluation, closures, graceful engine error handling |
 | Engine NIFs | Complete | 20+ Zig operations (sum, product, dot, etc.) |
 | Zig Backend | Complete | Codegen, functions, optimization passes |
 | Type System | Complete | Inference, lambda/map/struct types |
