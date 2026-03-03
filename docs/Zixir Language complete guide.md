@@ -190,7 +190,7 @@ mix zixir.repl
 
 You should see:
 ```
-Welcome to Zixir REPL v1.0.0
+Welcome to Zixir REPL v7.1.0
 Type :help for help, :quit to exit
 
 zixir>
@@ -2745,5 +2745,5 @@ Congratulations! You've completed the **Zixir Language Complete Guide**. You now
 
 ---
 
-*This guide was written for Zixir v1.0.0*
-*Last updated: February 2024*
+*This guide was written for Zixir v7.1.0*
+*Last updated: March 2026*
