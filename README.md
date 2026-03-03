@@ -39,7 +39,7 @@ Elixir orchestrates and restarts failed workers; Zig runs hot-path code; Python 
 
 ### How it works
 
-Zixir has its **own grammar** (`let`, expressions, `engine.op(args)`, `python "module" "function" (args)`, literals, binary ops). Source is **parsed** in Elixir into a Zixir AST, then either:
+Zixir has its **own grammar** (`let`, expressions, `engine.op(args)`, `python "module" "function" (args)`, literals, binary ops, 25+ built-in functions). Source is **parsed** in Elixir into a Zixir AST, then either:
 
 - **Interpreted** — `Zixir.eval(source)` evaluates the AST in Elixir; `engine.*` calls run in Zig NIFs, `python` calls go to Python via a port.
 - **Compiled** — `Zixir.Compiler.compile(source)` type-checks, optimizes, and **emits Zig**; the Zig is compiled to a native binary or run JIT.
@@ -109,17 +109,17 @@ flowchart TB
 | Part | Content |
 |------|---------|
 | **Part 1: Getting Started (1–5)** | Installation (all platforms), your first program, REPL, Hello world with explanations |
-| **Part 2: Language Fundamentals (6–12)** | Variables and all data types (Int, Float, Bool, String, Arrays, Maps), type explanations, common mistakes, exercises |
+| **Part 2: Language Fundamentals (6–12)** | Variables and all data types (Int, Float, Bool, String, Arrays, Maps), map indexing, type conversions, built-in functions, exercises |
 | **Part 3: Control Flow (13–17)** | If/else, while and for loops, pattern matching, decision-making patterns |
 | **Part 4: Functions (18–22)** | Definition and calling, parameters vs arguments, lambdas, recursion, scope and best practices |
-| **Part 5: Power Features (23–28)** | Engine operations (all 22 Zig NIFs), Python integration, performance, when to use what |
+| **Part 5: Power Features (23–28)** | 25+ built-in functions, engine operations (22 Zig NIFs), Python integration, performance |
 | **Part 6: Real-World Projects (29–35)** | Data pipeline, AI text analysis, LLM integration, workflow automation |
 | **Part 7: Mastery (36–40)** | Best practices, performance tips, debugging guide, patterns and anti-patterns |
 | **Appendices** | Grammar reference, quick reference card, common patterns, engine operations table |
 
 **Key features:** Progressive learning, 20+ complete examples, 4 real projects, exercises with solutions, visual aids, error-handling focus, AI/automation emphasis.
 
-**Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 22 engine ops documented · full grammar reference.
+**Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 25+ built-in functions · 22 engine ops · modulo, map indexing, type conversions · full grammar reference.
 
 **PDF:** A PDF copy is available at [docs/Zixir Language complete guide.pdf](docs/Zixir%20Language%20complete%20guide.pdf) (same path as the guide, .pdf for download). Website: [zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf](https://zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf). To rebuild locally: **Node** — `npx md-to-pdf "docs/Zixir Language complete guide.md"` (output is already named with spaces); **or** **pandoc** — `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows; requires [pandoc](https://pandoc.org) and LaTeX). To enable automatic PDF build on push: create `.github/workflows/build-guide-pdf.yml` from [scripts/build-guide-pdf-workflow.yml](scripts/build-guide-pdf-workflow.yml) (skip the first 3 comment lines).
 
@@ -145,7 +145,7 @@ flowchart TB
 ```bash
 git clone https://github.com/Zixir-lang/Zixir.git
 cd Zixir
-git checkout v7.0.0
+git checkout v7.1.0
 mix deps.get
 mix zig.get   # after deps.get, for Zigler
 mix compile
@@ -168,7 +168,7 @@ cd Zixir
 # 3. Reset any local changes and fetch tags
 git checkout -- .
 git fetch origin --tags
-git checkout v7.0.0
+git checkout v7.1.0
 
 # 4. Full clean
 mix clean
@@ -233,7 +233,8 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Parser | Complete | Recursive descent; tokenization, expressions, control flow, comprehensions |
+| Parser | Complete | Recursive descent; tokenization, expressions, control flow, modulo (`%`), map indexing |
+| Interpreter | Complete | 25+ built-in functions (`length`, `print`, `to_string`, `type_of`, `split`, `join`, `range`, `reverse`, `abs`, `min`, `max`, etc.), map bracket access, closures |
 | Engine NIFs | Complete | 20+ Zig operations (sum, product, dot, etc.) |
 | Zig Backend | Complete | Codegen, functions, optimization passes |
 | Type System | Complete | Inference, lambda/map/struct types |
