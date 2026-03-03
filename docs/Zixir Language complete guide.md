@@ -97,16 +97,15 @@ Before we begin, it's important to understand Zixir's current capabilities:
 - ✅ Python FFI (module-level functions)
 
 **Current Limitations:**
-- ⚠️ **Maps:** Can be created but indexing is limited (use Python for map operations)
 - ⚠️ **Loops:** While/for loops work with expressions but don't support variable assignment for accumulation
 - ⚠️ **Python Methods:** Only module-level functions work (e.g., `math.sqrt`), not methods (e.g., `str.lower`)
-- ⚠️ **Standard Library:** Limited built-ins; use engine operations or Python
 
 **Recommended Approach:**
+- Use **built-in functions** for common operations (`length`, `to_string`, `print`, etc.)
+- Use **map indexing** for key-value access (`user["name"]`)
 - Use **engine operations** for bulk data processing (fastest)
-- Use **Python FFI** for complex operations and libraries
+- Use **Python FFI** for complex operations and external libraries
 - Use **recursion** or **engine operations** instead of imperative loops
-- Use **arrays** instead of maps for most data structures
 
 ---
 
@@ -394,13 +393,18 @@ let person = {
   "city": "New York"
 }
 
-# Maps can be created but accessing values via indexing 
-# (e.g., person["name"]) is currently limited.
-# Use Python's dict methods for advanced map operations:
-# python "dict" "get" (person, "name")
+# Access map values with bracket indexing
+let name = person["name"]     # "Alice"
+let age = person["age"]       # 30
+let city = person["city"]     # "New York"
 ```
 
-**Note:** Map support is basic in Zixir v1.0. For production use with maps, leverage Python integration.
+**Map operations using built-in functions:**
+```zixir
+let user = {"name": "Alice", "role": "admin"}
+let all_keys = keys(user)       # ["name", "role"]
+let all_values = values(user)   # ["Alice", "admin"]
+```
 
 ### Type Annotations
 
@@ -483,10 +487,10 @@ let empty = []
 let nested = [[1, 2], [3, 4], [5, 6]]  # Array of arrays
 ```
 
-**Getting the length (using Python):**
+**Getting the length:**
 ```zixir
 let items = ["a", "b", "c"]
-let count = 3  # Hardcoded count
+let count = length(items)  # 3
 ```
 
 **Common array patterns:**
@@ -494,8 +498,7 @@ let count = 3  # Hardcoded count
 # Get first and last
 let arr = [10, 20, 30, 40, 50]
 let first = arr[0]
-let last = arr[4]  # Hardcoded index
-# Note: Array length must be hardcoded or calculated using known array size
+let last = arr[length(arr) - 1]  # 50 (dynamic last element)
 
 # Slice (subset of array)
 let middle = [arr[1], arr[2], arr[3]]  # [20, 30, 40]
@@ -538,65 +541,64 @@ let city = company["address"]["city"]  # "New York"
 
 **Working with Maps:**
 
-Maps can be created, but accessing values is currently limited in Zixir v1.0. For production use with maps, use Python integration:
-
 ```zixir
-# Creating a map
 let user = {
   "name": "Alice Johnson",
   "age": 28,
   "email": "alice@example.com"
 }
 
-# Accessing with Python (recommended)
-let name = python "operator" "getitem" (user, "name")
-let age = python "operator" "getitem" (user, "age")
+# Access values with bracket indexing
+let name = user["name"]      # "Alice Johnson"
+let age = user["age"]        # 28
+let email = user["email"]    # "alice@example.com"
 
-# Or use Python's dict methods
-let keys = python "dict" "keys" (user)    # Get all keys
-let values = python "dict" "values" (user)  # Get all values
+# Get all keys and values
+let all_keys = keys(user)      # ["name", "age", "email"]
+let all_values = values(user)  # ["Alice Johnson", 28, "alice@example.com"]
+let size = length(user)        # 3
 ```
-
-**Note:** Direct map indexing (`user["name"]`) is not supported in Zixir v1.0. Use the Python approaches shown above.
 
 ### Type Conversions
 
-Sometimes you need to convert between types. Zixir provides these functions:
+Zixir provides built-in functions for type conversion:
 
 ```zixir
-# Type conversions in Zixir:
-# - Integers: Just write the number (42)
-# - Floats: Just write the number (3.14)
-# - String to number: Not directly supported in v1.0
-# - Number to string: Use interpolation or engine operations
-
-# For string representation, you can use:
+# Number to string
 let num = 42
-let num_str = "42"  # Just write it as a string literal
+let num_str = to_string(num)        # "42"
+let pi_str = to_string(3.14)       # "3.14"
+let bool_str = to_string(true)     # "true"
 
-# Or use Python's built-in functions (requires __builtins__ module):
-# Note: Built-in functions may not be available in all Python configurations
-let arr_display = "[1, 2, 3]"  # For display purposes
+# String to number
+let parsed_int = parse_int("42")       # 42
+let parsed_float = parse_float("3.14") # 3.14
+
+# Check types at runtime
+let t = type_of(42)                # "Int"
+let t2 = type_of("hello")         # "String"
+let t3 = type_of([1, 2, 3])       # "Array"
 ```
 
-### Real-World Example: User Profile (Using Arrays)
+### Real-World Example: User Profile
 
-Since map indexing is limited, here's how to store user data using arrays:
+Maps make it easy to work with structured data:
 
 ```zixir
-# Store user data as parallel arrays
-let names = ["Alice", "Bob", "Charlie"]
-let ages = [28, 35, 42]
-let emails = ["alice@example.com", "bob@example.com", "charlie@example.com"]
+# Store user profiles as maps
+let user = {
+  "name": "Alice",
+  "age": 28,
+  "email": "alice@example.com"
+}
 
-# Access by index
-let index = 0
-let name = names[index]        # "Alice"
-let age = ages[index]          # 28
-let email = emails[index]      # "alice@example.com"
+# Access fields with bracket indexing
+let name = user["name"]        # "Alice"
+let age = user["age"]          # 28
 
-# Create a summary (for display, just use string literals)
-"User " ++ name ++ " is " ++ "28" ++ " years old"
+# Build a summary string
+let summary = "User " ++ name ++ " is " ++ to_string(age) ++ " years old"
+print(summary)                 # "User Alice is 28 years old"
 # Result: "User Alice is 28 years old"
 ```
 
@@ -638,13 +640,16 @@ let age = python "operator" "getitem" (user, "age")
 | `-` | Subtraction | `10 - 4` | `6` |
 | `*` | Multiplication | `6 * 7` | `42` |
 | `/` | Division | `15 / 3` | `5.0` |
+| `%` | Modulo (remainder) | `10 % 3` | `1` |
 | `-` | Negation | `-5` | `-5` |
 
-**Important:** Division always returns a Float, even if the result is a whole number.
+**Important:** Division always returns a Float, even if the result is a whole number. Modulo returns an integer when both operands are integers.
 
 ```zixir
 10 / 2      # 5.0 (Float)
 10 / 3      # 3.3333333333 (Float)
+10 % 3      # 1 (remainder)
+17 % 5      # 2
 ```
 
 ### Comparison Operators
@@ -714,7 +719,7 @@ Just like in math, some operations happen before others:
 ```
 1. Parentheses: ( )
 2. Unary: -, !
-3. Multiplication/Division: *, /
+3. Multiplication/Division/Modulo: *, /, %
 4. Addition/Subtraction: +, -
 5. Comparison: <, >, <=, >=
 6. Equality: ==, !=
@@ -780,6 +785,102 @@ let in_range = x >= min && x <= max  # true
 # 4. String concatenation:
 #    Create the sentence "The temperature is 72 degrees"
 #    from "The temperature is ", 72, and " degrees"
+```
+
+---
+
+## 6b. Built-in Functions
+
+Zixir provides a set of built-in functions for common operations. These are always available without imports.
+
+### Output
+
+| Function | Description | Example | Result |
+|----------|-------------|---------|--------|
+| `print(args...)` | Print values to output | `print("Hello", 42)` | `"Hello 42"` |
+
+```zixir
+print("Hello, World!")
+print("Value:", 42)
+print("Sum:", 2 + 3)
+```
+
+### Type Conversion
+
+| Function | Description | Example | Result |
+|----------|-------------|---------|--------|
+| `to_string(val)` | Convert any value to string | `to_string(42)` | `"42"` |
+| `parse_int(str)` | Parse string to integer | `parse_int("42")` | `42` |
+| `parse_float(str)` | Parse string to float | `parse_float("3.14")` | `3.14` |
+| `type_of(val)` | Get the type name as string | `type_of(42)` | `"Int"` |
+
+```zixir
+let n = 42
+let s = to_string(n)            # "42"
+let greeting = "Number: " ++ s  # "Number: 42"
+
+let parsed = parse_int("100")   # 100
+let t = type_of(parsed)         # "Int"
+```
+
+### Collection Functions
+
+| Function | Description | Example | Result |
+|----------|-------------|---------|--------|
+| `length(val)` | Get length of array, string, or map | `length([1,2,3])` | `3` |
+| `head(list)` | Get first element | `head([1,2,3])` | `1` |
+| `tail(list)` | Get all elements except first | `tail([1,2,3])` | `[2,3]` |
+| `push(list, val)` | Append element to array | `push([1,2], 3)` | `[1,2,3]` |
+| `reverse(val)` | Reverse array or string | `reverse([1,2,3])` | `[3,2,1]` |
+| `contains(col, val)` | Check if collection contains value | `contains([1,2,3], 2)` | `true` |
+| `range(a, b)` | Generate array from a to b | `range(1, 5)` | `[1,2,3,4,5]` |
+| `keys(map)` | Get all keys from a map | `keys({"a": 1})` | `["a"]` |
+| `values(map)` | Get all values from a map | `values({"a": 1})` | `[1]` |
+
+```zixir
+let arr = [10, 20, 30, 40, 50]
+let len = length(arr)            # 5
+let first = head(arr)           # 10
+let rest = tail(arr)            # [20, 30, 40, 50]
+let extended = push(arr, 60)    # [10, 20, 30, 40, 50, 60]
+
+let nums = range(1, 10)         # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+let has_five = contains(nums, 5) # true
+```
+
+### String Functions
+
+| Function | Description | Example | Result |
+|----------|-------------|---------|--------|
+| `upper(str)` | Convert to uppercase | `upper("hello")` | `"HELLO"` |
+| `lower(str)` | Convert to lowercase | `lower("HELLO")` | `"hello"` |
+| `trim(str)` | Remove leading/trailing whitespace | `trim("  hi  ")` | `"hi"` |
+| `split(str, sep)` | Split string by separator | `split("a-b-c", "-")` | `["a","b","c"]` |
+| `join(list, sep)` | Join array into string | `join(["a","b"], "-")` | `"a-b"` |
+| `reverse(str)` | Reverse a string | `reverse("abc")` | `"cba"` |
+| `contains(str, sub)` | Check if string contains substring | `contains("hello", "ell")` | `true` |
+| `length(str)` | Get string length | `length("hello")` | `5` |
+
+```zixir
+let text = "  Hello, World!  "
+let cleaned = trim(text)         # "Hello, World!"
+let shouted = upper(cleaned)     # "HELLO, WORLD!"
+let words = split(cleaned, " ")  # ["Hello,", "World!"]
+let joined = join(words, "-")    # "Hello,-World!"
+```
+
+### Math Functions
+
+| Function | Description | Example | Result |
+|----------|-------------|---------|--------|
+| `abs(n)` | Absolute value | `abs(-5)` | `5` |
+| `min(a, b)` | Minimum of two numbers | `min(3, 7)` | `3` |
+| `max(a, b)` | Maximum of two numbers | `max(3, 7)` | `7` |
+
+```zixir
+let diff = abs(-10)     # 10
+let smaller = min(5, 3) # 3
+let bigger = max(5, 3)  # 5
 ```
 
 ---
@@ -2298,7 +2399,7 @@ object.field
 | `[]` | 1 | Indexing |
 | `.` | 1 | Field access |
 | `-` `!` | 2 | Unary negation, not |
-| `*` `/` | 3 | Multiplication, division |
+| `*` `/` `%` | 3 | Multiplication, division, modulo |
 | `+` `-` | 4 | Addition, subtraction |
 | `++` | 4 | Concatenation |
 | `<` `>` `<=` `>=` | 5 | Comparison |
@@ -2365,7 +2466,7 @@ const PI = 3.14159          # Compile-time constant
 ### Operators
 ```zixir
 # Arithmetic
-+  -  *  /
++  -  *  /  %
 
 # Comparison
 ==  !=  <  >  <=  >=
@@ -2375,7 +2476,37 @@ const PI = 3.14159          # Compile-time constant
 
 # Other
 ++   # String/array concatenation
-[]   # Array indexing (arrays only, not maps)
+[]   # Array/map indexing
+```
+
+### Built-in Functions
+```zixir
+# Output
+print("Hello", value)
+
+# Type conversion
+to_string(42)          # "42"
+parse_int("42")        # 42
+parse_float("3.14")    # 3.14
+type_of(value)         # "Int", "String", etc.
+
+# Collections
+length(arr)            # array/string/map length
+head(arr)              # first element
+tail(arr)              # all except first
+push(arr, val)         # append
+reverse(arr)           # reverse
+contains(arr, val)     # membership check
+range(1, 10)           # generate array
+keys(map)              # map keys
+values(map)            # map values
+
+# Strings
+upper(str)   lower(str)   trim(str)
+split(str, sep)   join(arr, sep)
+
+# Math
+abs(n)   min(a, b)   max(a, b)
 ```
 
 ### Control Flow
@@ -2383,10 +2514,10 @@ const PI = 3.14159          # Compile-time constant
 # If/else
 if condition: expr else: expr
 
-# While loop (expression-oriented, no assignment in body)
+# While loop
 while condition: expr
 
-# For loop (expression-oriented, no assignment in body)
+# For loop
 for item in list: expr
 
 # Pattern matching
@@ -2395,8 +2526,6 @@ match value {
   _ => default
 }
 ```
-
-**Note:** While/for loops in Zixir are expression-oriented. They don't support variable assignment within the loop body. Use engine operations or recursion for iteration with accumulation.
 
 ### Functions
 ```zixir
