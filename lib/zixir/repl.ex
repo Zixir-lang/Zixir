@@ -47,13 +47,16 @@ defmodule Zixir.REPL do
     :reset       - Clear all variables
     
   Language Features:
-    - let x = 5              - Variable binding
-    - x + 10                 - Expression evaluation
-    - engine.list_sum([...]) - Engine operations
-    - python "math" "sqrt" (16.0)  - Python calls
-    - if x > 5: 10 else: 20  - Conditionals
-    - [1, 2, 3]              - Arrays
-    - fn add(x, y): x + y    - Functions (experimental)
+    - let x = 5                    - Variable binding (immutable)
+    - x + 10                       - Expression evaluation
+    - value |> transform()         - Pipe operator
+    - fn add(x, y): x + y         - Functions (recursive, closures)
+    - if x > 5: 10 else: 20       - Conditionals
+    - match x { 1 => "one" }      - Pattern matching
+    - [1, 2, 3], {"a": 1}         - Arrays and maps
+    - engine.list_sum([...])       - Engine operations (Zig)
+    - python "math" "sqrt" (16.0)  - Python FFI
+    - try { expr } catch e => { }  - Error handling
   """
 
   @doc """
