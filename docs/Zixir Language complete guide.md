@@ -82,30 +82,33 @@ By the end of this guide, you'll be able to:
 - Build real AI automation workflows
 - Debug and optimize your code
 
-### ⚠️ Known Limitations in Zixir v1.0
+### ⚠️ Known Limitations in Zixir v7.1.0
 
 Before we begin, it's important to understand Zixir's current capabilities:
 
 **What Works Great:**
 - ✅ All primitive types (Int, Float, Bool, String)
-- ✅ Arrays and array operations
-- ✅ All operators and expressions
-- ✅ Functions (simple and recursive)
+- ✅ Arrays and array operations (indexing, `length`, `head`, `tail`, `push`, `reverse`, `range`)
+- ✅ Maps and map indexing (`user["name"]`, `keys()`, `values()`)
+- ✅ All operators and expressions (including modulo `%`)
+- ✅ 25+ built-in functions (`length`, `print`, `to_string`, `type_of`, `split`, `join`, `upper`, `lower`, `trim`, `abs`, `min`, `max`, `parse_int`, `parse_float`, `contains`, `reverse`, `range`, `head`, `tail`, `push`, `keys`, `values`)
+- ✅ Functions (simple, recursive, closures, lambdas)
 - ✅ Pattern matching
 - ✅ If/else expressions
-- ✅ Engine operations (22 high-performance operations)
+- ✅ Engine operations (22 high-performance Zig NIF operations)
 - ✅ Python FFI (module-level functions)
 
 **Current Limitations:**
-- ⚠️ **Loops:** While/for loops work with expressions but don't support variable assignment for accumulation
-- ⚠️ **Python Methods:** Only module-level functions work (e.g., `math.sqrt`), not methods (e.g., `str.lower`)
+- ⚠️ **Loops:** While/for loops work but don't support variable accumulation across iterations (by design — Zixir is immutable). Use recursion or engine operations instead.
+- ⚠️ **Python Methods:** Only module-level functions work (e.g., `math.sqrt`), not object methods (e.g., `str.lower`)
+- ⚠️ **Pipe operator:** `|>` syntax is not yet functional
 
 **Recommended Approach:**
-- Use **built-in functions** for common operations (`length`, `to_string`, `print`, etc.)
+- Use **built-in functions** for common operations (`length`, `to_string`, `print`, `split`, `join`, etc.)
 - Use **map indexing** for key-value access (`user["name"]`)
 - Use **engine operations** for bulk data processing (fastest)
 - Use **Python FFI** for complex operations and external libraries
-- Use **recursion** or **engine operations** instead of imperative loops
+- Use **recursion** or **engine operations** instead of imperative loops with accumulation
 
 ---
 
