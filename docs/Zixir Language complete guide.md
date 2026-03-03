@@ -95,15 +95,16 @@ Before we begin, it's important to understand Zixir's current capabilities:
 - ✅ Functions (simple, recursive, closures, lambdas)
 - ✅ Pattern matching
 - ✅ If/else expressions
+- ✅ Pipe operator (`|>`) for chaining function calls
 - ✅ Engine operations (22 high-performance Zig NIF operations)
 - ✅ Python FFI (module-level functions)
 
 **Current Limitations:**
 - ⚠️ **Loops:** While/for loops work but don't support variable accumulation across iterations (by design — Zixir is immutable). Use recursion or engine operations instead.
 - ⚠️ **Python Methods:** Only module-level functions work (e.g., `math.sqrt`), not object methods (e.g., `str.lower`)
-- ⚠️ **Pipe operator:** `|>` syntax is not yet functional
 
 **Recommended Approach:**
+- Use **pipe operator** (`|>`) to chain transformations cleanly
 - Use **built-in functions** for common operations (`length`, `to_string`, `print`, `split`, `join`, etc.)
 - Use **map indexing** for key-value access (`user["name"]`)
 - Use **engine operations** for bulk data processing (fastest)
@@ -728,6 +729,7 @@ Just like in math, some operations happen before others:
 6. Equality: ==, !=
 7. Logical AND: &&
 8. Logical OR: ||
+9. Pipe: |>  (lowest precedence)
 ```
 
 ```zixir
@@ -885,6 +887,56 @@ let diff = abs(-10)     # 10
 let smaller = min(5, 3) # 3
 let bigger = max(5, 3)  # 5
 ```
+
+---
+
+## 6c. Pipe Operator
+
+The pipe operator `|>` passes the result of the left expression as the **first argument** to the function on the right. This lets you chain transformations in a readable, top-to-bottom style instead of nesting function calls.
+
+### Basic Usage
+
+```zixir
+# Without pipe (nested, reads inside-out)
+upper(trim("  hello  "))
+
+# With pipe (reads left-to-right)
+"  hello  " |> trim() |> upper()    # "HELLO"
+```
+
+### Piping into Functions with Arguments
+
+When the right-side function takes additional arguments, the piped value becomes the first argument:
+
+```zixir
+fn add(a, b): a + b
+10 |> add(5)           # 15 (same as add(10, 5))
+
+"hello world" |> contains("world")  # true
+```
+
+### Chaining Multiple Pipes
+
+```zixir
+# Clean and transform a string
+"  Hello World  " |> trim() |> lower() |> length()   # 11
+
+# Convert and format
+-42 |> abs() |> to_string()    # "42"
+```
+
+### Pipe with Built-in Functions
+
+All 25+ built-in functions work with pipes:
+
+```zixir
+[3, 1, 2] |> reverse()        # [2, 1, 3]
+[1, 2, 3] |> length()         # 3
+42 |> type_of()                # "Int"
+"abc" |> upper()               # "ABC"
+```
+
+> **Tip:** The pipe operator has the lowest precedence, so `3 + 4 |> to_string()` evaluates `3 + 4` first, then pipes `7` into `to_string()`.
 
 ---
 
@@ -2390,6 +2442,10 @@ map["key"]
 # Field access
 object.field
 
+# Pipe operator
+expression |> function_name()
+expression |> function_name(extra_arg)
+
 # Parentheses
 (expression)
 ```
@@ -2409,6 +2465,7 @@ object.field
 | `==` `!=` | 6 | Equality |
 | `&&` | 7 | Logical AND |
 | `||` | 8 | Logical OR |
+| `\|>` | 9 | Pipe (lowest precedence) |
 
 ### Function Definition
 
@@ -2480,6 +2537,7 @@ const PI = 3.14159          # Compile-time constant
 # Other
 ++   # String/array concatenation
 []   # Array/map indexing
+|>   # Pipe (chains function calls)
 ```
 
 ### Built-in Functions
@@ -2570,7 +2628,7 @@ python "random" "random" ()
 
 ### Common Patterns
 
-**Note:** Loops with index are not supported in Zixir v1.0. Use engine operations instead.
+**Note:** Loops don't support variable accumulation (Zixir is immutable). Use recursion, pipes, or engine operations instead.
 
 **Filter array (using engine):**
 ```zixir

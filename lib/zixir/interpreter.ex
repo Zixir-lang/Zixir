@@ -149,11 +149,21 @@ defmodule Zixir.Interpreter do
   end
 
   defp eval_expr({:engine_call, func_name, args, _line, _col}, env) do
-    # Engine call: engine.list_sum([...])
     with {:ok, evaled_args} <- eval_args(args, env) do
       op = String.to_atom(func_name)
-      result = Zixir.Engine.run(op, evaled_args)
-      {:ok, result}
+      try do
+        result = Zixir.Engine.run(op, evaled_args)
+        {:ok, result}
+      rescue
+        e in ArgumentError ->
+          {:error, "Engine operation #{func_name} failed: #{Exception.message(e)}"}
+        e in ArithmeticError ->
+          {:error, "Engine operation #{func_name} failed: #{Exception.message(e)}"}
+        _e in FunctionClauseError ->
+          {:error, "Engine operation #{func_name}: invalid arguments #{inspect(evaled_args)}"}
+        e ->
+          {:error, "Engine operation #{func_name} failed: #{Exception.message(e)}"}
+      end
     end
   end
   
@@ -245,17 +255,19 @@ defmodule Zixir.Interpreter do
   end
 
   defp eval_expr({:pipe, left_expr, right_expr}, env) do
-    # Pipe operator: left |> right
     with {:ok, left_val} <- eval_expr(left_expr, env) do
-      # Inject left value as first argument to right expression
       case right_expr do
+        {:call, func, args, line, col} ->
+          eval_expr({:call, func, [{:literal, left_val} | args], line, col}, env)
         {:call, func, args} ->
-          eval_expr({:call, func, [left_val | args]}, env)
+          eval_expr({:call, func, [{:literal, left_val} | args]}, env)
         _ ->
           {:error, "Right side of pipe must be a function call"}
       end
     end
   end
+
+  defp eval_expr({:literal, value}, _env), do: {:ok, value}
 
   defp eval_expr({:async, expr, _line, _col}, env) do
     # For now, async just evaluates synchronously

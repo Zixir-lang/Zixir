@@ -31,7 +31,7 @@ defmodule Zixir.REPL do
   require Logger
 
   @welcome_message """
-  Welcome to Zixir REPL v0.1.0
+  Welcome to Zixir REPL v7.1.0
   Type :help for help, :quit to exit
   
   """
@@ -194,42 +194,25 @@ defmodule Zixir.REPL do
   end
 
   defp evaluate(code, state) do
-    case Zixir.eval(code) do
-      {:ok, result} ->
-        # Extract any new variable bindings from the code
-        new_env = extract_bindings(code, result, state.env)
-        
-        # Print result (unless it's nil from a let statement)
+    case Zixir.Interpreter.eval(code, state.env) do
+      {:ok, result, new_env} ->
         if result != nil do
           IO.puts(format_result(result))
         end
-        
+
         {:continue, %{state | env: new_env, history: [code | state.history]}}
-      
+
+      {:error, message} when is_binary(message) ->
+        IO.puts("Error: #{message}")
+        {:continue, %{state | multiline_buffer: "", line_count: 0}}
+
       {:error, %Zixir.CompileError{} = error} ->
         IO.puts("Error: #{error.message}")
-        if error.line && error.line > 0 do
-          IO.puts("  at line #{error.line}, column #{error.column}")
-        end
         {:continue, %{state | multiline_buffer: "", line_count: 0}}
-      
+
       {:error, reason} ->
         IO.puts("Error: #{inspect(reason)}")
         {:continue, %{state | multiline_buffer: "", line_count: 0}}
-    end
-  end
-
-  defp extract_bindings(code, _result, env) do
-    # Simple extraction of let bindings
-    # In a full implementation, we'd parse and track all bindings properly
-    case Regex.run(~r/^let\s+(\w+)\s*=/, code) do
-      [_, var_name] ->
-        # Re-evaluate to get the value
-        case Zixir.eval(code) do
-          {:ok, value} -> Map.put(env, var_name, value)
-          _ -> env
-        end
-      _ -> env
     end
   end
 

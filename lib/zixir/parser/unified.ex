@@ -102,6 +102,7 @@ defmodule Zixir.Parser.Unified do
     "->" => :arrow,
     "=>" => :fat_arrow,
     ".." => :range_op,
+    "|>" => :|>,
     "<" => :lt,
     ">" => :gt
   }
@@ -402,9 +403,15 @@ defmodule Zixir.Parser.Unified do
   defp parse_block(tokens), do: {nil, tokens}
 
   defp parse_block_contents([{:op, :"}", _, _} | rest], acc), do: {{:block, Enum.reverse(acc)}, rest}
-  
+
+  defp parse_block_contents([], _acc) do
+    raise ParseError, message: "Unexpected end of input, expected '}' to close block", line: 0, column: 0
+  end
+
   defp parse_block_contents(tokens, acc) do
     case parse_statement(tokens) do
+      {nil, []} ->
+        raise ParseError, message: "Unexpected end of input, expected '}' to close block", line: 0, column: 0
       {nil, rest} -> parse_block_contents(rest, acc)
       {stmt, rest} -> parse_block_contents(rest, [stmt | acc])
     end
@@ -500,7 +507,23 @@ defmodule Zixir.Parser.Unified do
   # Parser - Expressions (with operator precedence)
   # ============================================================================
 
-  defp parse_expression(tokens), do: parse_or(tokens)
+  defp parse_expression(tokens), do: parse_pipe(tokens)
+
+  defp parse_pipe(tokens) do
+    {left, rest} = parse_or(tokens)
+    case rest do
+      [{:op, :|>, _, _} | rest2] ->
+        {right, rest3} = parse_or(rest2)
+        parse_pipe_chain({:pipe, left, right}, rest3)
+      _ -> {left, rest}
+    end
+  end
+
+  defp parse_pipe_chain(left, [{:op, :|>, _, _} | rest]) do
+    {right, rest2} = parse_or(rest)
+    parse_pipe_chain({:pipe, left, right}, rest2)
+  end
+  defp parse_pipe_chain(left, rest), do: {left, rest}
 
   defp parse_or(tokens) do
     {left, rest} = parse_and(tokens)
@@ -753,11 +776,6 @@ defmodule Zixir.Parser.Unified do
   
   defp parse_identifier_suffix(expr, [{:op, :., _, _}, {:ident, field, _, _} | rest]) do
     parse_identifier_suffix({:field, expr, field}, rest)
-  end
-  
-  defp parse_identifier_suffix(expr, [{:op, :|>, _, _} | rest]) do
-    {right, rest2} = parse_unary(rest)
-    parse_identifier_suffix({:pipe, expr, right}, rest2)
   end
   
   defp parse_identifier_suffix(expr, rest), do: {expr, rest}

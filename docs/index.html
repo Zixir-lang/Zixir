@@ -184,6 +184,7 @@ mix compile</div>
       <li><strong>Expressions</strong> — literals (numbers, strings, lists, maps), variables, binary ops (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>)</li>
       <li><strong>Maps &amp; indexing</strong> — <code>user["name"]</code> bracket access, <code>keys(map)</code>, <code>values(map)</code></li>
       <li><strong>Built-in functions</strong> — <code>length</code>, <code>print</code>, <code>to_string</code>, <code>type_of</code>, <code>split</code>, <code>join</code>, <code>range</code>, <code>reverse</code>, <code>abs</code>, <code>min</code>, <code>max</code>, and more</li>
+      <li><strong>Pipe operator</strong> — <code>value |> transform() |> format()</code> chain functions left-to-right</li>
       <li><strong>engine.</strong><code>op(args)</code> — call into the Zig engine (e.g. <code>engine.list_sum([1.0, 2.0, 3.0])</code>)</li>
       <li><strong>python</strong> <code>"module" "function" (args)</code> — call Python (e.g. <code>python "math" "sqrt" (4.0)</code>)</li>
       <li><strong>match</strong> — pattern matching on values</li>
@@ -192,10 +193,11 @@ mix compile</div>
     <p style="color: var(--zixir-text-muted); font-size: 0.95rem;">Source is parsed in Elixir into a Zixir AST. It can be <strong>interpreted</strong> (<code>Zixir.eval(source)</code> — engine calls run in Zig NIFs, python calls go to Python via a port) or <strong>compiled</strong> (<code>Zixir.Compiler.compile(source)</code> — type-checks, optimizes, emits Zig; then compile to a native binary or run JIT). Your code stays Zixir-only; the runtime is Elixir + Zig + Python.</p>
     <div class="landing-code" style="margin-top: 1rem;">let data = [1.0, 2.0, 3.0, 4.0, 5.0]
 let total = engine.list_sum(data)
-let count = length(data)
+let count = data |> length()
+let label = total |> to_string() |> upper()
 let user = {"name": "Alice", "score": total}
-print("User: " ++ user["name"] ++ ", items: " ++ to_string(count))
-# result: "User: Alice, items: 5"</div>
+print("User: " ++ user["name"] ++ ", total: " ++ label)
+# result: "User: Alice, total: 15.0"</div>
     <p style="margin-top: 0.75rem; font-size: 0.9rem;"><a href="LANGUAGE.md" style="color: var(--zixir-purple-400);">Full language spec → LANGUAGE.md</a></p>
   </section>
 
@@ -217,7 +219,7 @@ print("User: " ++ user["name"] ++ ", items: " ++ to_string(count))
     <h3>Key features</h3>
     <p style="color: var(--zixir-text-muted); font-size: 0.95rem;">Progressive learning · Every concept explained · 20+ complete examples · 4 real projects · Exercises with solutions · Visual aids · Error handling · AI-focused automation workflows.</p>
     <h3>Guide statistics</h3>
-    <p style="color: var(--zixir-text-muted); font-size: 0.95rem;">40+ pages · 20+ code examples · 4 major projects · 6 practice exercises per chapter · 25+ built-in functions · 22 engine operations · Modulo, map indexing, type conversions · Complete grammar reference · Quick reference card.</p>
+    <p style="color: var(--zixir-text-muted); font-size: 0.95rem;">40+ pages · 20+ code examples · 4 major projects · 6 practice exercises per chapter · 25+ built-in functions · 22 engine operations · Pipe operator, modulo, map indexing, type conversions · Complete grammar reference · Quick reference card.</p>
     <p style="margin-top: 1rem;"><a href="https://github.com/Zixir-lang/Zixir/blob/master/docs/Zixir%20Language%20complete%20guide.md" style="color: var(--zixir-purple-400); font-weight: 600;">→ Zixir Language complete guide (read on GitHub)</a> · <a href="https://github.com/Zixir-lang/Zixir/raw/master/docs/Zixir%20Language%20complete%20guide.md" style="color: var(--zixir-purple-400); font-weight: 600;">Download (Markdown)</a> · <a href="Zixir%20Language%20complete%20guide.pdf" style="color: var(--zixir-purple-400); font-weight: 600;">Download PDF</a></p>
     <p style="font-size: 0.85rem; color: var(--zixir-text-muted);">To rebuild the PDF locally: <code>npx md-to-pdf "docs/Zixir Language complete guide.md"</code> then keep the generated <code>Zixir Language complete guide.pdf</code>; or use <code>.\scripts\build-guide-pdf.ps1</code> (pandoc + LaTeX).</p>
   </section>

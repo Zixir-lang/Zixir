@@ -112,14 +112,14 @@ flowchart TB
 | **Part 2: Language Fundamentals (6–12)** | Variables and all data types (Int, Float, Bool, String, Arrays, Maps), map indexing, type conversions, built-in functions, exercises |
 | **Part 3: Control Flow (13–17)** | If/else, while and for loops, pattern matching, decision-making patterns |
 | **Part 4: Functions (18–22)** | Definition and calling, parameters vs arguments, lambdas, recursion, scope and best practices |
-| **Part 5: Power Features (23–28)** | 25+ built-in functions, engine operations (22 Zig NIFs), Python integration, performance |
+| **Part 5: Power Features (23–28)** | 25+ built-in functions, pipe operator (`\|>`), engine operations (22 Zig NIFs), Python integration, performance |
 | **Part 6: Real-World Projects (29–35)** | Data pipeline, AI text analysis, LLM integration, workflow automation |
 | **Part 7: Mastery (36–40)** | Best practices, performance tips, debugging guide, patterns and anti-patterns |
 | **Appendices** | Grammar reference, quick reference card, common patterns, engine operations table |
 
 **Key features:** Progressive learning, 20+ complete examples, 4 real projects, exercises with solutions, visual aids, error-handling focus, AI/automation emphasis.
 
-**Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 25+ built-in functions · 22 engine ops · modulo, map indexing, type conversions · full grammar reference.
+**Guide stats:** 40+ pages · 20+ code examples · 4 projects · 6 exercises per chapter · 25+ built-in functions · 22 engine ops · pipe operator, modulo, map indexing, type conversions · full grammar reference.
 
 **PDF:** A PDF copy is available at [docs/Zixir Language complete guide.pdf](docs/Zixir%20Language%20complete%20guide.pdf) (same path as the guide, .pdf for download). Website: [zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf](https://zixir-lang.github.io/Zixir/Zixir%20Language%20complete%20guide.pdf). To rebuild locally: **Node** — `npx md-to-pdf "docs/Zixir Language complete guide.md"` (output is already named with spaces); **or** **pandoc** — `./scripts/build-guide-pdf.sh` (Unix) or `.\scripts\build-guide-pdf.ps1` (Windows; requires [pandoc](https://pandoc.org) and LaTeX). To enable automatic PDF build on push: create `.github/workflows/build-guide-pdf.yml` from [scripts/build-guide-pdf-workflow.yml](scripts/build-guide-pdf-workflow.yml) (skip the first 3 comment lines).
 
@@ -233,8 +233,8 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Parser | Complete | Recursive descent; tokenization, expressions, control flow, modulo (`%`), map indexing |
-| Interpreter | Complete | 25+ built-in functions (`length`, `print`, `to_string`, `type_of`, `split`, `join`, `range`, `reverse`, `abs`, `min`, `max`, etc.), map bracket access, closures |
+| Parser | Complete | Recursive descent; tokenization, expressions, control flow, modulo (`%`), map indexing, pipe operator (`\|>`) |
+| Interpreter | Complete | 25+ built-in functions, pipe operator (`\|>`), map bracket access, closures, graceful engine error handling |
 | Engine NIFs | Complete | 20+ Zig operations (sum, product, dot, etc.) |
 | Zig Backend | Complete | Codegen, functions, optimization passes |
 | Type System | Complete | Inference, lambda/map/struct types |
@@ -245,7 +245,7 @@ After Setup, run `mix zixir.run examples/hello.zixir`. Expected: `11.0`. For JIT
 | Workflow | Complete | Steps, retries, checkpoints, sandboxing |
 | Observability | Complete | Logging, metrics, tracing, alerts |
 | Cache | Complete | ETS + disk caching |
-| CLI/REPL | Working | All commands functional |
+| CLI/REPL | Complete | Variable persistence, function persistence, all commands functional |
 | Portable CLI | Working | `zixir_run.sh` / `zixir_run.bat` from release; run from any path |
 | LSP Server | ✅ Ready | `mix zixir.lsp` + VS Code integration |
 | Package Manager | Complete | `Zixir.Package`: resolve, install (Git/path), list, cache; `zixir.toml` manifest |
