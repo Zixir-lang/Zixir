@@ -289,8 +289,28 @@ defmodule Zixir.Interpreter do
     end
   end
 
+  defp eval_expr({:try, body, catches, _line, _col}, env) do
+    case eval_expr(body, env) do
+      {:ok, value} -> {:ok, value}
+      {:error, reason} ->
+        case find_matching_catch(catches, reason, env) do
+          {:ok, value} -> {:ok, value}
+          :no_match -> {:error, reason}
+        end
+    end
+  end
+
   defp eval_expr(expr, _env) do
     {:error, "Unsupported expression: #{inspect(expr)}"}
+  end
+
+  defp find_matching_catch([], _reason, _env), do: :no_match
+  defp find_matching_catch([{error_var, _error_type, catch_body} | rest], reason, env) do
+    catch_env = Map.put(env, error_var, reason)
+    case eval_expr(catch_body, catch_env) do
+      {:ok, value} -> {:ok, value}
+      {:error, _} -> find_matching_catch(rest, reason, env)
+    end
   end
 
   # ============================================================================

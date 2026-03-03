@@ -255,17 +255,34 @@ defmodule Zixir.REPL do
     end
   end
 
+  @engine_categories [
+    {"Aggregations", ~w(list_sum list_product list_mean list_min list_max list_variance list_std)},
+    {"Vector", ~w(dot_product vec_add vec_sub vec_mul vec_div vec_scale)},
+    {"Transform", ~w(map_add map_mul filter_gt sort_asc)},
+    {"Search", ~w(find_index count_value)},
+    {"Matrix", ~w(mat_mul mat_transpose)},
+    {"String", ~w(string_count string_find string_starts_with string_ends_with)}
+  ]
+
   defp show_engine_ops() do
     ops = Zixir.Engine.operations()
-    
     IO.puts("Available engine operations (#{length(ops)} total):")
     IO.puts("")
-    IO.puts("Aggregations: list_sum, list_product, list_mean, list_min, list_max, list_variance, list_std")
-    IO.puts("Vector: dot_product, vec_add, vec_sub, vec_mul, vec_div, vec_scale")
-    IO.puts("Transform: map_add, map_mul, filter_gt, sort_asc")
-    IO.puts("Search: find_index, count_value")
-    IO.puts("Matrix: mat_mul, mat_transpose")
-    IO.puts("String: string_count, string_find, string_starts_with, string_ends_with")
+
+    Enum.each(@engine_categories, fn {category, known_ops} ->
+      matching = Enum.filter(ops, &(Atom.to_string(&1) in known_ops))
+      unless matching == [] do
+        IO.puts("#{category}: #{Enum.map_join(matching, ", ", &Atom.to_string/1)}")
+      end
+    end)
+
+    uncategorized = Enum.reject(ops, fn op ->
+      Enum.any?(@engine_categories, fn {_, known} -> Atom.to_string(op) in known end)
+    end)
+    unless uncategorized == [] do
+      IO.puts("Other: #{Enum.map_join(uncategorized, ", ", &Atom.to_string/1)}")
+    end
+
     IO.puts("")
     IO.puts("Example: engine.list_sum([1.0, 2.0, 3.0])")
   end

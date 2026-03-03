@@ -479,16 +479,15 @@ defmodule Zixir.Parser.Unified do
 
   defp parse_catches_impl(tokens, acc) do
     case tokens do
-      [{:ident, error_var, _, _} | [{:op, :=, _, _}, {:op, :>, _, _} | rest_after_arrow]] ->
+      [{:ident, error_var, _, _}, {:op, :fat_arrow, _, _} | rest_after_arrow] ->
         {error_type, rest} = parse_type(rest_after_arrow)
         {catch_body, rest2} = parse_block(rest)
-        
+
         case rest2 do
           [{:op, :",", _, _} | after_comma] -> parse_catches_impl(after_comma, [{error_var, error_type, catch_body} | acc])
-          [{:op, :"}", _, _} | _] -> {Enum.reverse([{error_var, error_type, catch_body} | acc]), rest2}
           _ -> {Enum.reverse([{error_var, error_type, catch_body} | acc]), rest2}
         end
-      
+
       _ -> {Enum.reverse(acc), tokens}
     end
   end

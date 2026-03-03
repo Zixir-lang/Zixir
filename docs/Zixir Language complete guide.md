@@ -2,7 +2,7 @@
 
 **A Comprehensive Guide for Beginners and Developers**
 
-*Version 1.0 - Production Ready*
+*Version 7.1.0 - Production Ready*
 
 ---
 
@@ -1723,15 +1723,16 @@ python "random" "randint" (1, 100)       # Random int 1-100
 let arr = [5, 2, 8, 1, 9]
 let sorted = python "sorted" (arr)  # [1, 2, 5, 8, 9]
 
-# String manipulation (limited in v1.0)
-# Note: Python string methods are not directly accessible
-# Use Zixir string concatenation (++) instead
+# For advanced string ops, use built-in functions:
+# upper(), lower(), trim(), split(), join(), contains(), reverse()
+# Or use Python for operations not covered by built-ins
 ```
 
 **Date and Time:**
 ```zixir
-# Note: datetime classes cannot be instantiated directly in Zixir v1.0
-# Use Python via external scripts for datetime operations
+# Datetime operations are handled via Python FFI:
+# python "time" "time" ()        — current timestamp
+# python "datetime" "now" ()     — requires external Python script
 ```
 
 ### When to Use Python vs Engine
@@ -1807,8 +1808,8 @@ let raw_temperatures = [
 ]
 
 # Step 2: Clean the data (remove extreme outliers using engine operations)
-# Note: In Zixir v1.0, complex filtering is best done with Python
-# Here we'll demonstrate using engine.filter_gt for simple filtering
+# Complex filtering is best done with engine ops or Python FFI
+# Here we demonstrate using engine.filter_gt for simple filtering
 fn remove_extreme_values(data: [Float], max_val: Float) -> [Float]: {
   # Remove values above max using engine.filter_gt and subtraction
   # This is a workaround - production code should use Python
@@ -1827,7 +1828,7 @@ fn remove_extreme_values(data: [Float], max_val: Float) -> [Float]: {
 We define an array of temperature readings. For this example, assume data is pre-cleaned or use Python filtering.
 
 **Step 2 - Data Cleaning (Approach):**
-In Zixir v1.0, you have several options:
+You have several options:
 1. **Pre-clean data** before loading into Zixir
 2. **Use Python** for complex filtering: `python "list" "filter" (lambda, data)`
 3. **Use engine.filter_gt** for simple > filters
@@ -2036,7 +2037,7 @@ const MODEL = "gpt-3.5-turbo"
 
 # Note: This project demonstrates the CONCEPT of LLM integration
 # Actual implementation requires Python requests library and proper error handling
-# In Zixir v1.0, complex nested Python calls may need to be done in Python scripts
+# Complex nested Python calls may need to be done in Python scripts
 
 # Step 1: Simple function to demonstrate the pattern
 fn create_prompt(task: String, text: String) -> String: {
@@ -2121,7 +2122,7 @@ fn calculate_discount(order: Map) -> Map: {
 }
 
 # Note: This function demonstrates the concept
-# In Zixir v1.0, membership testing requires Python or manual checks
+# For membership testing, use contains() or engine operations
 fn check_inventory(items: [String]) -> String: {
   # Simplified: assume all items available for demo
   "Items available: " ++ "laptop, mouse"
@@ -2150,7 +2151,7 @@ fn send_notification(customer: String, message: String) -> String: {
 }
 
 # Note: This project demonstrates workflow concepts
-# In Zixir v1.0, use parallel arrays or Python for complex data structures
+# For complex data structures, use maps or Python FFI
 
 # Step 2: Main workflow orchestrator (simplified)
 fn process_order_simplified(amount: Float, customer: String, method: String) -> String: {
@@ -2180,7 +2181,7 @@ process_order_simplified(1200.0, "Alice", "credit_card")
   
 ### Workflow Pattern Explanation
 
-This demonstrates a **simplified Pipeline Pattern** suitable for Zixir v1.0:
+This demonstrates a **Pipeline Pattern** using Zixir's functional approach:
 
 **Step 1 - Input Validation:**
 ```zixir
@@ -2248,7 +2249,7 @@ let b = "test"
    # Process data in batches using engine operations
    let results = engine.map_mul(data, 2.0)
    
-   # Bad - individual calls (not supported in v1.0)
+   # Bad - individual calls in loops (prefer batch operations)
    # Loops with Python calls are inefficient
    ```
 
@@ -2632,20 +2633,20 @@ python "random" "random" ()
 
 **Filter array (using engine):**
 ```zixir
-let filtered = []
-for item in arr: {
-  if condition: {
-    filtered = filtered ++ [item]
-  }
-}
+let filtered = engine.filter_gt(arr, 0.0)
 ```
 
-**Map operation:**
+**Transform array (using pipe + engine):**
 ```zixir
-let result = []
-for item in arr: {
-  result = result ++ [transform(item)]
-}
+let result = engine.map_mul(arr, 2.0)
+let stats = result |> engine.list_mean()
+```
+
+**Accumulate with recursion (functional style):**
+```zixir
+fn sum_list(arr):
+  if length(arr) == 0: 0
+  else: head(arr) + sum_list(tail(arr))
 ```
 
 ---
@@ -2664,20 +2665,13 @@ fn validate_age(age: Int) -> Bool: {
 }
 
 fn validate_user(user: Map) -> Map: {
-  let errors = []
-  
-  if !validate_email(user["email"]): {
-    errors = errors ++ ["Invalid email"]
-  }
-  
-  if !validate_age(user["age"]): {
-    errors = errors ++ ["Invalid age"]
-  }
-  
-  if errors == []: {
+  let email_ok = validate_email(user["email"])
+  let age_ok = validate_age(user["age"])
+
+  if email_ok && age_ok: {
     {"valid": true}
   } else: {
-    {"valid": false, "errors": errors}
+    {"valid": false, "email_ok": email_ok, "age_ok": age_ok}
   }
 }
 ```
@@ -2685,28 +2679,23 @@ fn validate_user(user: Map) -> Map: {
 ### Pattern 2: Retry Logic
 
 ```zixir
-fn retry_operation(operation: Function, max_attempts: Int) -> Result: {
-  let attempts = 0
-  let result = null
-  
-  while attempts < max_attempts && result == null: {
-    try {
-      result = operation()
-    } catch Error => {
-      attempts = attempts + 1
-      if attempts < max_attempts: {
-        # Wait before retry (using Python)
-        python "time.sleep" (1.0)
-      }
-    }
-  }
-  
-  if result == null: {
+# Recursive retry — no mutable state needed
+fn retry_operation(operation: Function, attempts_left: Int) -> Map: {
+  if attempts_left <= 0: {
     {"success": false, "error": "Max retries exceeded"}
   } else: {
-    {"success": true, "result": result}
+    let result = operation()
+    if result["ok"]: {
+      {"success": true, "result": result["value"]}
+    } else: {
+      # Retry with one fewer attempt
+      retry_operation(operation, attempts_left - 1)
+    }
   }
 }
+
+# Usage
+let outcome = retry_operation(my_operation, 3)
 ```
 
 ### Pattern 3: Data Processing Pipeline
@@ -2738,14 +2727,16 @@ const DEFAULT_CONFIG = {
   "debug": false
 }
 
-fn load_config(overrides: Map) -> Map: {
-  # Merge overrides with defaults
-  let config = DEFAULT_CONFIG
-  for key in python "overrides.keys" (): {
-    config[key] = overrides[key]
-  }
-  config
+fn get_config(key: String, overrides: Map) -> Map: {
+  # Check overrides first, fall back to defaults
+  let override_val = overrides[key]
+  if override_val != nil: override_val
+  else: DEFAULT_CONFIG[key]
 }
+
+# Usage
+let retries = get_config("max_retries", user_overrides)
+let timeout = get_config("timeout", user_overrides)
 ```
 
 ### Pattern 5: Result Type
